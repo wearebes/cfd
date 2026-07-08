@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/jcy/research/cfd/basilisk/src/wsServer/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

@@ -1,0 +1,3 @@
+/Users/jcy/research/cfd/basilisk/src/wsServer/build/CMakeFiles/ws.dir
+/Users/jcy/research/cfd/basilisk/src/wsServer/build/CMakeFiles/edit_cache.dir
+/Users/jcy/research/cfd/basilisk/src/wsServer/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,2 @@
+/usr/bin/ar qc libws.a CMakeFiles/ws.dir/src/ws.c.o CMakeFiles/ws.dir/src/base64/base64.c.o CMakeFiles/ws.dir/src/sha1/sha1.c.o CMakeFiles/ws.dir/src/handshake/handshake.c.o
+/usr/bin/ranlib libws.a
