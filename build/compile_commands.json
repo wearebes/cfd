@@ -1,0 +1,26 @@
+[
+{
+  "directory": "/Users/jcy/research/cfd/build",
+  "command": "/opt/homebrew/bin/aarch64-apple-darwin25-gcc-15  -I/Users/jcy/research/cfd/basilisk/src/wsServer/include -g -std=gnu99 -arch arm64 -o CMakeFiles/ws.dir/src/ws.c.o -c /Users/jcy/research/cfd/basilisk/src/wsServer/src/ws.c",
+  "file": "/Users/jcy/research/cfd/basilisk/src/wsServer/src/ws.c",
+  "output": "CMakeFiles/ws.dir/src/ws.c.o"
+},
+{
+  "directory": "/Users/jcy/research/cfd/build",
+  "command": "/opt/homebrew/bin/aarch64-apple-darwin25-gcc-15  -I/Users/jcy/research/cfd/basilisk/src/wsServer/include -g -std=gnu99 -arch arm64 -o CMakeFiles/ws.dir/src/base64/base64.c.o -c /Users/jcy/research/cfd/basilisk/src/wsServer/src/base64/base64.c",
+  "file": "/Users/jcy/research/cfd/basilisk/src/wsServer/src/base64/base64.c",
+  "output": "CMakeFiles/ws.dir/src/base64/base64.c.o"
+},
+{
+  "directory": "/Users/jcy/research/cfd/build",
+  "command": "/opt/homebrew/bin/aarch64-apple-darwin25-gcc-15  -I/Users/jcy/research/cfd/basilisk/src/wsServer/include -g -std=gnu99 -arch arm64 -o CMakeFiles/ws.dir/src/sha1/sha1.c.o -c /Users/jcy/research/cfd/basilisk/src/wsServer/src/sha1/sha1.c",
+  "file": "/Users/jcy/research/cfd/basilisk/src/wsServer/src/sha1/sha1.c",
+  "output": "CMakeFiles/ws.dir/src/sha1/sha1.c.o"
+},
+{
+  "directory": "/Users/jcy/research/cfd/build",
+  "command": "/opt/homebrew/bin/aarch64-apple-darwin25-gcc-15  -I/Users/jcy/research/cfd/basilisk/src/wsServer/include -g -std=gnu99 -arch arm64 -o CMakeFiles/ws.dir/src/handshake/handshake.c.o -c /Users/jcy/research/cfd/basilisk/src/wsServer/src/handshake/handshake.c",
+  "file": "/Users/jcy/research/cfd/basilisk/src/wsServer/src/handshake/handshake.c",
+  "output": "CMakeFiles/ws.dir/src/handshake/handshake.c.o"
+}
+]
