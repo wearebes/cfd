@@ -18,7 +18,12 @@ if [ "$#" -eq 0 ]; then
 fi
 
 source_file=""
+output_file=""
+previous_arg=""
 for arg in "$@"; do
+  if [ "$previous_arg" = "-o" ]; then
+    output_file="$arg"
+  fi
   case "$arg" in
     *.c)
       if [ -z "$source_file" ]; then
@@ -26,6 +31,7 @@ for arg in "$@"; do
       fi
       ;;
   esac
+  previous_arg="$arg"
 done
 
 if [ -z "$source_file" ]; then
@@ -52,17 +58,33 @@ case "$abs_source" in
   "$BASILISK"/*)
     qcc_source="${abs_source#"$BASILISK"/}"
     qcc_args=()
+    previous_arg=""
     for arg in "$@"; do
       if [ "$arg" = "$source_file" ] || [ "$arg" = "$abs_source" ]; then
         qcc_args+=("$qcc_source")
+      elif [ "$previous_arg" = "-o" ] && [ -n "$output_file" ] && [ "$arg" = "$output_file" ]; then
+        case "$arg" in
+          /*) qcc_args+=("$arg") ;;
+          *) qcc_args+=("$repo_root/$arg") ;;
+        esac
       else
         qcc_args+=("$arg")
       fi
+      previous_arg="$arg"
     done
     cd "$BASILISK"
     exec ./qcc -autolink "${qcc_args[@]}"
     ;;
   *)
-    exec "$BASILISK/qcc" -autolink -I"$BASILISK" "$@"
+    # No -I"$BASILISK" here: qcc already resolves Basilisk headers via the
+    # $BASILISK env var internally. Adding it redundantly as an explicit -I
+    # makes qcc's own (non-#if-aware) include scanner discover headers like
+    # bcg.h through two different search roots and stage/emit them twice,
+    # causing spurious "redefinition" errors for any stock header that
+    # (like bcg.h) has no include guard and is reachable via more than one
+    # include path (e.g. navier-stokes/centered.h and tracer.h both pull in
+    # bcg.h). Verified empirically 2026-07-09 while wiring up the external
+    # rising-clsvof k-replacement harness.
+    exec "$BASILISK/qcc" -autolink "$@"
     ;;
 esac
