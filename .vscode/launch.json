@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Basilisk/qcc: 调试活动文件",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/${fileBasenameNoExtension}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [
+                {
+                    "name": "BASILISK",
+                    "value": "${workspaceFolder}/basilisk/src"
+                },
+                {
+                    "name": "OPENGLIBS",
+                    "value": "-lfb_tiny"
+                }
+            ],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "preLaunchTask": "Basilisk/qcc: 生成活动文件"
+        }
+    ]
+}

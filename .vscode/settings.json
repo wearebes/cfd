@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "/Users/jcy/research/cfd/basilisk/src/wsServer"
+    "cmake.configureOnOpen": false,
+    "cmake.sourceDirectory": "${workspaceFolder}/basilisk/src/wsServer"
 }

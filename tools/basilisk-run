@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+usage() {
+  printf 'Usage: %s [qcc flags] source.c [program args]\n' "$0" >&2
+  printf 'Use -- to separate compiler flags from program args.\n' >&2
+}
+
+if [ "$#" -eq 0 ]; then
+  usage
+  exit 2
+fi
+
+compile_args=()
+program_args=()
+seen_separator=0
+source_file=""
+
+for arg in "$@"; do
+  if [ "$arg" = "--" ]; then
+    seen_separator=1
+    continue
+  fi
+
+  if [ "$seen_separator" -eq 1 ]; then
+    program_args+=("$arg")
+    continue
+  fi
+
+  compile_args+=("$arg")
+  case "$arg" in
+    *.c)
+      if [ -z "$source_file" ]; then
+        source_file="$arg"
+      fi
+      ;;
+  esac
+done
+
+if [ -z "$source_file" ]; then
+  usage
+  printf 'error: no .c source file was provided\n' >&2
+  exit 2
+fi
+
+if [ ! -f "$source_file" ]; then
+  printf 'error: source file not found: %s\n' "$source_file" >&2
+  exit 2
+fi
+
+source_dir="$(cd "$(dirname "$source_file")" && pwd)"
+source_base="$(basename "$source_file" .c)"
+output="$source_dir/$source_base"
+
+"$script_dir/basilisk-cc" "${compile_args[@]}" -o "$output" -lm
+cd "$source_dir"
+if [ "${#program_args[@]}" -eq 0 ]; then
+  exec "$output"
+else
+  exec "$output" "${program_args[@]}"
+fi

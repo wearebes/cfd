@@ -1,0 +1,30 @@
+stommel-ml.s:	\
+	/Users/jcy/research/cfd/basilisk/src/grid/multigrid.h \
+	/Users/jcy/research/cfd/basilisk/src/layered/hydro.h \
+	/Users/jcy/research/cfd/basilisk/src/layered/implicit.h \
+	/Users/jcy/research/cfd/basilisk/src/layered/coriolis.h \
+	/Users/jcy/research/cfd/basilisk/src/poisson.h \
+	/Users/jcy/research/cfd/basilisk/src/utils.h \
+	/Users/jcy/research/cfd/basilisk/src/run.h \
+	/Users/jcy/research/cfd/basilisk/src/layered/diffusion.h \
+	/Users/jcy/research/cfd/basilisk/src/elevation.h \
+	/Users/jcy/research/cfd/basilisk/src/gauges.h \
+	/Users/jcy/research/cfd/basilisk/src/poisson.h \
+	/Users/jcy/research/cfd/basilisk/src/utils.h \
+	/Users/jcy/research/cfd/basilisk/src/output.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/gpu/output.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/layers.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/foreach_cell.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/neighbors.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/variables.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/multigrid-common.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/multigrid-mpi.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/variables.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/cartesian-common.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/events.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/fpe.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/stencils.h \
+	/Users/jcy/research/cfd/basilisk/src/khash.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/externals.h \
+	/Users/jcy/research/cfd/basilisk/src/common.h \
+

@@ -1,12 +1,15 @@
 {
+    "version": "2.0.0",
     "tasks": [
         {
             "type": "shell",
-            "label": "C/C++: clang 生成活动文件",
-            "command": "/bin/zsh",
+            "label": "Basilisk/qcc: 生成活动文件",
+            "command": "${workspaceFolder}/tools/basilisk-cc",
             "args": [
-                "-lc",
-                "if [[ \"${file}\" == *\"/basilisk/src/\"* ]]; then srcfile=\"${file}\"; srcfile=\"${srcfile#${workspaceFolder}/basilisk/src/}\"; cd \"${workspaceFolder}/basilisk/src\" && ./qcc -autolink \"$srcfile\" -o \"${fileDirname}/${fileBasenameNoExtension}\" -lm; else /usr/bin/clang -fcolor-diagnostics -fansi-escape-codes -g \"${file}\" -o \"${fileDirname}/${fileBasenameNoExtension}\"; fi"
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}",
+                "-lm"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -15,31 +18,18 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "detail": "调试器生成的任务。"
+            "detail": "Use the repository Basilisk compiler wrapper instead of VS Code generated gcc tasks."
         },
         {
-            "type": "cppbuild",
-            "label": "C/C++: gcc-15 生成活动文件",
-            "command": "/opt/homebrew/bin/gcc-15",
+            "type": "shell",
+            "label": "Basilisk/qcc: 运行活动文件",
+            "command": "${workspaceFolder}/tools/basilisk-run",
             "args": [
-                "-fdiagnostics-color=always",
-                "-g",
-                "${file}",
-                "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "${file}"
             ],
-            "options": {
-                "cwd": "${fileDirname}"
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "detail": "调试器生成的任务。"
+            "problemMatcher": [],
+            "group": "test",
+            "detail": "Build the active file with the repository Basilisk wrapper, then run it from the source directory."
         }
-    ],
-    "version": "2.0.0"
+    ]
 }

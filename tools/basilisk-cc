@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd "$script_dir/.." && pwd)"
+
+: "${BASILISK:=$repo_root/basilisk/src}"
+: "${OPENGLIBS:=-lfb_tiny}"
+export BASILISK OPENGLIBS
+
+usage() {
+  printf 'Usage: %s [qcc flags] source.c -o output [link flags]\n' "$0" >&2
+}
+
+if [ "$#" -eq 0 ]; then
+  usage
+  exit 2
+fi
+
+source_file=""
+for arg in "$@"; do
+  case "$arg" in
+    *.c)
+      if [ -z "$source_file" ]; then
+        source_file="$arg"
+      fi
+      ;;
+  esac
+done
+
+if [ -z "$source_file" ]; then
+  usage
+  printf 'error: no .c source file was provided\n' >&2
+  exit 2
+fi
+
+if [ ! -f "$source_file" ]; then
+  printf 'error: source file not found: %s\n' "$source_file" >&2
+  exit 2
+fi
+
+if [ ! -x "$BASILISK/qcc" ]; then
+  make -C "$BASILISK" qcc
+fi
+
+if [ ! -f "$BASILISK/gl/libglutils.a" ] || [ ! -f "$BASILISK/gl/libfb_tiny.a" ]; then
+  make -C "$BASILISK/gl"
+fi
+
+abs_source="$(cd "$(dirname "$source_file")" && pwd)/$(basename "$source_file")"
+case "$abs_source" in
+  "$BASILISK"/*)
+    qcc_source="${abs_source#"$BASILISK"/}"
+    qcc_args=()
+    for arg in "$@"; do
+      if [ "$arg" = "$source_file" ] || [ "$arg" = "$abs_source" ]; then
+        qcc_args+=("$qcc_source")
+      else
+        qcc_args+=("$arg")
+      fi
+    done
+    cd "$BASILISK"
+    exec ./qcc -autolink "${qcc_args[@]}"
+    ;;
+  *)
+    exec "$BASILISK/qcc" -autolink -I"$BASILISK" "$@"
+    ;;
+esac

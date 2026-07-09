@@ -1,0 +1,26 @@
+poisson.3D.s:	\
+	/Users/jcy/research/cfd/basilisk/src/utils.h \
+	/Users/jcy/research/cfd/basilisk/src/poisson.h \
+	/Users/jcy/research/cfd/basilisk/src/output.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/gpu/output.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/octree.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/tree.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/mempool.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/memindex/virtual.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/layers.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/foreach_cell.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/neighbors.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/variables.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/tree-common.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/tree-mpi.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/balance.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/multigrid-common.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/variables.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/cartesian-common.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/events.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/fpe.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/stencils.h \
+	/Users/jcy/research/cfd/basilisk/src/khash.h \
+	/Users/jcy/research/cfd/basilisk/src/grid/externals.h \
+	/Users/jcy/research/cfd/basilisk/src/common.h \
+
