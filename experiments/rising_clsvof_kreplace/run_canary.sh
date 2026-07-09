@@ -18,9 +18,11 @@ model_include_dir="$repo_root/tools/clsvof_model/include"
 placeholder_model_dir="$repo_root/dataset/model/c_exports/baseline_128_hgradient"
 
 # NN model names for this canary (dataset/model/c_exports/<name>/nn_weights.h).
-# Task 4/5 run only the baseline canary; Task 8 extends this list.
 nn_models=(
+  baseline_64_hgradient
   baseline_128_hgradient
+  baseline_256_hgradient
+  baseline_512_hgradient
 )
 
 work_root="$script_dir/work"
