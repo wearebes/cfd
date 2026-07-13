@@ -1,0 +1,10 @@
+{
+  "row_id": "capwave__clsvof_native__N0128__imax02",
+  "state": "completed",
+  "started_at": "2026-07-11T09:53:46.410282+00:00",
+  "work_dir": "/Users/jcy/research/cfd/experiments/clsvof_redistance_imax_matrix/work/20260710T172910Z/capwave__clsvof_native__N0128__imax02/attempt_1783763626",
+  "pid": 64934,
+  "finished_at": "2026-07-11T09:57:34.796308+00:00",
+  "compile_seconds": 4.29283179086633,
+  "run_seconds": 223.91914587514475
+}

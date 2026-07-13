@@ -1,0 +1,12 @@
+[
+  {
+    "mode": "clsvof_nn_cell_offset_64",
+    "samples": 71133,
+    "tau_final": 0.999987,
+    "u_star_max": 0.00848024,
+    "delta_f_final": 3.89743e-09,
+    "ca_max": 7.741364568429349e-05,
+    "ca_final": 2.854565652949674e-05,
+    "ca_tail_max": 2.8545747816589657e-05
+  }
+]

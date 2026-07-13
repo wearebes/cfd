@@ -1,0 +1,88 @@
+{
+  "case_status": "accepted_runtime_evidence",
+  "control_gate": {
+    "all_passed": true,
+    "basilisk_untouched": {
+      "detail": "git status --short -- basilisk shows no entries beyond the pre-experiment baseline",
+      "passed": true
+    },
+    "native_wrapper_equivalence": {
+      "detail": "compare_out.py exit 0 (out fields match ignoring perf.t/perf.speed); log byte-identical",
+      "passed": true
+    },
+    "overlay_liveness": {
+      "detail": "compare_out.py exit 1 vs original (native_perturbed diverges from t=0.000167809 onward), proving ki dispatch reaches the solver",
+      "passed": true
+    }
+  },
+  "date": "20260710",
+  "identity": "rising case1 20260709T141809Z",
+  "limitations": [
+    "Four checkpoint rows are valid runtime evidence but remain an ablation table, not a cross-case headline result.",
+    "No NN improvement claim is made from these same-host near-parity rows."
+  ],
+  "nn_rows": [
+    {
+      "accepted_runtime_gate": true,
+      "case": "case1",
+      "checkpoint": "dataset/model/baseline_128_hgradient.pt",
+      "clamp_hits": 0,
+      "hidden_units": 128,
+      "mode": "nn_baseline_128_hgradient",
+      "model": "baseline_128_hgradient",
+      "output_contract": "h*kappa",
+      "provider_evaluations": 216126,
+      "raw27_contract": "phi9+nx9+ny9",
+      "status": "diagnostic_ablation",
+      "training_dataset": "/home/mail/jiaqizhang/jcy/PINN/dataset/128_hgradient.h5"
+    },
+    {
+      "accepted_runtime_gate": true,
+      "case": "case1",
+      "checkpoint": "dataset/model/baseline_256_hgradient.pt",
+      "clamp_hits": 0,
+      "hidden_units": 128,
+      "mode": "nn_baseline_256_hgradient",
+      "model": "baseline_256_hgradient",
+      "output_contract": "h*kappa",
+      "provider_evaluations": 216126,
+      "raw27_contract": "phi9+nx9+ny9",
+      "status": "diagnostic_ablation",
+      "training_dataset": "/home/mail/jiaqizhang/jcy/PINN/dataset/256_hgradient.h5"
+    },
+    {
+      "accepted_runtime_gate": true,
+      "case": "case1",
+      "checkpoint": "dataset/model/baseline_512_hgradient.pt",
+      "clamp_hits": 0,
+      "hidden_units": 128,
+      "mode": "nn_baseline_512_hgradient",
+      "model": "baseline_512_hgradient",
+      "output_contract": "h*kappa",
+      "provider_evaluations": 216126,
+      "raw27_contract": "phi9+nx9+ny9",
+      "status": "diagnostic_ablation",
+      "training_dataset": "/home/mail/jiaqizhang/jcy/PINN/dataset/512_hgradient.h5"
+    },
+    {
+      "accepted_runtime_gate": true,
+      "case": "case1",
+      "checkpoint": "dataset/model/baseline_64_hgradient.pt",
+      "clamp_hits": 0,
+      "hidden_units": 128,
+      "mode": "nn_baseline_64_hgradient",
+      "model": "baseline_64_hgradient",
+      "output_contract": "h*kappa",
+      "provider_evaluations": 216126,
+      "raw27_contract": "phi9+nx9+ny9",
+      "status": "diagnostic_ablation",
+      "training_dataset": "/home/mail/jiaqizhang/jcy/PINN/dataset/64_hgradient.h5"
+    }
+  ],
+  "report_role": "diagnostic_ablation_until_case2_and_capwave_close",
+  "source_fingerprint": "rising_v1:d47183004112d07cce518ee308c069b02a0600ba75303d251a1604575b6b5863:234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395:-DLEVELSET=1 -DCLSVOF=1",
+  "source_fingerprint_detail": {
+    "integral_h_sha256": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395",
+    "rising_c_sha256": "d47183004112d07cce518ee308c069b02a0600ba75303d251a1604575b6b5863"
+  }
+}

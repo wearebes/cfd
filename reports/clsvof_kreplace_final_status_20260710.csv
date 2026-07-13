@@ -1,0 +1,10 @@
+identity,status,evidence,provider_evaluations,clamp_hits,metric
+rising case1,accepted,experiments/rising_clsvof_kreplace/results/20260709T141809Z,216126,0,all four NN rows accepted runtime evidence
+rising case2,accepted,experiments/rising_clsvof_kreplace/results_case2/20260709T174800Z,102641/102672/102862/102638,0/0/0/0,all four NN rows accepted runtime evidence
+capwave fixed-sweep,accepted,experiments/capwave_clsvof_kreplace/results/20260709T173527Z,11824/35536/84176/369320,0/0/0/0,official wave RMS delta 0 for N16/N32/N64/N128
+capwave matched N64,accepted,experiments/capwave_clsvof_kreplace/results/20260709T173049Z,48640,0,wave RMS delta 2.2446043891668784e-06
+capwave matched N128,accepted,experiments/capwave_clsvof_kreplace/results/20260709T174010Z,285144,0,wave RMS delta 6.0833730999045488e-07
+capwave matched N256,accepted,experiments/capwave_clsvof_kreplace/results/20260709T182905Z,1522472,0,wave RMS delta 2.684901301009066e-07
+capwave matched N512,accepted,experiments/capwave_clsvof_kreplace/results/20260709T190130Z,8756096,0,wave RMS delta 3.91611427348643e-08
+capwave diagnostic imports,diagnostic,experiments/capwave_clsvof_kreplace/diagnostic_imports/20260710_from_private_tmp,n/a,n/a,predates main-workspace provider-stat gate
+capwave mislabeled fixed-sweep 20260709T173134Z,superseded,experiments/capwave_clsvof_kreplace/results/20260709T173134Z,n/a,n/a,single N128 patched case not stock fixed sweep

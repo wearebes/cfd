@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "generated_date": "2026-07-13",
+  "files": {
+    "basilisk/src/test/capwave-clsvof.c": "89628e5b0ec13e8b93cde8a7d3bf917329fd20e0f2ae71720ffe4ce028d7cbed",
+    "basilisk/src/test/rising.c": "d47183004112d07cce518ee308c069b02a0600ba75303d251a1604575b6b5863",
+    "cases/stationary_bubble/src/stationary-clsvof.c": "d27855945de09cc0d3194c57b288f3b81ad5e69f62c8d19b4d0e59a84b25a7f2",
+    "basilisk/src/two-phase-clsvof.h": "c0f21472c2d6acac0bdda0a2c43602273ee35d6c111cce4a98005ff9f6dbd048",
+    "basilisk/src/integral.h": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395",
+    "basilisk/src/redistance.h": "3f60a716118bd651d594ea3b0beae521c5ca7c7ac15929ad49ac8fc50449dc6e",
+    "cases/_shared/nn_cell_curvature/src/clsvof_nn_cell_curvature.h": "25d5d656e1777f0989bc3ebbe7105f703dd9bc88934f8b98c2d6f3f24a1d0dbd",
+    "cases/_shared/nn_cell_curvature/src/kappa_offset_stats.h": "43a266a6ca3e982eac67b7707960ee053d65498ac5638f5ddc0272fca88a5e19",
+    "cases/_shared/nn_cell_curvature/src/make_overlay_integral.py": "2268cb5e82a4b3620c4f8a8e719ac6b8c42f9df59e6ed25b5a8c46722238bd38",
+    "cases/_shared/nondefault_redistance/src/make_redistance_overlay.py": "4bc21a10a07f95dcfaa3cbd61c506e1975f4ae0890f420d33a31d167e5115051",
+    "cases/capwave/src/make_single_resolution_case.py": "38dbbca3a25eb7e4b55c58edb26ba75d3270d90e504c2270b2382df5a4595a41",
+    "cases/capwave/generate/native.sh": "bc282b6fa034014f4c4fabf340cd6e417bdfac255231aefaf3e0318f9c46d39d",
+    "cases/capwave/generate/nn_cell_offset.sh": "a73cf966ab31ffe8ea47a1a71698641f9cb63fe4bf6d0a6af490eb3a42f36ede",
+    "cases/rising_bubble/generate/native.sh": "bcf0f558ca1036ca43b915b38ef17e0609aa714ff5fcbb15a1680c2cf0d6eef2",
+    "cases/rising_bubble/generate/nn_cell_offset.sh": "87ab1f197432237b578876c29c8b3ca1c006e045b30e19478890ddfb1eff2db1",
+    "cases/stationary_bubble/generate/native.sh": "d5a95f83c87f398fb323ce5141d061e4bd4f46c4089804c7c8597275b0903b12",
+    "cases/stationary_bubble/generate/nn_cell_offset.sh": "923097034eacbe8e10e104ebc4baa9540a0a9a0deb7a54e9605c80ba884cba62",
+    "tools/clsvof_model/include/clsvof_mlp_infer.h": "ce280823f9464e9d8f047cd55f12f3b78e5f53e1b35997558865d6e0bfbb3d53",
+    "dataset/model/c_exports/baseline_64_hgradient/nn_weights.h": "c52015fbba38c58f3613d3f1627308ac78f1f25d029950781ae7b1833b347b20",
+    "dataset/model/c_exports/baseline_128_hgradient/nn_weights.h": "79e4b768d37a8ee3a96db39ef30d236f2cec64110854a8527af7d829ab02babf",
+    "dataset/model/c_exports/baseline_256_hgradient/nn_weights.h": "19d93582bacd828f0a02d649c1693ad3a7140801538c053d502c3d1fa94ca88e",
+    "dataset/model/c_exports/baseline_512_hgradient/nn_weights.h": "0a6ad99b892ae70265202ecdb69fad33d5f58ced209297bff372720bf1d7bf10"
+  }
+}

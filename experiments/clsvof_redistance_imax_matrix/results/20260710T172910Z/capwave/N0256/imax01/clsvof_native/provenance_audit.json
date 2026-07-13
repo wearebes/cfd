@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "matrix_id": "20260710T172910Z",
+  "row_id": "capwave__clsvof_native__N0256__imax01",
+  "audited_at": "2026-07-12T06:34:11.263093+00:00",
+  "manifest_sha256_before_audit": "1d28bd5f5359696a187526cbb920b4234ad9a73283d1d3dd71407b34fd44952a",
+  "command": [
+    "/Users/jcy/research/cfd/tools/basilisk-cc",
+    "-DREDIST_MATRIX_LOG_STRIDE=50",
+    "-DREDIST_MATRIX_FINAL_TIME=2.2426211256",
+    "-DCLSVOF=1",
+    "-DCAPWAVE_K_MODE=CAPWAVE_K_NATIVE",
+    "-I/Users/jcy/research/cfd/experiments/capwave_clsvof_kreplace/include",
+    "-I/Users/jcy/research/cfd/tools/clsvof_model/include",
+    "-I/Users/jcy/research/cfd/dataset/model/c_exports/baseline_128_hgradient",
+    "capwave-clsvof.c",
+    "-o",
+    "capwave-clsvof",
+    "-lm"
+  ],
+  "inputs": {
+    "source_prosperetti": {
+      "path": "basilisk/src/test/prosperetti.h",
+      "sha256": "5bd86a34b8bbd199dd417e69781db2e53831cbc82d6c0bc68bc5d64f4d68dbf9",
+      "matrix_baseline_sha256": "5bd86a34b8bbd199dd417e69781db2e53831cbc82d6c0bc68bc5d64f4d68dbf9",
+      "matches_matrix_baseline": true
+    },
+    "provider": {
+      "path": "experiments/capwave_clsvof_kreplace/include/capwave_k_provider.h",
+      "sha256": "123892ce6811c318eeef6a923bb227f0233f4f0a3854a1fca8e986093b21297d",
+      "matrix_baseline_sha256": "123892ce6811c318eeef6a923bb227f0233f4f0a3854a1fca8e986093b21297d",
+      "matches_matrix_baseline": true
+    },
+    "features": {
+      "path": "experiments/capwave_clsvof_kreplace/include/clsvof_nn_features.h",
+      "sha256": "036ab392bf0f4de575ffbc20396ccfc7eb5c7084b4bb3314e48703ebd49d461d",
+      "matrix_baseline_sha256": "036ab392bf0f4de575ffbc20396ccfc7eb5c7084b4bb3314e48703ebd49d461d",
+      "matches_matrix_baseline": true
+    },
+    "stock_two_phase_clsvof": {
+      "path": "basilisk/src/two-phase-clsvof.h",
+      "sha256": "c0f21472c2d6acac0bdda0a2c43602273ee35d6c111cce4a98005ff9f6dbd048",
+      "matrix_baseline_sha256": "c0f21472c2d6acac0bdda0a2c43602273ee35d6c111cce4a98005ff9f6dbd048",
+      "matches_matrix_baseline": true
+    },
+    "stock_redistance": {
+      "path": "basilisk/src/redistance.h",
+      "sha256": "3f60a716118bd651d594ea3b0beae521c5ca7c7ac15929ad49ac8fc50449dc6e",
+      "matrix_baseline_sha256": "3f60a716118bd651d594ea3b0beae521c5ca7c7ac15929ad49ac8fc50449dc6e",
+      "matches_matrix_baseline": true
+    },
+    "stock_integral": {
+      "path": "basilisk/src/integral.h",
+      "sha256": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395",
+      "matrix_baseline_sha256": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395",
+      "matches_matrix_baseline": true
+    },
+    "mlp_inference": {
+      "path": "tools/clsvof_model/include/clsvof_mlp_infer.h",
+      "sha256": "ce280823f9464e9d8f047cd55f12f3b78e5f53e1b35997558865d6e0bfbb3d53",
+      "matrix_baseline_sha256": null,
+      "matches_matrix_baseline": null
+    },
+    "source_case": {
+      "path": "basilisk/src/test/capwave.c",
+      "sha256": "89628e5b0ec13e8b93cde8a7d3bf917329fd20e0f2ae71720ffe4ce028d7cbed",
+      "matrix_baseline_sha256": null,
+      "matches_matrix_baseline": null
+    }
+  },
+  "manifest_embedded_input_keys": [
+    "case",
+    "features",
+    "integral",
+    "metrics_header",
+    "mlp_inference",
+    "provider",
+    "redistance_header",
+    "redistance_provenance",
+    "source_case",
+    "source_prosperetti",
+    "stock_integral",
+    "stock_redistance",
+    "stock_two_phase_clsvof"
+  ],
+  "baseline_mismatches": [],
+  "passed": true,
+  "note": "Companion audit backfills per-row provider/features/weights provenance for rows whose immutable runtime manifest predates the expanded file list."
+}

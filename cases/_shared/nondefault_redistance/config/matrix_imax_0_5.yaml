@@ -1,0 +1,9 @@
+schema_version: 1
+name: clsvof_native_nn_cell_offset_imax_0_5
+authoritative_config: hpc/config/matrix_180.json
+row_count: 180
+methods: [clsvof_native, clsvof_nn_cell_offset]
+benchmarks: [capwave, rising_case1, rising_case2, stationary_bubble]
+imax: [0, 1, 2, 3, 4, 5]
+stationary_resolutions: [64, 128, 256]
+general_resolutions: [64, 128, 256, 512]

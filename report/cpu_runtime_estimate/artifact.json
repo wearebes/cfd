@@ -1,0 +1,242 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "180-row CFD matrix: two rising cases, no stationary N512",
+    "description": "Revised runtime range and implementation audit for two Hysing cases and stationary N64-N256.",
+    "generatedAt": "2026-07-13T00:00:00Z",
+    "cards": [
+      {
+        "id": "rows_card",
+        "description": "Capwave, two rising cases, and stationary N64-N256; two methods and six imax values.",
+        "dataset": "summary",
+        "sourceId": "runtime_model",
+        "metrics": [{"label": "Formal rows", "field": "rows", "format": "number"}]
+      },
+      {
+        "id": "central_card",
+        "description": "Central workload model with 40x aggregate effective throughput.",
+        "dataset": "summary",
+        "sourceId": "runtime_model",
+        "metrics": [{"label": "Central estimate", "field": "central_days", "format": "number", "unit": "days"}]
+      },
+      {
+        "id": "stationary_card",
+        "description": "Stationary share after excluding its N512 rows.",
+        "dataset": "summary",
+        "sourceId": "runtime_model",
+        "metrics": [{"label": "Stationary share", "field": "stationary_share", "format": "percent"}]
+      }
+    ],
+    "charts": [
+      {
+        "id": "strategy_chart",
+        "title": "Estimated formal runtime after removing stationary N512",
+        "subtitle": "Central p=3.25 workload; assumed aggregate effective speedup is shown in tooltips",
+        "type": "bar",
+        "dataset": "strategies",
+        "sourceId": "runtime_model",
+        "valueFormat": "number",
+        "encodings": {
+          "x": {"field": "strategy", "type": "nominal", "label": "128-CPU allocation"},
+          "y": {"field": "wall_days", "type": "quantitative", "label": "Estimated wall time, days"},
+          "color": {"field": "strategy", "type": "nominal", "label": "Strategy"},
+          "tooltip": [
+            {"field": "aggregate_speedup", "type": "quantitative", "label": "Aggregate effective speedup", "format": "number"},
+            {"field": "status", "type": "nominal", "label": "Use"}
+          ]
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "workload_table",
+        "title": "Equivalent single-thread workload by case",
+        "subtitle": "Apple-M3 hours before server and OpenMP speedup",
+        "dataset": "workload",
+        "sourceId": "runtime_model",
+        "defaultSort": {"field": "central_hours", "direction": "desc"},
+        "columns": [
+          {"field": "case", "label": "Case", "type": "text"},
+          {"field": "evidence", "label": "Evidence", "type": "text"},
+          {"field": "low_hours", "label": "Low hours", "format": "number"},
+          {"field": "central_hours", "label": "Central hours", "format": "number"},
+          {"field": "high_hours", "label": "High hours", "format": "number"}
+        ]
+      },
+      {
+        "id": "policy_table",
+        "title": "Default 128-CPU resource policy",
+        "subtitle": "The scheduler may run several OpenMP rows while assigned CPUs sum to at most 128",
+        "dataset": "policy",
+        "sourceId": "runtime_model",
+        "defaultSort": {"field": "threads_per_row", "direction": "asc"},
+        "columns": [
+          {"field": "scope", "label": "Rows", "type": "text"},
+          {"field": "threads_per_row", "label": "Threads/row", "format": "number"},
+          {"field": "max_concurrent", "label": "Concurrent rows", "format": "number"},
+          {"field": "reason", "label": "Reason", "type": "text"}
+        ]
+      },
+      {
+        "id": "cpu_table",
+        "title": "Performance-first CPU choice",
+        "subtitle": "Host topology still requires lscpu verification",
+        "dataset": "cpu_options",
+        "sourceId": "cpu_specs",
+        "defaultSort": {"field": "rank", "direction": "asc"},
+        "columns": [
+          {"field": "rank", "label": "Rank", "format": "number"},
+          {"field": "cpu", "label": "CPU option", "type": "text"},
+          {"field": "host_cores_threads", "label": "Processor cores/threads", "type": "text"},
+          {"field": "planning_days", "label": "Provisional planning range", "type": "text"},
+          {"field": "decision", "label": "Decision", "type": "text"}
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "runtime_model",
+        "label": "Repository timings and documented extrapolation",
+        "path": "report/cpu_runtime_estimate/sources.md",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "WITH workload(case_name,low_hours,central_hours,high_hours) AS (VALUES ('capwave',72.53,72.53,72.53),('rising Case 1',14.21,14.21,14.21),('rising Case 2',21.32,28.42,35.53),('stationary bubble',442.93,612.96,851.35)) SELECT * FROM workload",
+          "description": "Completed local timings, Case 2 sensitivity, and stationary N64-N256 scaling assumptions.",
+          "executed_at": "2026-07-13T00:00:00Z"
+        }
+      },
+      {
+        "id": "cpu_specs",
+        "label": "Official AMD and Intel processor specifications",
+        "path": "report/cpu_runtime_estimate/sources.md",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "WITH cpu_specs(cpu,cores,threads) AS (VALUES ('AMD EPYC 9754',128,256),('AMD EPYC 7H12',64,128),('Intel Xeon Platinum 8375C',32,64),('Intel Xeon Platinum 8350C',32,64)) SELECT * FROM cpu_specs",
+          "description": "Official processor-level specifications; cloud allocation topology remains unverified.",
+          "executed_at": "2026-07-13T00:00:00Z"
+        }
+      }
+    ],
+    "blocks": [
+      {"id": "title", "type": "markdown", "body": "# 180-row CFD matrix: two rising cases, no stationary N512"},
+      {
+        "id": "technical_summary",
+        "type": "markdown",
+        "sourceId": "runtime_model",
+        "body": "## Removing stationary N512 changes this from a week-scale job to roughly one day\n\nThe corrected matrix contains **180 rows**: capwave, Hysing rising Case 1, Hysing rising Case 2, and stationary N64-N256; native and NN cell-offset; imax 0-5. On the 128-CPU EPYC 9754 option, formal execution is provisionally **12-30 hours**, with a central estimate of **18.2 hours**. Reserve about **two calendar days** for preflight, OpenMP canaries, validation, retries, and packaging."
+      },
+      {"id": "headline_metrics", "type": "metric-strip", "cardIds": ["rows_card", "central_card", "stationary_card"]},
+      {
+        "id": "key_finding",
+        "type": "markdown",
+        "sourceId": "runtime_model",
+        "body": "## Excluding stationary N512 removes most of the modeled work\n\nStationary falls from **5,838** central equivalent hours to about **613 hours** and now represents **84.2%** of total work instead of 98.5%. Capwave contributes 72.5 hours, rising Case 1 contributes 14.2 hours, and rising Case 2 is provisionally modeled at 28.4 hours. The Case 2 value is not a formal four-resolution measurement."
+      },
+      {"id": "strategy_evidence", "type": "chart", "chartId": "strategy_chart"},
+      {"id": "policy_evidence", "type": "table", "tableId": "policy_table"},
+      {"id": "workload_evidence", "type": "table", "tableId": "workload_table"},
+      {
+        "id": "scope",
+        "type": "markdown",
+        "sourceId": "runtime_model",
+        "body": "## Scope and definitions\n\nCapwave, rising Case 1, and rising Case 2 each contain `4 resolutions x 2 methods x 6 imax = 48 rows`. Stationary contains `3 resolutions x 2 methods x 6 imax = 36 rows`, because N512 is excluded. Total: **180 rows**. There are two methods: native and NN cell-offset. `Aggregate effective speedup` combines server per-core performance, OpenMP scaling, NUMA/SMT effects, and concurrent rows."
+      },
+      {
+        "id": "methodology",
+        "type": "markdown",
+        "sourceId": "runtime_model",
+        "body": "## Methodology\n\nMeasured capwave and rising Case 1 evidence is retained. Rising Case 2 has legacy N256 evidence but no formal four-resolution imax matrix, so its workload is modeled at 1.5-2.5 times Case 1, with 2.0 times as the central value. Stationary begins with completed N64 full-horizon runs and scales only through N256 using p=3.0, 3.25, and 3.5. The central 18.2-hour estimate uses 728.1 equivalent hours and 40x aggregate effective throughput."
+      },
+      {
+        "id": "cpu_finding",
+        "type": "markdown",
+        "sourceId": "runtime_model",
+        "body": "## The three existing generators share one cell-offset implementation, but Case 2 is not wired yet\n\nCapwave, rising Case 1, and stationary all copy the same canonical `clsvof_nn_cell_curvature.h`, use the same overlay generator, and select weights by resolution. The header hash is `4e950902...f5dc1b`. Rising Case 2 currently exists only in the older `rising_k_provider` route; the new formal generator explicitly targets Case 1. Case 2 must be added with `-DCASE2=1`, separate output identity, and the same canonical header hash before the 180-row matrix is executable."
+      },
+      {"id": "cpu_evidence", "type": "table", "tableId": "cpu_table"},
+      {
+        "id": "limitations",
+        "type": "markdown",
+        "sourceId": "runtime_model",
+        "body": "## Validation assessment: share with caveats\n\nThe 180-row count, shared-header paths, and canonical header hash were checked against the live repository. The time estimate remains provisional because rising Case 2 lacks a formal matrix, stationary N128/N256 are modeled, and target-host OpenMP efficiency is unmeasured. The NN statistics path also has shared writes and must be made thread-safe."
+      },
+      {
+        "id": "recommendation",
+        "type": "markdown",
+        "sourceId": "runtime_model",
+        "body": "## Release rule\n\nFirst add Case 2 to the formal shared-header generator and prove its manifest records the same header and resolution-specific weight hashes as Case 1. Then make NN statistics thread-safe, run `lscpu`, and benchmark N256 rows at 16, 32, 64, and 128 threads. Because stationary now stops at N256, 32x4 and 64x2 should be compared for total throughput; the measured aggregate speedup should replace the provisional 40x value before setting the finish deadline."
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-07-13T00:00:00Z",
+    "status": "ready",
+    "datasets": {
+      "summary": [{"rows": 180, "central_days": 0.8, "stationary_share": 0.842}],
+      "strategies": [
+        {"strategy": "128 x 1", "wall_days": 1.1, "aggregate_speedup": 28, "status": "Single-row latency only"},
+        {"strategy": "64 x 2", "wall_days": 0.8, "aggregate_speedup": 40, "status": "Recommended default"},
+        {"strategy": "32 x 4", "wall_days": 0.6, "aggregate_speedup": 48, "status": "Canary candidate"}
+      ],
+      "workload": [
+        {"case": "capwave", "evidence": "Measured native plus completed NN timing anchors", "low_hours": 72.53, "central_hours": 72.53, "high_hours": 72.53},
+        {"case": "rising Case 1", "evidence": "Measured native plus observed NN/native ratio", "low_hours": 14.21, "central_hours": 14.21, "high_hours": 14.21},
+        {"case": "rising Case 2", "evidence": "Legacy N256 evidence; formal matrix modeled at 1.5-2.5x Case 1", "low_hours": 21.32, "central_hours": 28.42, "high_hours": 35.53},
+        {"case": "stationary bubble", "evidence": "N64 measured; N128-N256 modeled; N512 excluded", "low_hours": 442.93, "central_hours": 612.96, "high_hours": 851.35}
+      ],
+      "policy": [
+        {"order": 1, "scope": "capwave/rising cases N64", "threads_per_row": 8, "max_concurrent": 16, "reason": "Avoid parallel overhead on short rows"},
+        {"order": 2, "scope": "capwave/rising cases N128", "threads_per_row": 16, "max_concurrent": 8, "reason": "Prefer row throughput"},
+        {"order": 3, "scope": "capwave/rising cases N256", "threads_per_row": 32, "max_concurrent": 4, "reason": "Balanced allocation"},
+        {"order": 4, "scope": "capwave/rising cases N512", "threads_per_row": 64, "max_concurrent": 2, "reason": "Large row, preserve concurrency"},
+        {"order": 5, "scope": "stationary N64", "threads_per_row": 16, "max_concurrent": 8, "reason": "Measured long horizon, small grid"},
+        {"order": 6, "scope": "stationary N128", "threads_per_row": 32, "max_concurrent": 4, "reason": "Scale threads with grid"},
+        {"order": 7, "scope": "stationary N256", "threads_per_row": 64, "max_concurrent": 2, "reason": "Highest retained stationary resolution"}
+      ],
+      "cpu_options": [
+        {"rank": 1, "cpu": "AMD EPYC 9754", "host_cores_threads": "128/256", "planning_days": "12-30 formal hours", "decision": "Performance-first choice"},
+        {"rank": 2, "cpu": "AMD EPYC 7H12", "host_cores_threads": "64/128", "planning_days": "18-40 formal hours", "decision": "Older value alternative"},
+        {"rank": 3, "cpu": "Intel Xeon Platinum 8375C", "host_cores_threads": "32/64", "planning_days": "20-48 formal hours", "decision": "Use only after same-case benchmark"},
+        {"rank": 4, "cpu": "Intel Xeon Platinum 8350C", "host_cores_threads": "32/64", "planning_days": "24-60 formal hours", "decision": "Not preferred for performance"}
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "runtime_model",
+      "label": "Repository timings and documented extrapolation",
+      "path": "report/cpu_runtime_estimate/sources.md",
+      "query": {
+        "engine": "sqlite",
+        "language": "sql",
+        "sql": "WITH workload(case_name,low_hours,central_hours,high_hours) AS (VALUES ('capwave',72.53,72.53,72.53),('rising Case 1',14.21,14.21,14.21),('rising Case 2',21.32,28.42,35.53),('stationary bubble',442.93,612.96,851.35)) SELECT * FROM workload",
+        "description": "Completed local timings, Case 2 sensitivity, and stationary N64-N256 scaling assumptions.",
+        "tables_used": [
+          "experiments/clsvof_redistance_imax_matrix/results/20260710T172910Z",
+          "experiments/capwave_clsvof_kreplace/results",
+          "experiments/stationary_clsvof_smoke/results",
+          "basilisk/src/tension.h"
+        ],
+        "executed_at": "2026-07-13T00:00:00Z"
+      }
+    },
+    {
+      "id": "cpu_specs",
+      "label": "Official AMD and Intel processor specifications",
+      "path": "report/cpu_runtime_estimate/sources.md",
+      "query": {
+        "engine": "sqlite",
+        "language": "sql",
+        "sql": "WITH cpu_specs(cpu,cores,threads) AS (VALUES ('AMD EPYC 9754',128,256),('AMD EPYC 7H12',64,128),('Intel Xeon Platinum 8375C',32,64),('Intel Xeon Platinum 8350C',32,64)) SELECT * FROM cpu_specs",
+        "description": "Official processor-level specifications; cloud topology is unverified.",
+        "executed_at": "2026-07-13T00:00:00Z"
+      }
+    }
+  ],
+  "package_info": {}
+}

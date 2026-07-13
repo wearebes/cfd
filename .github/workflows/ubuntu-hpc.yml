@@ -1,0 +1,43 @@
+name: Ubuntu HPC fresh clone
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bootstrap Basilisk
+        run: bash hpc/bootstrap_ubuntu.sh
+
+      - name: Python and contract tests
+        run: python3 -m pytest hpc/tests cases/_shared/nn_cell_curvature/tests cases/rising_bubble/tests cases/tests cases/_shared/nondefault_redistance/tests -q
+
+      - name: Validate 180-row dry run
+        run: |
+          python3 hpc/run_matrix.py --matrix-id ci_dry --cpus 2 --phase all --dry-run > /tmp/matrix.jsonl
+          test "$(wc -l < /tmp/matrix.jsonl)" -eq 181
+          tail -n 1 /tmp/matrix.jsonl | jq -e '.row_count == 180'
+
+      - name: Compile and run OpenMP statistics parity
+        run: |
+          gcc -std=c11 -O2 -Icases/_shared/nn_cell_curvature/src cases/_shared/nn_cell_curvature/tests/openmp_stats_smoke.c -o /tmp/stats_serial -lm
+          gcc -std=c11 -O2 -fopenmp -Icases/_shared/nn_cell_curvature/src cases/_shared/nn_cell_curvature/tests/openmp_stats_smoke.c -o /tmp/stats_openmp -lm
+          /tmp/stats_serial 100003 > /tmp/stats_serial.txt
+          OMP_NUM_THREADS=4 OMP_DYNAMIC=FALSE /tmp/stats_openmp 100003 > /tmp/stats_openmp.txt
+          python3 -m pytest cases/_shared/nn_cell_curvature/tests/test_openmp_stats.py -q
+
+      - name: N64 generator smoke matrix
+        run: |
+          OMP_NUM_THREADS=1 bash cases/capwave/generate/native.sh --smoke --imax 3 --resolution 64 --output /tmp/cap_native
+          OMP_NUM_THREADS=2 bash cases/capwave/generate/nn_cell_offset.sh --smoke --imax 3 --resolution 64 --output /tmp/cap_nn
+          OMP_NUM_THREADS=2 bash cases/rising_bubble/generate/native.sh --case 1 --smoke --imax 3 --resolution 64 --output /tmp/rising1_native
+          OMP_NUM_THREADS=2 bash cases/rising_bubble/generate/nn_cell_offset.sh --case 1 --smoke --imax 3 --resolution 64 --output /tmp/rising1_nn
+          OMP_NUM_THREADS=4 bash cases/rising_bubble/generate/native.sh --case 2 --smoke --imax 3 --resolution 64 --output /tmp/rising2_native
+          OMP_NUM_THREADS=4 bash cases/rising_bubble/generate/nn_cell_offset.sh --case 2 --smoke --imax 3 --resolution 64 --output /tmp/rising2_nn
+          OMP_NUM_THREADS=1 bash cases/stationary_bubble/generate/native.sh --smoke --imax 3 --level 6 --tau-max 0.001 --output /tmp/stationary_native
+          OMP_NUM_THREADS=1 bash cases/stationary_bubble/generate/nn_cell_offset.sh --smoke --imax 3 --level 6 --tau-max 0.001 --output /tmp/stationary_nn

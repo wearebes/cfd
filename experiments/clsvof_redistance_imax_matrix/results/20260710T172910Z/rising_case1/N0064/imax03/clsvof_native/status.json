@@ -1,0 +1,10 @@
+{
+  "row_id": "rising_case1__clsvof_native__N0064__imax03",
+  "state": "completed",
+  "started_at": "2026-07-11T10:07:17.797281+00:00",
+  "work_dir": "/Users/jcy/research/cfd/experiments/clsvof_redistance_imax_matrix/work/20260710T172910Z/rising_case1__clsvof_native__N0064__imax03/attempt_1783764437",
+  "pid": 80202,
+  "finished_at": "2026-07-11T10:07:25.791051+00:00",
+  "compile_seconds": 4.198539374861866,
+  "run_seconds": 3.6868840421084315
+}

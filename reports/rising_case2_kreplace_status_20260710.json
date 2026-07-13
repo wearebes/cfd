@@ -1,0 +1,70 @@
+{
+  "date": "20260710",
+  "identity": "rising case2 20260709T174800Z",
+  "case_status": "accepted_runtime_evidence",
+  "source_fingerprint": "rising_v1:d47183004112d07cce518ee308c069b02a0600ba75303d251a1604575b6b5863:234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395:-DLEVELSET=1 -DCLSVOF=1 -DCASE2=1",
+  "control_gate": {
+    "all_passed": true,
+    "native_wrapper_equivalence": {
+      "passed": true,
+      "detail": "compare_out.py exit 0; out fields match original ignoring perf.t/perf.speed, and log matches original after removing provider-stat footer"
+    },
+    "overlay_liveness": {
+      "passed": true,
+      "detail": "compare_out.py exit 1 vs original; native_perturbed diverges from line 3"
+    },
+    "basilisk_untouched": {
+      "passed": true,
+      "detail": "case2 rerun used copied cases and generated overlays only"
+    }
+  },
+  "nn_rows": [
+    {
+      "case": "case2",
+      "mode": "nn_baseline_64_hgradient",
+      "provider_evaluations": 102641,
+      "clamp_hits": 0,
+      "accepted_runtime_gate": true,
+      "status": "diagnostic_ablation",
+      "checkpoint": "dataset/model/baseline_64_hgradient.pt",
+      "raw27_contract": "phi9+nx9+ny9",
+      "output_contract": "h*kappa"
+    },
+    {
+      "case": "case2",
+      "mode": "nn_baseline_128_hgradient",
+      "provider_evaluations": 102672,
+      "clamp_hits": 0,
+      "accepted_runtime_gate": true,
+      "status": "diagnostic_ablation",
+      "checkpoint": "dataset/model/baseline_128_hgradient.pt",
+      "raw27_contract": "phi9+nx9+ny9",
+      "output_contract": "h*kappa"
+    },
+    {
+      "case": "case2",
+      "mode": "nn_baseline_256_hgradient",
+      "provider_evaluations": 102862,
+      "clamp_hits": 0,
+      "accepted_runtime_gate": true,
+      "status": "diagnostic_ablation",
+      "checkpoint": "dataset/model/baseline_256_hgradient.pt",
+      "raw27_contract": "phi9+nx9+ny9",
+      "output_contract": "h*kappa"
+    },
+    {
+      "case": "case2",
+      "mode": "nn_baseline_512_hgradient",
+      "provider_evaluations": 102638,
+      "clamp_hits": 0,
+      "accepted_runtime_gate": true,
+      "status": "diagnostic_ablation",
+      "checkpoint": "dataset/model/baseline_512_hgradient.pt",
+      "raw27_contract": "phi9+nx9+ny9",
+      "output_contract": "h*kappa"
+    }
+  ],
+  "limitations": [
+    "Four checkpoint rows are valid runtime evidence but remain a training-rho/checkpoint ablation table, not a standalone improvement claim."
+  ]
+}

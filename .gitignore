@@ -1,0 +1,15 @@
+.DS_Store
+**/.DS_Store
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.qcc/
+*.o
+*.a
+
+hpc/work/
+hpc/results/
+hpc/packages/
+
+tem/
+build/

@@ -18,10 +18,12 @@ from summarize_canary import (
 )
 
 
-def plot_shape(result_dir: Path, repo_root: Path, modes: list[str], out_path: Path) -> None:
+def plot_shape(result_dir: Path, repo_root: Path, modes: list[str], out_path: Path, case: str = "case1") -> None:
     fig, ax = plt.subplots(figsize=(8, 4))
-    moonmd = read_moonmd_points(repo_root / MOONMD_RELATIVE_PATH)
-    ax.plot([p[0] for p in moonmd], [p[1] for p in moonmd], "k-", linewidth=2, label="MooNMD")
+    moonmd = read_moonmd_points(repo_root / MOONMD_RELATIVE_PATH[case])
+    all_x = [p[0] for p in moonmd]
+    all_y = [p[1] for p in moonmd]
+    ax.plot(all_x, all_y, "k-", linewidth=2, label="MooNMD")
     for mode in modes:
         segments = read_facet_segments(result_dir / mode / "log")
         first = True
@@ -32,9 +34,14 @@ def plot_shape(result_dir: Path, repo_root: Path, modes: list[str], out_path: Pa
                 linewidth=1,
                 label=mode if first else None,
             )
+            all_x.extend([a[0], b[0]])
+            all_y.extend([a[1], b[1]])
             first = False
-    ax.set_xlim(0.4, 1.4)
-    ax.set_ylim(0, 0.4)
+    if all_x and all_y:
+        x_pad = 0.05 * (max(all_x) - min(all_x) + 1e-9)
+        y_pad = 0.05 * (max(all_y) - min(all_y) + 1e-9)
+        ax.set_xlim(min(all_x) - x_pad, max(all_x) + x_pad)
+        ax.set_ylim(min(0.0, min(all_y) - y_pad), max(all_y) + y_pad)
     ax.set_xlabel("x (rise direction)")
     ax.set_ylabel("y")
     ax.set_title("Bubble shape at t = 3")
@@ -71,6 +78,9 @@ def plot_timeseries(result_dir: Path, modes: list[str], out_path: Path) -> None:
 def parse_args(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("result_dir", type=Path)
+    parser.add_argument(
+        "--case2", action="store_true", help="use the case-2 (sigma 1.96) MooNMD reference"
+    )
     return parser.parse_args(argv)
 
 
@@ -79,8 +89,9 @@ def main(argv=None) -> int:
     result_dir = args.result_dir.resolve()
     repo_root = Path(__file__).resolve().parents[2]
     modes = discover_modes(result_dir)
+    case = "case2" if args.case2 else "case1"
 
-    plot_shape(result_dir, repo_root, modes, result_dir / "shape_t3.png")
+    plot_shape(result_dir, repo_root, modes, result_dir / "shape_t3.png", case=case)
     plot_timeseries(result_dir, modes, result_dir / "timeseries.png")
     print(f"wrote {result_dir / 'shape_t3.png'}")
     print(f"wrote {result_dir / 'timeseries.png'}")

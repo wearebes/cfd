@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "generated_utc": "2026-07-12T18:11:40.294738+00:00",
+  "status": "PASS",
+  "canonical_cell_curvature_sha256": "25d5d656e1777f0989bc3ebbe7105f703dd9bc88934f8b98c2d6f3f24a1d0dbd",
+  "records": [
+    {
+      "label": "case1_native",
+      "path": "/Users/jcy/research/cfd/tem/mac_gcc_openmp_validation_v3/tem/validation/rising1_native_omp2b",
+      "benchmark": "rising_case1",
+      "benchmark_case": "hysing_case_1",
+      "method": "clsvof_native",
+      "threads": 2,
+      "compile_defines": [
+        "LEVELSET=1",
+        "CLSVOF=1",
+        "LEVEL=6"
+      ],
+      "valid_rows": 215,
+      "t_final": 3.0,
+      "compile_stderr_bytes": 0,
+      "cell_curvature_sha256": null,
+      "stats_lines": 0,
+      "failures": []
+    },
+    {
+      "label": "case1_nn",
+      "path": "/Users/jcy/research/cfd/tem/mac_gcc_openmp_validation_v3/tem/validation/rising1_nn_omp2b",
+      "benchmark": "rising_case1",
+      "benchmark_case": "hysing_case_1",
+      "method": "clsvof_nn_cell_offset",
+      "threads": 2,
+      "compile_defines": [
+        "LEVELSET=1",
+        "CLSVOF=1",
+        "LEVEL=6"
+      ],
+      "valid_rows": 215,
+      "t_final": 3.0,
+      "compile_stderr_bytes": 0,
+      "cell_curvature_sha256": "25d5d656e1777f0989bc3ebbe7105f703dd9bc88934f8b98c2d6f3f24a1d0dbd",
+      "stats_lines": 1,
+      "failures": []
+    },
+    {
+      "label": "case2_native",
+      "path": "/Users/jcy/research/cfd/tem/mac_gcc_openmp_validation_v3/tem/validation/rising2_native_omp4b",
+      "benchmark": "rising_case2",
+      "benchmark_case": "hysing_case_2",
+      "method": "clsvof_native",
+      "threads": 4,
+      "compile_defines": [
+        "LEVELSET=1",
+        "CLSVOF=1",
+        "LEVEL=6",
+        "CASE2=1"
+      ],
+      "valid_rows": 138,
+      "t_final": 3.0,
+      "compile_stderr_bytes": 0,
+      "cell_curvature_sha256": null,
+      "stats_lines": 0,
+      "failures": []
+    },
+    {
+      "label": "case2_nn",
+      "path": "/Users/jcy/research/cfd/tem/mac_gcc_openmp_validation_v3/tem/validation/rising2_nn_omp4b",
+      "benchmark": "rising_case2",
+      "benchmark_case": "hysing_case_2",
+      "method": "clsvof_nn_cell_offset",
+      "threads": 4,
+      "compile_defines": [
+        "LEVELSET=1",
+        "CLSVOF=1",
+        "LEVEL=6",
+        "CASE2=1"
+      ],
+      "valid_rows": 138,
+      "t_final": 3.0,
+      "compile_stderr_bytes": 0,
+      "cell_curvature_sha256": "25d5d656e1777f0989bc3ebbe7105f703dd9bc88934f8b98c2d6f3f24a1d0dbd",
+      "stats_lines": 1,
+      "failures": []
+    }
+  ],
+  "failures": []
+}

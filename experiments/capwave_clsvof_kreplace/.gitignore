@@ -1,0 +1,6 @@
+work/
+results/*
+!results/.gitkeep
+__pycache__/
+tests/__pycache__/
+*.pyc

@@ -3,11 +3,18 @@ from __future__ import annotations
 
 import argparse
 import math
+import re
 from pathlib import Path
 
 
-MOONMD_RELATIVE_PATH = "dataset/official_data/rising_bubble/sources/c1g3l4s.txt"
+MOONMD_RELATIVE_PATH = {
+    "case1": "dataset/official_data/rising_bubble/sources/c1g3l4s.txt",
+    "case2": "dataset/official_data/rising_bubble/sources/c2g3l4s.txt",
+}
 EXPECTED_HEADER = "t sb -1 xb vb dt perf.t perf.speed"
+PROVIDER_STATS_RE = re.compile(
+    r"rising_k_provider_stats\s+evaluations=(?P<evaluations>\d+)\s+clamp_hits=(?P<clamp_hits>\d+)"
+)
 
 
 def read_out(path: Path):
@@ -27,22 +34,37 @@ def read_out(path: Path):
     return header, rows
 
 
+def parse_provider_stats(log_text: str) -> dict[str, int] | None:
+    matches = list(PROVIDER_STATS_RE.finditer(log_text))
+    if not matches:
+        return None
+    match = matches[-1]
+    return {
+        "evaluations": int(match.group("evaluations")),
+        "clamp_hits": int(match.group("clamp_hits")),
+    }
+
+
 def read_facet_segments(path: Path):
     """Basilisk output_facets format: blank-line-separated groups of
     points; each consecutive pair within a group is one facet segment."""
     segments = []
     current = []
+
+    def flush_current():
+        nonlocal current
+        for i in range(len(current) - 1):
+            segments.append((current[i], current[i + 1]))
+        current = []
+
     for line in path.read_text(encoding="utf-8").splitlines():
         stripped = line.strip()
-        if not stripped:
-            for i in range(len(current) - 1):
-                segments.append((current[i], current[i + 1]))
-            current = []
+        if not stripped or stripped.startswith("#") or stripped.startswith("rising_k_provider_stats "):
+            flush_current()
             continue
         parts = stripped.split()
         current.append((float(parts[0]), float(parts[1])))
-    for i in range(len(current) - 1):
-        segments.append((current[i], current[i + 1]))
+    flush_current()
     return segments
 
 
@@ -133,18 +155,21 @@ def fmt(value) -> str:
     return "n/a" if value is None else f"{value:.6g}"
 
 
-def build_summary(result_dir: Path, repo_root: Path) -> str:
+def build_summary(result_dir: Path, repo_root: Path, case: str = "case1") -> str:
     modes = discover_modes(result_dir)
-    moonmd_points = read_moonmd_points(repo_root / MOONMD_RELATIVE_PATH)
+    moonmd_points = read_moonmd_points(repo_root / MOONMD_RELATIVE_PATH[case])
 
     per_mode = {}
     for mode in modes:
         mode_dir = result_dir / mode
         header, rows = read_out(mode_dir / "out")
+        log_path = mode_dir / "log"
+        log_text = log_path.read_text(encoding="utf-8") if log_path.exists() else ""
         per_mode[mode] = {
-            "health": run_health(header, rows, mode_dir / "log"),
+            "health": run_health(header, rows, log_path),
             "metrics": hysing_metrics(rows),
             "shape": shape_deviation(read_facet_segments(mode_dir / "log"), moonmd_points),
+            "provider_stats": parse_provider_stats(log_text),
         }
 
     lines = [f"# Rising CLSVOF K Replacement Canary Summary ({result_dir.name})", ""]
@@ -157,6 +182,17 @@ def build_summary(result_dir: Path, repo_root: Path) -> str:
         health = per_mode[mode]["health"]
         status = "OK" if not health else "FAIL"
         lines.append(f"| {mode} | {status} | {'; '.join(health)} |")
+    lines.append("")
+
+    lines.append("## Provider stats")
+    lines.append("")
+    lines.append("| mode | provider evals | clamp hits |")
+    lines.append("| --- | --- | --- |")
+    for mode in modes:
+        stats = per_mode[mode]["provider_stats"] or {}
+        lines.append(
+            f"| {mode} | {stats.get('evaluations', 'n/a')} | {stats.get('clamp_hits', 'n/a')} |"
+        )
     lines.append("")
 
     lines.append("## Hysing benchmark quantities")
@@ -210,13 +246,17 @@ def build_summary(result_dir: Path, repo_root: Path) -> str:
 def parse_args(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("result_dir", type=Path)
+    parser.add_argument(
+        "--case2", action="store_true", help="use the case-2 (sigma 1.96) MooNMD reference"
+    )
     return parser.parse_args(argv)
 
 
 def main(argv=None) -> int:
     args = parse_args(argv)
     repo_root = Path(__file__).resolve().parents[2]
-    print(build_summary(args.result_dir.resolve(), repo_root))
+    case = "case2" if args.case2 else "case1"
+    print(build_summary(args.result_dir.resolve(), repo_root, case=case))
     return 0
 
 

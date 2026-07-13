@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "matrix_name": "clsvof_redistance_imax_formal_matrix",
+  "matrix_id": "20260710T172910Z",
+  "row": {
+    "row_id": "capwave__clsvof_native__N0512__imax03",
+    "benchmark": "capwave",
+    "rising_case": "",
+    "method": "clsvof_native",
+    "N": 512,
+    "LEVEL": null,
+    "actual_grid": "512x512",
+    "checkpoint": "none",
+    "imax": 3,
+    "planning_status": "candidate_reuse",
+    "existing_evidence": "dataset/official_data/capwave/raw/extended_clsvof/wave-512"
+  },
+  "command": [
+    "/Users/jcy/research/cfd/tools/basilisk-cc",
+    "-DREDIST_MATRIX_LOG_STRIDE=100",
+    "-DREDIST_MATRIX_FINAL_TIME=2.2426211256",
+    "-DCLSVOF=1",
+    "-DCAPWAVE_K_MODE=CAPWAVE_K_NATIVE",
+    "-I/Users/jcy/research/cfd/experiments/capwave_clsvof_kreplace/include",
+    "-I/Users/jcy/research/cfd/tools/clsvof_model/include",
+    "-I/Users/jcy/research/cfd/dataset/model/c_exports/baseline_128_hgradient",
+    "capwave-clsvof.c",
+    "-o",
+    "capwave-clsvof",
+    "-lm"
+  ],
+  "started_at": "2026-07-11T19:03:38.292087+00:00",
+  "finished_at": "2026-07-12T01:50:26.118968+00:00",
+  "compile_seconds": 3.487579416949302,
+  "run_seconds": 24403.93347683386,
+  "physical_validation": {
+    "wave_rows": 738,
+    "relative_rms": 0.000836646
+  },
+  "reuse_validation": {
+    "original_path": "/Users/jcy/research/cfd/dataset/official_data/capwave/raw/extended_clsvof/wave-512",
+    "original_sha256": "5ef98134bcc32ca524af4e6cba1becd4b170ddd008187f0d0dc9aab47a20a7d3",
+    "generated_sha256": "5ef98134bcc32ca524af4e6cba1becd4b170ddd008187f0d0dc9aab47a20a7d3",
+    "comparison": "byte_identical",
+    "matched_rows": 738
+  },
+  "files": {
+    "source_case": {
+      "path": "/Users/jcy/research/cfd/basilisk/src/test/capwave-clsvof.c",
+      "sha256": "89628e5b0ec13e8b93cde8a7d3bf917329fd20e0f2ae71720ffe4ce028d7cbed"
+    },
+    "case": {
+      "path": "/Users/jcy/research/cfd/experiments/clsvof_redistance_imax_matrix/work/20260710T172910Z/capwave__clsvof_native__N0512__imax03/attempt_1783796618/capwave-clsvof.c",
+      "sha256": "a277428037b8ec7a679a7eaa4c04220118f52c6ae600d96c86a6f85958b802f9"
+    },
+    "metrics_header": {
+      "path": "/Users/jcy/research/cfd/experiments/clsvof_redistance_imax_matrix/work/20260710T172910Z/capwave__clsvof_native__N0512__imax03/attempt_1783796618/redistance_matrix_metrics.h",
+      "sha256": "2f85505a176ad679b3cf75519ac3a945b0e8ef0275beb3adca94e9df441e886f"
+    },
+    "redistance_header": {
+      "path": "/Users/jcy/research/cfd/experiments/clsvof_redistance_imax_matrix/work/20260710T172910Z/capwave__clsvof_native__N0512__imax03/attempt_1783796618/two-phase-clsvof.h",
+      "sha256": "3946749ec739a2eac116fd4703ff422a46c038c42134b5870cb4577e69a8b1a1"
+    },
+    "redistance_provenance": {
+      "path": "/Users/jcy/research/cfd/experiments/clsvof_redistance_imax_matrix/work/20260710T172910Z/capwave__clsvof_native__N0512__imax03/attempt_1783796618/redistance_overlay.json",
+      "sha256": "62337f68c1131863c55224d3fec83f5a8fa713bdb3a99fbbe3eb80528064aa14"
+    },
+    "integral": {
+      "path": "/Users/jcy/research/cfd/experiments/clsvof_redistance_imax_matrix/work/20260710T172910Z/capwave__clsvof_native__N0512__imax03/attempt_1783796618/integral.h",
+      "sha256": "9d03fcd894e0059ecd516cd7993ceb8191b7de3e62fe418a919cfb69ff8a06d3"
+    },
+    "source_prosperetti": {
+      "path": "/Users/jcy/research/cfd/basilisk/src/test/prosperetti.h",
+      "sha256": "5bd86a34b8bbd199dd417e69781db2e53831cbc82d6c0bc68bc5d64f4d68dbf9"
+    },
+    "provider": {
+      "path": "/Users/jcy/research/cfd/experiments/capwave_clsvof_kreplace/include/capwave_k_provider.h",
+      "sha256": "123892ce6811c318eeef6a923bb227f0233f4f0a3854a1fca8e986093b21297d"
+    },
+    "features": {
+      "path": "/Users/jcy/research/cfd/experiments/capwave_clsvof_kreplace/include/clsvof_nn_features.h",
+      "sha256": "036ab392bf0f4de575ffbc20396ccfc7eb5c7084b4bb3314e48703ebd49d461d"
+    },
+    "stock_two_phase_clsvof": {
+      "path": "/Users/jcy/research/cfd/basilisk/src/two-phase-clsvof.h",
+      "sha256": "c0f21472c2d6acac0bdda0a2c43602273ee35d6c111cce4a98005ff9f6dbd048"
+    },
+    "stock_redistance": {
+      "path": "/Users/jcy/research/cfd/basilisk/src/redistance.h",
+      "sha256": "3f60a716118bd651d594ea3b0beae521c5ca7c7ac15929ad49ac8fc50449dc6e"
+    },
+    "stock_integral": {
+      "path": "/Users/jcy/research/cfd/basilisk/src/integral.h",
+      "sha256": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395"
+    },
+    "mlp_inference": {
+      "path": "/Users/jcy/research/cfd/tools/clsvof_model/include/clsvof_mlp_infer.h",
+      "sha256": "ce280823f9464e9d8f047cd55f12f3b78e5f53e1b35997558865d6e0bfbb3d53"
+    }
+  },
+  "platform": {
+    "machine": "arm64",
+    "system": "Darwin"
+  }
+}
