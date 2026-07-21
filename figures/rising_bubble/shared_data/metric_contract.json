@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "source": "dataset/rising_bubble formal history.dat and final interface.dat",
+  "bubble_indicator": "1-f",
+  "metrics": {
+    "volume": "E_V,max = max_j |epsilon_V(t_j)|",
+    "velocity": "RMSE of V_c against linearly interpolated Hysing reference",
+    "center": "RMSE of z_c against linearly interpolated Hysing reference",
+    "circularity": "phi_c(3)=2*sqrt(pi*A_b(3))/P_b(3); main scalar is |phi_c(3)-phi_c_ref(3)|"
+  },
+  "circularity_availability": {
+    "numerical": "t=3 only; history.dat column 3 is -1 placeholder",
+    "reference": "full Hysing history through t=3",
+    "phi_min_numerical": "not recoverable from the archived formal dataset"
+  },
+  "heatmap": "NN improvement (%) = 100*(E_CLSVOF-E_NN)/E_CLSVOF; positive is better",
+  "display_scope": {
+    "heatmap_imax": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "curve_imax": [
+      3,
+      0
+    ],
+    "method_encoding": "CLSVOF solid; NN dashed",
+    "imax_encoding": "imax=3 blue; imax=0 orange"
+  },
+  "chamfer_role": "supplementary only and excluded from the main figure"
+}

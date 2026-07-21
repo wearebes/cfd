@@ -15,8 +15,9 @@ import torch.nn as nn
 ROOT = Path(__file__).resolve().parents[3]
 MODEL_ROOT = ROOT / "dataset/model"
 EXPORT_ROOT = MODEL_ROOT / "c_exports"
-INCLUDE_DIR = ROOT / "tools/clsvof_model/include"
+INCLUDE_DIR = ROOT / "generate/_shared/nn_runtime/src"
 SMOKE_C = ROOT / "tools/clsvof_model/tests/smoke_infer.c"
+FORMAL_RESOLUTIONS = (64, 128, 256, 512)
 
 
 class MLP(nn.Module):
@@ -79,7 +80,8 @@ def c_zero_input_output(model_dir: Path) -> float:
 def main() -> int:
     os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
     max_diff = 0.0
-    for checkpoint_path in sorted(MODEL_ROOT.glob("baseline_*_hgradient.pt")):
+    for resolution in FORMAL_RESOLUTIONS:
+        checkpoint_path = MODEL_ROOT / f"baseline_{resolution}_hgradient.pt"
         name = checkpoint_path.stem
         expected = pytorch_zero_input_output(checkpoint_path)
         actual = c_zero_input_output(EXPORT_ROOT / name)

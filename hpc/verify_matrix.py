@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -18,8 +19,14 @@ from hpc.lib.integrity import (  # noqa: E402
     sha256_file,
     validate_completed_result,
 )
-from hpc.lib.matrix import formal_rows, result_relative_path  # noqa: E402
+from hpc.lib.matrix import (  # noqa: E402
+    BENCHMARKS,
+    MatrixRow,
+    formal_rows,
+    result_relative_path,
+)
 from hpc.lib.scheduler import load_policy, phase_rows  # noqa: E402
+from hpc.lib.dataset_publish import publish_scientific_row  # noqa: E402
 
 
 def overlay_provenance(result_path: Path) -> dict[str, object]:
@@ -39,15 +46,173 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--phase", choices=["n64", "remaining", "all"], default="all")
     parser.add_argument(
+        "--benchmark",
+        action="append",
+        choices=BENCHMARKS,
+        help="limit verification to one or more benchmarks (repeatable)",
+    )
+    parser.add_argument(
+        "--resolution",
+        action="append",
+        type=int,
+        choices=(64, 128, 256, 512),
+        help="limit verification to one or more resolutions (repeatable)",
+    )
+    parser.add_argument(
         "--policy", type=Path, default=ROOT / "hpc/config/thread_policy.json"
+    )
+    parser.add_argument(
+        "--publish-dataset",
+        action="store_true",
+        help="publish only verified numerical products and runtime rows to dataset/",
     )
     return parser.parse_args(argv)
 
 
+RUNTIME_FIELDS = [
+    "case",
+    "subcase",
+    "resolution",
+    "imax",
+    "method",
+    "model_resolution",
+    "data_dir",
+    "elapsed_seconds",
+    "complete",
+]
+
+
+def last_numeric_time(path: Path) -> float:
+    lines = [line.strip() for line in path.read_text().splitlines() if line.strip()]
+    if not lines:
+        raise RuntimeError(f"empty time series: {path}")
+    return float(lines[-1].split()[0])
+
+
+def publish_verified_dataset(
+    result_root: Path,
+    selected: list[MatrixRow],
+    manifests: dict[str, dict[str, object]],
+) -> None:
+    dataset = ROOT / "dataset"
+    new_runtime_rows: list[dict[str, object]] = []
+    plans: list[tuple[MatrixRow, Path, Path, str, str, bool]] = []
+    for row in selected:
+        source_dir = result_root / result_relative_path(row)
+        method = row.method
+        if row.benchmark == "capwave":
+            target_dir = (
+                dataset
+                / "capwave"
+                / "formal_v2"
+                / f"N{row.resolution:04d}"
+                / f"imax{row.imax:02d}"
+                / method
+            )
+            case, subcase, complete = "capwave", "", True
+        elif row.benchmark.startswith("rising_case"):
+            subcase = "case1" if row.benchmark.endswith("1") else "case2"
+            target_dir = (
+                dataset
+                / "rising_bubble"
+                / "formal_v2"
+                / subcase
+                / f"N{row.resolution:04d}"
+                / f"imax{row.imax:02d}"
+                / method
+            )
+            case, complete = "rising_bubble", True
+        else:
+            target_dir = (
+                dataset
+                / "stationary_bubble"
+                / "formal_v2"
+                / f"N{row.resolution:04d}"
+                / f"imax{row.imax:02d}"
+                / method
+            )
+            case, subcase = "stationary_bubble", ""
+            complete = True
+
+        plans.append((row, source_dir, target_dir, case, subcase, complete))
+
+        execution = manifests[row.row_id]["execution"]
+        new_runtime_rows.append(
+            {
+                "case": case,
+                "subcase": subcase,
+                "resolution": row.resolution,
+                "imax": row.imax,
+                "method": method,
+                "model_resolution": "",
+                "data_dir": target_dir.relative_to(dataset).as_posix(),
+                "elapsed_seconds": execution["elapsed_seconds"],  # type: ignore[index]
+                "complete": "true" if complete else "false",
+            }
+        )
+
+    for _, source_dir, target_dir, _, _, _ in plans:
+        publish_scientific_row(source_dir, target_dir)
+
+    runtime_path = dataset / "runtime_v2.csv"
+    if runtime_path.is_file():
+        with runtime_path.open(newline="", encoding="utf-8") as stream:
+            existing = list(csv.DictReader(stream))
+    else:
+        existing = []
+    replaced = {
+        (
+            str(row["case"]),
+            str(row["subcase"]),
+            str(row["resolution"]),
+            str(row["imax"]),
+            str(row["method"]),
+        )
+        for row in new_runtime_rows
+    }
+    retained = [
+        row
+        for row in existing
+        if (
+            row["case"],
+            row["subcase"],
+            row["resolution"],
+            row["imax"],
+            row["method"],
+        )
+        not in replaced
+    ]
+    merged = retained + new_runtime_rows
+    merged.sort(
+        key=lambda row: (
+            str(row["case"]),
+            str(row["subcase"]),
+            -1 if row["resolution"] == "" else int(row["resolution"]),
+            -1 if row["imax"] == "" else int(row["imax"]),
+            str(row["method"]),
+        )
+    )
+    temporary = runtime_path.with_name(f".runtime.csv.publish.{os.getpid()}")
+    with temporary.open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=RUNTIME_FIELDS, lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(merged)
+    os.replace(temporary, runtime_path)
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    if args.publish_dataset and args.phase != "all":
+        raise SystemExit("--publish-dataset requires --phase all")
     result_root = args.results_root / args.matrix_id
-    selected = phase_rows(formal_rows(), args.phase)
+    rows = formal_rows()
+    if args.benchmark:
+        selected_benchmarks = set(args.benchmark)
+        rows = [row for row in rows if row.benchmark in selected_benchmarks]
+    if args.resolution:
+        selected_resolutions = set(args.resolution)
+        rows = [row for row in rows if row.resolution in selected_resolutions]
+    selected = phase_rows(rows, args.phase)
     _, policy_hash = load_policy(args.policy)
     records = []
     manifests: dict[str, dict[str, object]] = {}
@@ -83,11 +248,11 @@ def main(argv: list[str] | None = None) -> int:
             for row in selected
         }
         for benchmark, resolution, imax, _ in sorted(rows_by_key):
-            if _ != "clsvof_native":
+            if _ != "clsvof":
                 continue
-            native = rows_by_key[(benchmark, resolution, imax, "clsvof_native")]
+            native = rows_by_key[(benchmark, resolution, imax, "clsvof")]
             nn = rows_by_key[
-                (benchmark, resolution, imax, "clsvof_nn_cell_offset")
+                (benchmark, resolution, imax, "nn")
             ]
             if native.row_id not in manifests or nn.row_id not in manifests:
                 continue
@@ -108,10 +273,10 @@ def main(argv: list[str] | None = None) -> int:
             generator = manifests[nn.row_id].get("generator_manifest", {})
             artifacts = generator.get("artifacts", {})  # type: ignore[union-attr]
             expected_header = lock[
-                "cases/_shared/nn_cell_curvature/src/clsvof_nn_cell_curvature.h"
+                "generate/_shared/nn_runtime/src/clsvof_nn_cell_curvature.h"
             ]
             expected_stats = lock[
-                "cases/_shared/nn_cell_curvature/src/kappa_offset_stats.h"
+                "generate/_shared/nn_runtime/src/kappa_offset_stats.h"
             ]
             expected_weights = lock[
                 f"dataset/model/c_exports/baseline_{resolution}_hgradient/nn_weights.h"
@@ -193,6 +358,8 @@ def main(argv: list[str] | None = None) -> int:
         (result_root / "SHA256SUMS").write_text(
             "\n".join(checksums) + "\n", encoding="utf-8"
         )
+        if args.publish_dataset:
+            publish_verified_dataset(result_root, selected, manifests)
     print(
         json.dumps(
             {
@@ -201,6 +368,9 @@ def main(argv: list[str] | None = None) -> int:
                 "completed_rows": len(records) - len(failures),
                 "invalid_rows": len(failures),
                 "pair_failure_count": len(pair_failures),
+                "dataset_published": bool(
+                    args.publish_dataset and not failures and not pair_failures
+                ),
             }
         )
     )

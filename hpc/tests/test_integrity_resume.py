@@ -12,7 +12,7 @@ from hpc.lib.integrity import (
 from hpc.lib.matrix import MatrixRow
 
 
-ROW = MatrixRow("rising_case2", "clsvof_nn_cell_offset", 128, 5)
+ROW = MatrixRow("rising_case2", "nn", 128, 5)
 
 
 def make_result(path: Path, policy: str = "policy") -> None:
@@ -60,7 +60,7 @@ def test_missing_and_extra_outputs_are_rejected(tmp_path: Path) -> None:
 def test_identity_and_policy_mismatch_are_rejected(tmp_path: Path) -> None:
     result = tmp_path / "result"
     make_result(result)
-    wrong_row = MatrixRow("rising_case1", "clsvof_nn_cell_offset", 128, 5)
+    wrong_row = MatrixRow("rising_case1", "nn", 128, 5)
     assert not validate_completed_result(result, wrong_row, "matrix", "policy")[0]
     assert not validate_completed_result(result, ROW, "matrix", "other")[0]
 

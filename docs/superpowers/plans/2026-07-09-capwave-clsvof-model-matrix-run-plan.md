@@ -6,7 +6,7 @@
 
 **Architecture:** This is an execution-gating plan layered on top of `docs/superpowers/plans/2026-07-09-capwave-clsvof-kreplace.md`. The existing implementation plan owns the model provider, `integral.h` overlay, runner, and summarizer; this plan owns when to launch the run matrix, which readiness gates must pass first, and how to defer the launch if the implementation is still incomplete. All experiment outputs stay under `experiments/capwave_clsvof_kreplace/results/`.
 
-**Tech Stack:** Bash, Python 3, Basilisk `qcc` through `tools/basilisk-run`, generated C model exports in `dataset/model/c_exports/baseline_{64,128,256,512}_hgradient/`, and Markdown/CSV run summaries.
+**Tech Stack:** Bash, Python 3, Basilisk `qcc` through `tools/basilisk-run`, generated C model exports in `experiments/clsvof_kappa_offset_conversion/models/c_exports/baseline_{64,128,256,512}_hgradient/`, and Markdown/CSV run summaries.
 
 ---
 
@@ -39,10 +39,10 @@ nn_baseline_512_hgradient
 - [ ] All four model export directories exist:
 
 ```text
-dataset/model/c_exports/baseline_64_hgradient/
-dataset/model/c_exports/baseline_128_hgradient/
-dataset/model/c_exports/baseline_256_hgradient/
-dataset/model/c_exports/baseline_512_hgradient/
+experiments/clsvof_kappa_offset_conversion/models/c_exports/baseline_64_hgradient/
+experiments/clsvof_kappa_offset_conversion/models/c_exports/baseline_128_hgradient/
+experiments/clsvof_kappa_offset_conversion/models/c_exports/baseline_256_hgradient/
+experiments/clsvof_kappa_offset_conversion/models/c_exports/baseline_512_hgradient/
 ```
 
 - [ ] The overlay generator test passes:

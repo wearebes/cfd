@@ -16,9 +16,10 @@ import torch.nn as nn
 ROOT = Path(__file__).resolve().parents[3]
 MODEL_ROOT = ROOT / "dataset/model"
 EXPORT_ROOT = MODEL_ROOT / "c_exports"
-INFER_INCLUDE_DIR = ROOT / "tools/clsvof_model/include"
-SHARED_INCLUDE_DIR = ROOT / "experiments/clsvof_kappa_offset_conversion/include"
+INFER_INCLUDE_DIR = ROOT / "generate/_shared/nn_runtime/src"
+SHARED_INCLUDE_DIR = INFER_INCLUDE_DIR
 FIXTURE = ROOT / "tools/clsvof_model/tests/fixtures/raw27_golden_vector.json"
+FORMAL_RESOLUTIONS = (64, 128, 256, 512)
 
 
 class MLP(nn.Module):
@@ -120,7 +121,8 @@ def test_exported_c_forward_matches_pytorch_for_golden_vector_all_checkpoints():
     fixture = load_fixture()
     raw_literal = ", ".join(f"{float(v):.9g}f" for v in fixture["raw27"])
 
-    for checkpoint_path in sorted(MODEL_ROOT.glob("baseline_*_hgradient.pt")):
+    for resolution in FORMAL_RESOLUTIONS:
+        checkpoint_path = MODEL_ROOT / f"baseline_{resolution}_hgradient.pt"
         model_name = checkpoint_path.stem
         expected = pytorch_output(checkpoint_path, fixture["raw27"])
         source = f"""

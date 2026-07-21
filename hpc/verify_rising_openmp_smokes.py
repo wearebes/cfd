@@ -18,10 +18,10 @@ from hpc.lib.integrity import atomic_json, sha256_file  # noqa: E402
 
 
 EXPECTED = (
-    ("case1_native", "rising_case1", "hysing_case_1", "clsvof_native", False),
-    ("case1_nn", "rising_case1", "hysing_case_1", "clsvof_nn_cell_offset", False),
-    ("case2_native", "rising_case2", "hysing_case_2", "clsvof_native", True),
-    ("case2_nn", "rising_case2", "hysing_case_2", "clsvof_nn_cell_offset", True),
+    ("case1_native", "rising_case1", "hysing_case_1", "clsvof", False),
+    ("case1_nn", "rising_case1", "hysing_case_1", "nn", False),
+    ("case2_native", "rising_case2", "hysing_case_2", "clsvof", True),
+    ("case2_nn", "rising_case2", "hysing_case_2", "nn", True),
 )
 
 
@@ -69,7 +69,7 @@ def inspect(path: Path, expected: tuple[str, str, str, str, bool]) -> dict[str, 
         failures.append("compile.stderr is nonempty")
     if ("CASE2=1" in defines) != case2:
         failures.append(f"CASE2 define mismatch: {defines}")
-    expected_stats = 1 if method == "clsvof_nn_cell_offset" else 0
+    expected_stats = 1 if method == "nn" else 0
     if len(stats) != expected_stats:
         failures.append(f"stats line count={len(stats)}, expected {expected_stats}")
     return {
@@ -108,7 +108,7 @@ def main() -> int:
     if records[2]["valid_rows"] != records[3]["valid_rows"]:
         failures.append("Case 2 native/NN row counts differ")
     canonical = sha256_file(
-        ROOT / "cases/_shared/nn_cell_curvature/src/clsvof_nn_cell_curvature.h"
+        ROOT / "generate/_shared/nn_runtime/src/clsvof_nn_cell_curvature.h"
     )
     for record in (records[1], records[3]):
         if record["cell_curvature_sha256"] != canonical:

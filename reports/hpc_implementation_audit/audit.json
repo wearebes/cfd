@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_utc": "2026-07-13T03:54:13.658563+00:00",
+  "generated_utc": "2026-07-21T05:58:30.811637+00:00",
   "status": "READY_FOR_UBUNTU_CI",
   "checks": [
     {
@@ -46,7 +46,7 @@
     {
       "name": "local_test_suite",
       "status": "PASS",
-      "evidence": "80 passed, 3 skipped in 11.27s"
+      "evidence": "94 passed, 3 skipped in 16.84s"
     }
   ],
   "external_gates": [

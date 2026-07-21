@@ -1,2 +1,0 @@
-
-# Multigrid, 71133 steps, 3150.97 CPU, 3298 real, 8.83e+04 points.step/s, 26 var

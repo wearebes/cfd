@@ -1,0 +1,210 @@
+{
+  "checks": [
+    {
+      "comparison": "byte_exact",
+      "generated_bytes": 14136,
+      "generated_sha256": "16d66924dd4de1be8c38091b87b9d57d0ec9b453cfe52173061bc5af206a01c3",
+      "legacy_bytes": 14136,
+      "legacy_sha256": "16d66924dd4de1be8c38091b87b9d57d0ec9b453cfe52173061bc5af206a01c3",
+      "name": "capwave_clsvof.trajectory",
+      "status": "PASS"
+    },
+    {
+      "comparison": "byte_exact",
+      "generated_bytes": 14,
+      "generated_sha256": "f0c9d48e34d947308148ba9c14bd96627062b7f8dd2e6d4067aabcb338aa4304",
+      "legacy_bytes": 14,
+      "legacy_sha256": "f0c9d48e34d947308148ba9c14bd96627062b7f8dd2e6d4067aabcb338aa4304",
+      "name": "capwave_clsvof.official_error_and_provider_log",
+      "status": "PASS"
+    },
+    {
+      "comparison": "byte_exact",
+      "generated_bytes": 14140,
+      "generated_sha256": "479ddac7bce29d508cbe1877476007e1d58c66636e6a5920cdff8740e3f03930",
+      "legacy_bytes": 14140,
+      "legacy_sha256": "479ddac7bce29d508cbe1877476007e1d58c66636e6a5920cdff8740e3f03930",
+      "name": "capwave_nn.trajectory",
+      "status": "PASS"
+    },
+    {
+      "comparison": "byte_exact",
+      "generated_bytes": 313,
+      "generated_sha256": "d637a8e8f52c46f5b397f3343b683a78e1f44a437b0aaa1f34b815b556f0a247",
+      "legacy_bytes": 313,
+      "legacy_sha256": "d637a8e8f52c46f5b397f3343b683a78e1f44a437b0aaa1f34b815b556f0a247",
+      "name": "capwave_nn.official_error_and_provider_log",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "columns": [
+          "time",
+          "relative_volume",
+          "phase_marker",
+          "center",
+          "velocity",
+          "dt"
+        ],
+        "excluded_columns": "Basilisk wall-time/performance diagnostics",
+        "generated_rows": 215,
+        "legacy_rows": 215
+      },
+      "name": "rising_clsvof.history_scientific_columns",
+      "status": "PASS"
+    },
+    {
+      "comparison": "byte_exact",
+      "generated_bytes": 1050,
+      "generated_sha256": "e3d22c13e54785723cc74647bf3b719d3b391a981bc4ea25fe1641fe8d46dc13",
+      "legacy_bytes": 1050,
+      "legacy_sha256": "e3d22c13e54785723cc74647bf3b719d3b391a981bc4ea25fe1641fe8d46dc13",
+      "name": "rising_clsvof.terminal_interface_and_provider_log",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "columns": [
+          "time",
+          "relative_volume",
+          "phase_marker",
+          "center",
+          "velocity",
+          "dt"
+        ],
+        "excluded_columns": "Basilisk wall-time/performance diagnostics",
+        "generated_rows": 215,
+        "legacy_rows": 215
+      },
+      "name": "rising_nn.history_scientific_columns",
+      "status": "PASS"
+    },
+    {
+      "comparison": "byte_exact",
+      "generated_bytes": 1348,
+      "generated_sha256": "7c2229162afeb2f1971a250e8f1125464865a884190c67cb9a198564315c4b7e",
+      "legacy_bytes": 1348,
+      "legacy_sha256": "7c2229162afeb2f1971a250e8f1125464865a884190c67cb9a198564315c4b7e",
+      "name": "rising_nn.terminal_interface_and_provider_log",
+      "status": "PASS"
+    },
+    {
+      "comparison": "byte_exact",
+      "generated_bytes": 23997,
+      "generated_sha256": "2e54192acf43a418881c079d77b5532808c2cfcc39df1fd063d43f421b8f9a25",
+      "legacy_bytes": 23997,
+      "legacy_sha256": "2e54192acf43a418881c079d77b5532808c2cfcc39df1fd063d43f421b8f9a25",
+      "name": "stationary_clsvof.trajectory",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "generated": [],
+        "legacy": []
+      },
+      "name": "stationary_clsvof.provider_stats",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "fields": [
+          "level",
+          "laplace",
+          "u_star"
+        ],
+        "generated": [
+          6.0,
+          12000.0,
+          0.00275937
+        ],
+        "legacy": [
+          6.0,
+          12000.0,
+          0.00275937
+        ]
+      },
+      "name": "stationary_clsvof.terminal_identity_and_velocity",
+      "status": "PASS"
+    },
+    {
+      "evidence": "/private/tmp/cfd-n64-canary.YbWFqJ/stationary_clsvof/clsvof/termination.csv",
+      "name": "stationary_clsvof.termination_evidence",
+      "status": "PASS"
+    },
+    {
+      "comparison": "byte_exact",
+      "generated_bytes": 24010,
+      "generated_sha256": "a47dfe80cd7d3fc827dbe7dcfc620d78367d6d0e043fbd010c67edac373843fb",
+      "legacy_bytes": 24010,
+      "legacy_sha256": "a47dfe80cd7d3fc827dbe7dcfc620d78367d6d0e043fbd010c67edac373843fb",
+      "name": "stationary_nn.trajectory",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "generated": [
+          "kappa_offset_provider_stats evaluations=37076 clamp_hits=0 denominator_guard_hits=0 min_abs_denominator=0.98094948526831516 max_abs_d_over_h=0.48796347089887804 grad_samples=37076 grad_min=0.99928590879120249 grad_mean=0.99975880760946412 grad_std=0.00017502908693831863 grad_max=1.0000759447676038"
+        ],
+        "legacy": [
+          "kappa_offset_provider_stats evaluations=37076 clamp_hits=0 denominator_guard_hits=0 min_abs_denominator=0.98094948526831516 max_abs_d_over_h=0.48796347089887804 grad_samples=37076 grad_min=0.99928590879120249 grad_mean=0.99975880760946412 grad_std=0.00017502908693831863 grad_max=1.0000759447676038"
+        ]
+      },
+      "name": "stationary_nn.provider_stats",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "fields": [
+          "level",
+          "laplace",
+          "u_star"
+        ],
+        "generated": [
+          6.0,
+          12000.0,
+          0.00300395
+        ],
+        "legacy": [
+          6.0,
+          12000.0,
+          0.00300395
+        ]
+      },
+      "name": "stationary_nn.terminal_identity_and_velocity",
+      "status": "PASS"
+    },
+    {
+      "evidence": "/private/tmp/cfd-n64-canary.YbWFqJ/stationary_nn/nn/termination.csv",
+      "name": "stationary_nn.termination_evidence",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "allowed_difference": "shape-error and curvature terminal fields only",
+        "markers": [
+          "bubble[] = 1. - f[];",
+          "curvature (bubble, kappa);",
+          "foreach (reduction(max:ekmax))",
+          "fopen (\"termination.csv\", \"w\")"
+        ],
+        "source": "generate/stationary_bubble/src/stationary-clsvof.c",
+        "source_sha256": "f114439a46e0f3c9dd0d6e629daa9bd33133c213161a48c5c0688f177b45c572"
+      },
+      "name": "stationary.documented_terminal_observable_correction",
+      "status": "PASS"
+    }
+  ],
+  "failed_checks": [],
+  "generated_utc": "2026-07-21T05:56:20.647007+00:00",
+  "physics_equivalence": true,
+  "runtime_fields_excluded": true,
+  "schema_version": 1,
+  "scope": "N64 imax=3 single-thread smoke migration gate",
+  "stationary_terminal_exception": {
+    "legacy_terminal_fields": "shape error and curvature values are known invalid",
+    "reason": "known correction from outside-liquid f to official-compatible bubble=1-f diagnostics",
+    "solver_trajectory_changed": false
+  },
+  "status": "PASS_WITH_DOCUMENTED_DIAGNOSTIC_CORRECTION",
+  "strict_all_output_byte_equivalence": false
+}

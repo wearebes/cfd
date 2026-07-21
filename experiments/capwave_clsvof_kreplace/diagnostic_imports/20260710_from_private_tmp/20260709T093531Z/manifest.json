@@ -1,8 +1,0 @@
-{
-  "source_case": "basilisk/src/test/capwave-clsvof.c",
-  "source_integral": "basilisk/src/integral.h",
-  "replacement": "double ki = distance_curvature (point, d) -> double ki = capwave_k_provider (point, d)",
-  "nn_weights": "dataset/model/c_exports/baseline_128_hgradient/nn_weights.h",
-  "modes": ["original", "native_wrapper", "nn_baseline_128_hgradient"],
-  "clamp": "abs(kappa) <= 1/Delta"
-}

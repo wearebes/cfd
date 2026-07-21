@@ -36,13 +36,13 @@ def test_full_synthetic_matrix_passes_pair_and_integrity_gates(tmp_path: Path) -
             "stats_header_sha256": None,
             "weights_sha256": None,
         }
-        if row.method == "clsvof_nn_cell_offset":
+        if row.method == "nn":
             artifacts = {
                 "cell_curvature_sha256": lock[
-                    "cases/_shared/nn_cell_curvature/src/clsvof_nn_cell_curvature.h"
+                    "generate/_shared/nn_runtime/src/clsvof_nn_cell_curvature.h"
                 ],
                 "stats_header_sha256": lock[
-                    "cases/_shared/nn_cell_curvature/src/kappa_offset_stats.h"
+                    "generate/_shared/nn_runtime/src/kappa_offset_stats.h"
                 ],
                 "weights_sha256": lock[
                     f"dataset/model/c_exports/baseline_{row.resolution}_hgradient/nn_weights.h"

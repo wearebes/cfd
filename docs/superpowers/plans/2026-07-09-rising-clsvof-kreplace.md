@@ -1,12 +1,14 @@
 # Rising Bubble CLSVOF K Replacement Implementation Plan
 
+> 2026-07-16 数据布局更新：这是历史 direct-kreplace 执行合同。完整运行目录现在留在 `experiments/` 或 `hpc/results/`；只有最终 `history.dat`/`interface.dat` 进入按 case/resolution/imax/method 组织的公共 dataset。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Reproduce the stock `rising-clsvof` benchmark (Hysing et al. 2009, case 1) from outside the Basilisk source tree while changing only the cell-local curvature value `ki` used by `integral.h`, replacing it with the NN-predicted curvature.
 
 **Architecture:** Same overlay strategy as `docs/superpowers/plans/2026-07-09-capwave-clsvof-kreplace.md`, applied to the rising-bubble case. The implementation creates an external experiment workspace under `experiments/rising_clsvof_kreplace/`. Each run copies the stock `basilisk/src/test/rising.c` into a temporary work directory as `rising-clsvof.c`, generates a local `integral.h` overlay from the stock `basilisk/src/integral.h`, and relies on C include precedence (compile with the work directory as cwd) so the copied case uses the overlay. The overlay keeps the surface-tension tensor and face-force path unchanged, replacing only `double ki = distance_curvature (point, d);` with `double ki = rising_k_provider (point, d);`.
 
-**Tech Stack:** Bash, Python 3 (`/opt/anaconda3/envs/pinn/bin/python`), Basilisk `qcc` through `tools/basilisk-run`, C99 headers, generated float32 NN weights in `dataset/model/c_exports/`, and `tools/clsvof_model/include/clsvof_mlp_infer.h`.
+**Tech Stack:** Bash, Python 3 (`/opt/anaconda3/envs/pinn/bin/python`), Basilisk `qcc` through `tools/basilisk-run`, C99 headers, generated float32 NN weights in `experiments/clsvof_kappa_offset_conversion/models/c_exports/`, and `tools/clsvof_model/include/clsvof_mlp_infer.h`.
 
 **Independence:** This plan does not depend on the capwave k-replacement having been executed. The overlay generator and feature header are copied (with renames) from the capwave plan text; if `experiments/capwave_clsvof_kreplace/` already exists when this plan is implemented, reuse its tested code as the copy source and note the provenance in the README. Deduplicating the two experiments into a shared module is an explicit non-goal for now.
 
@@ -19,7 +21,7 @@ Verified facts (2026-07-09):
 - `basilisk/src/test/rising-clsvof.c` is a symlink to `rising.c`; the official build is `rising.c` compiled with `-DLEVELSET=1 -DCLSVOF=1` (see `basilisk/src/test/Makefile` lines 225-228).
 - With those flags, `rising.c` includes `two-phase-clsvof.h` and `integral.h`, and sets surface tension via `d.sigmaf` — exactly the same surface-tension path as `capwave-clsvof`.
 - The single curvature insertion point is `basilisk/src/integral.h` line 165: `double ki = distance_curvature (point, d);` (the line-138 call site is dead under the default `CURVATURE == 1`).
-- The archived official reference run lives in `dataset/official_data/rising_bubble/raw/rising-clsvof/{out,log}`; MooNMD reference data is in `dataset/official_data/rising_bubble/sources/c1g3l4.txt` and `c1g3l4s.txt`.
+- The case-1 CSF reference is in `dataset/rising_bubble/case1/reference/csf_default/{history.dat,interface.dat}`; MooNMD reference data is in `dataset/rising_bubble/case1/reference/hysing/{history.dat,interface.dat}`.
 - The official case-1 run costs ~14 s CPU (`perf.t` at end of `out`), so the full mode matrix is cheap.
 
 Differences from capwave that this plan must handle:
@@ -36,9 +38,9 @@ Differences from capwave that this plan must handle:
 - The surface-tension implementation must be copied from `basilisk/src/integral.h` for each run, via the overlay generator.
 - The only semantic replacement in the generated `integral.h` overlay is the source of `ki`.
 - The native-wrapper equivalence gate must pass before any NN result is interpreted.
-- First NN canary uses `dataset/model/c_exports/baseline_128_hgradient/nn_weights.h` with clamp factor `1.0`.
+- First NN canary uses `experiments/clsvof_kappa_offset_conversion/models/c_exports/baseline_128_hgradient/nn_weights.h` with clamp factor `1.0`.
 - Keep the official full run (`t = 3`, LEVEL 8, `dimensions (nx = 4)`). If a compile/runtime failure requires a shorter debug run, keep it in a separate debug script and do not call it the canary.
-- Do not modify `tools/rising bubble/` or anything under `dataset/official_data/`.
+- Do not modify `tools/rising bubble/` or canonical numerical references under `dataset/rising_bubble/` from a diagnostic runner.
 
 ## Run Economy and Data Placement (user request, 2026-07-09)
 
@@ -57,21 +59,18 @@ to find them.
   running NN modes only (e.g. `run_canary.sh --nn-only`, which resolves the
   latest gated control set and refuses to run if none exists or if the
   source/toolchain fingerprint in its manifest no longer matches).
-- The controls cannot be replaced by `dataset/official_data/` archives: the
+- The controls cannot be replaced by canonical reference data in `dataset/`: the
   archive's toolchain/machine provenance is unknown, so it serves plotting and
   the soft cross-check (Task 6) only. The hard equivalence gate needs exactly
   one same-toolchain native run — one, not one per model.
 
-**NN outputs are published into `dataset/`, mirroring the official layout.**
+**Full NN run directories remain outside `dataset/`.**
 
-- After the Task 5 gates pass, each NN mode's `out`, `log`, and `manifest.json`
-  are copied to `dataset/nn_data/rising-clsvof/<model_name>/` (e.g.
-  `dataset/nn_data/rising-clsvof/baseline_128_hgradient/`), a sibling of
-  `dataset/official_data/`, so official and NN data live under one root for
-  plotting and lookup. `experiments/rising_clsvof_kreplace/results/<timestamp>/`
-  remains the raw per-run archive and gate evidence; `dataset/nn_data/` is the
-  curated surface and is only ever written from a gated run.
-- `dataset/official_data/` stays read-only; NN data never goes there.
+- `out`, interface stderr, manifests and diagnostics remain under the experiment
+  result directory or `hpc/results/`. After matrix verification, only the final
+  numerical products are published as `history.dat` and `interface.dat` under
+  `dataset/rising_bubble/<case>/Nxxxx/imaxxx/<method>/`.
+- Canonical reference data stays read-only; diagnostic runners never write into it.
 
 **Capwave back-port note (do not act on it yet).** The same two policies apply
 to `2026-07-09-capwave-clsvof-kreplace.md` and the capwave matrix-run plan
@@ -79,7 +78,7 @@ to `2026-07-09-capwave-clsvof-kreplace.md` and the capwave matrix-run plan
 Per user instruction on 2026-07-09 the capwave plans are not being revised now;
 whoever next touches capwave must back-port: (a) one-time cached controls with
 an NN-only matrix mode, (b) publication of NN outputs to
-`dataset/nn_data/capwave-clsvof/<model_name>/`.
+`dataset/capwave/Nxxxx/imaxxx/<method>/wave.dat`, after matrix verification.
 
 ## File Structure
 
@@ -185,7 +184,7 @@ Expected diff: exactly two hunks (the include injection, the `ki` line).
 - [ ] **Step 2:** Create `rising_k_provider.h` mirroring `capwave_k_provider.h` from the capwave plan (Task 2 Step 4) with macros `RISING_K_MODE`, `RISING_K_NATIVE` (0, default), `RISING_K_NN_RAW` (1), `RISING_K_NATIVE_PERTURBED` (2), `RISING_K_CLAMP_FACTOR` (default 1.0). NN mode includes `nn_weights.h`, `clsvof_mlp_infer.h`, `clsvof_nn_features.h`. The perturbed mode is `distance_curvature (point, d) * (1. + 1e-3)` and must not include any NN header.
 - [ ] **Step 3:** Write the compile smoke test following the capwave plan (Task 2 Step 1), adapted to this case: the smoke source is a copy of the real `rising.c` copied into the tmp dir as `rising-clsvof.c`, compiled twice with `tools/basilisk-cc` from inside the tmp dir (so the overlay `integral.h` wins include precedence):
   - native: `-DLEVELSET=1 -DCLSVOF=1 -DRISING_K_MODE=RISING_K_NATIVE -I<include dir>`
-  - NN: `-DLEVELSET=1 -DCLSVOF=1 -DRISING_K_MODE=RISING_K_NN_RAW -I<include dir> -I tools/clsvof_model/include -I dataset/model/c_exports/baseline_128_hgradient`
+  - NN: `-DLEVELSET=1 -DCLSVOF=1 -DRISING_K_MODE=RISING_K_NN_RAW -I<include dir> -I tools/clsvof_model/include -I experiments/clsvof_kappa_offset_conversion/models/c_exports/baseline_128_hgradient`
 
   Note: the model include path is `tools/clsvof_model/include` (the directory that exists in this repo), not the `tools/clsvof_model_export` name used in the capwave plan text.
 - [ ] **Step 3b (include-precedence negative control):** In the same smoke script, compile the overlay work dir once *without* `-I<include dir>` and assert the compile FAILS (missing `rising_k_provider.h`). If it succeeds, the stock `basilisk/src/integral.h` was used instead of the overlay — the harness is broken; fix include precedence before proceeding. Note `tools/basilisk-cc` compiles external sources from the invoker's cwd, so the smoke script must `cd` into the tmp work dir (quoted-include resolution relative to the copied case file is what makes the overlay win).
@@ -231,7 +230,7 @@ The `diff`-based gate from the capwave plan cannot work here because `out` embed
   - `src_case="$repo_root/basilisk/src/test/rising.c"` copied to `<work>/rising-clsvof.c`. No other case files are needed (`c1g3l4*.txt` are plot-only references, not runtime inputs).
   - Common flags for every mode: `-DLEVELSET=1 -DCLSVOF=1`.
   - Run as `cd <work dir> && "$repo_root"/tools/basilisk-run <flags> rising-clsvof.c > out 2> log` (absolute wrapper path — a relative `tools/basilisk-run` breaks after the `cd`) so stdout becomes `out` and the facets land in `log`, matching the official layout.
-  - Modes: `original` (stock, no overlay), `native_wrapper` (overlay + `-DRISING_K_MODE=RISING_K_NATIVE -I<include>`), `native_perturbed` (overlay + `-DRISING_K_MODE=RISING_K_NATIVE_PERTURBED -I<include>`), `nn_baseline_128_hgradient` (overlay + `-DRISING_K_MODE=RISING_K_NN_RAW -DRISING_K_CLAMP_FACTOR=1.0 -I<include> -I tools/clsvof_model/include -I dataset/model/c_exports/baseline_128_hgradient`).
+  - Modes: `original` (stock, no overlay), `native_wrapper` (overlay + `-DRISING_K_MODE=RISING_K_NATIVE -I<include>`), `native_perturbed` (overlay + `-DRISING_K_MODE=RISING_K_NATIVE_PERTURBED -I<include>`), `nn_baseline_128_hgradient` (overlay + `-DRISING_K_MODE=RISING_K_NN_RAW -DRISING_K_CLAMP_FACTOR=1.0 -I<include> -I tools/clsvof_model/include -I experiments/clsvof_kappa_offset_conversion/models/c_exports/baseline_128_hgradient`).
   - Archive `out`, `log`, and the generated `integral.h` (for the overlay modes) into `results/<UTC timestamp>/<mode>/`, and write `manifest.json` recording source case, source integral, the replacement contract line, weights path, modes, clamp, and a source fingerprint (SHA-256 of `basilisk/src/test/rising.c` and `basilisk/src/integral.h`, plus the compile flags).
   - Support `--nn-only`: skip the three control modes and instead resolve the most recent results dir whose manifest (a) has the same source fingerprint and (b) is marked gate-passed; symlink/record its controls as the comparison baseline. Refuse to run (with a clear message) if no such gated control set exists — per the Run Economy policy, controls run once and are reused, never re-run per NN model.
 - [ ] **Step 2:** `chmod +x` the runner; write `README.md` describing the three modes, the gate order, and the no-`basilisk/`-modification rule.
@@ -287,7 +286,7 @@ Expected: no entries beyond those already present before this experiment ran (th
 ```bash
 latest="$(find experiments/rising_clsvof_kreplace/results -mindepth 1 -maxdepth 1 -type d | sort | tail -1)"
 /opt/anaconda3/envs/pinn/bin/python experiments/rising_clsvof_kreplace/compare_out.py --tol 1e-9 \
-  "dataset/official_data/rising_bubble/raw/rising-clsvof/out" "$latest/original/out"
+  "dataset/rising_bubble/case1/reference/csf_default/history.dat" "$latest/original/out"
 ```
 
 Expected: exact or near-exact match. If it mismatches beyond tolerance, record the deviation in the run's `notes.md` (toolchain/flag provenance of the archive may differ) but do not block: the hard baseline for NN evaluation is our own `original` mode from the same toolchain, not the archive.
@@ -303,7 +302,7 @@ Expected: exact or near-exact match. If it mismatches beyond tolerance, record t
 - [ ] **Step 1:** Write the summarizer. For each mode directory, parse `out` and `log` and emit a Markdown summary with:
   - Run health: completed to `t = 3`, no NaN/inf in columns 1-6, `log` non-empty.
   - Hysing benchmark quantities from `out`: max rise velocity `max(vb)` and its time, final `vb`, final center of mass `xb`, and volume drift `max |(sb - sb0)/sb0|` (column 2).
-  - Shape deviation at `t = 3`: for each MooNMD point in `dataset/official_data/rising_bubble/sources/c1g3l4s.txt` (columns: y x, plotted as `u 2:($1-0.5)`), the minimum distance to the mode's facet segment set from `log`; report mean and max. Also report the same metric between `original` and each other mode.
+  - Shape deviation at `t = 3`: for each MooNMD point in `dataset/rising_bubble/case1/reference/hysing/interface.dat` (columns: y x, plotted as `u 2:($1-0.5)`), compute the minimum distance to the mode's facet segment set from `log`; report mean and max. Also report the same metric between `original` and each other mode.
   - A delta table of every metric vs the `original` mode.
 - [ ] **Step 2:** Run it on the latest results and save `summary.md` into the results directory. Expected: `native_wrapper` deltas ≈ 0; `nn_baseline_128_hgradient` finite, run completes, volume drift comparable in magnitude to `original`.
 - [ ] **Step 3:** Plot overlays (experiment-local gnuplot or matplotlib script writing into the results dir; do not touch `tools/rising bubble/`): shape at `t = 3` (MooNMD + original + NN), rise velocity vs time, volume drift vs time.
@@ -314,9 +313,9 @@ Expected: exact or near-exact match. If it mismatches beyond tolerance, record t
 ### Task 8: Expand the Model Matrix, Then Case 2
 
 - [ ] **Step 1:** Gate: proceed only if Task 5 passed and the Task 7 canary ran to completion with finite outputs.
-- [ ] **Step 2:** Add modes `nn_baseline_64_hgradient`, `nn_baseline_256_hgradient`, `nn_baseline_512_hgradient` to the runner (only the `-I dataset/model/c_exports/<name>` include changes) and to the summarizer's mode list; run with `--nn-only` (controls are reused from the gated Task 5 results, not re-run); regenerate `summary.md`.
-- [ ] **Step 2b (publish to dataset):** For each NN mode of the gated run, copy `out`, `log`, and `manifest.json` to `dataset/nn_data/rising-clsvof/<model_name>/` (create the tree; overwrite is allowed only when the manifest being replaced has the same source fingerprint — otherwise keep both and flag it). This is the curated data surface per the Run Economy policy; plotting reads official data from `dataset/official_data/` and NN data from `dataset/nn_data/`.
-- [ ] **Step 3 (optional, after the case-1 matrix is clean):** Add case-2 modes: same source copy compiled with `-DCASE2=1 -DLEVELSET=1 -DCLSVOF=1`, work/results dirs suffixed `_case2`, cross-check archive `dataset/official_data/rising_bubble/raw/rising2-clsvof/`, MooNMD references `c2g3l4.txt`/`c2g3l4s.txt`. The same native-wrapper equivalence gate applies to case 2 independently.
+- [ ] **Step 2:** Add modes `nn_baseline_64_hgradient`, `nn_baseline_256_hgradient`, `nn_baseline_512_hgradient` to the runner (only the `-I experiments/clsvof_kappa_offset_conversion/models/c_exports/<name>` include changes) and to the summarizer's mode list; run with `--nn-only` (controls are reused from the gated Task 5 results, not re-run); regenerate `summary.md`.
+- [ ] **Step 2b (publish to dataset):** After the gated matrix completes, publish only `history.dat` and `interface.dat` to the canonical case/resolution/imax/method directory and regenerate `runtime.csv` once. Do not publish manifests or ordinary logs.
+- [ ] **Step 3 (optional, after the case-1 matrix is clean):** Add case-2 modes with `-DCASE2=1`; cross-check `dataset/rising_bubble/case2/reference/{csf_default,hysing}/`. The same native-wrapper equivalence gate applies to case 2 independently.
 - [ ] **Step 4:** Commit.
 
 ---
@@ -333,7 +332,7 @@ native_perturbed DIFFERS from original (overlay liveness proven).
 The t = 0 curvature spot-check passes (sign, magnitude, no clamp hits) before any NN dynamics are interpreted.
 The NN modes change only the provider for ki, run to t = 3, and produce finite metrics in summary.md.
 Controls were run once and reused: the model matrix ran with --nn-only against the gated control set.
-Gated NN outputs are published under dataset/nn_data/rising-clsvof/<model_name>/.
+Only gated final numerical outputs are published under the canonical rising case/resolution/imax/method path.
 git status --short -- basilisk shows no new entries.
 ```
 

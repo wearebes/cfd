@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "figure": "n128_process_three_method.png",
+  "backend": "Python/matplotlib",
+  "final_width_mm": 183,
+  "final_height_mm": 86,
+  "dpi": 600,
+  "layout": "three method rows by five theoretical phase columns",
+  "source_data": "process_contours.csv",
+  "image_adjustments": "none"
+}

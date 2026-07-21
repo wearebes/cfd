@@ -9,7 +9,7 @@ def test_correctness_canaries_cover_all_benchmarks() -> None:
         "stationary_bubble",
     }
     assert all(row.resolution == 64 and row.imax == 3 for row in CORRECTNESS_ROWS)
-    assert all(row.method == "clsvof_nn_cell_offset" for row in CORRECTNESS_ROWS)
+    assert all(row.method == "nn" for row in CORRECTNESS_ROWS)
 
 
 def test_scaling_candidates_are_bounded_and_unique() -> None:

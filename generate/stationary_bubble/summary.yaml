@@ -1,0 +1,260 @@
+{
+  "case": "stationary_bubble",
+  "generated_by": "generate/_shared/render_summaries.py",
+  "interfaces": {
+    "clsvof": {
+      "commands": {
+        "compile": {
+          "argv": [
+            "$REPO/basilisk/src/qcc",
+            "-O2",
+            "-DSTATIONARY_LEVEL=6",
+            "-DSTATIONARY_TAU_MAX=1.0",
+            "stationary-clsvof.c",
+            "-o",
+            "stationary-clsvof",
+            "-lm"
+          ],
+          "cwd": "$WORK",
+          "display": "$REPO/basilisk/src/qcc -O2 -DSTATIONARY_LEVEL=6 -DSTATIONARY_TAU_MAX=1.0 stationary-clsvof.c -o stationary-clsvof -lm > compile.stdout 2> compile.stderr",
+          "stderr": "compile.stderr",
+          "stdout": "compile.stdout"
+        },
+        "run": {
+          "argv": [
+            "./stationary-clsvof"
+          ],
+          "cwd": "$WORK",
+          "display": "./stationary-clsvof > stdout.txt 2> log",
+          "stderr": "log",
+          "stdout": "stdout.txt"
+        }
+      },
+      "default_parameters": {
+        "compile_only": 0,
+        "imax": 3,
+        "level": 6,
+        "model": null,
+        "openmp_threads": 1,
+        "resolution": 64,
+        "tau_max": 1.0
+      },
+      "entrypoint": "generate/stationary_bubble/clsvof.sh",
+      "role": "clsvof",
+      "sources": {
+        "case_source": {
+          "bytes": 3527,
+          "path": "generate/stationary_bubble/src/stationary-clsvof.c",
+          "sha256": "f114439a46e0f3c9dd0d6e629daa9bd33133c213161a48c5c0688f177b45c572"
+        },
+        "checkpoint_overlay": {
+          "bytes": 733,
+          "path": "source_snapshot/checkpoint_overlay.json",
+          "sha256": "f970e54febe455652878df4c80c274477f702256fe23d26d042073bc2239231b"
+        },
+        "compiled_case": {
+          "bytes": 7729,
+          "path": "source_snapshot/stationary-clsvof.c",
+          "sha256": "aa0184f5e0a42f75fe1c2f5fc72e5e4259d42fa2415035573a2ebdfa581b23ac"
+        },
+        "compiled_integral": {
+          "bytes": 6839,
+          "path": "source_snapshot/integral.h",
+          "sha256": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395"
+        },
+        "compiled_two_phase": {
+          "bytes": 2264,
+          "path": "source_snapshot/two-phase-clsvof.h",
+          "sha256": "c0f21472c2d6acac0bdda0a2c43602273ee35d6c111cce4a98005ff9f6dbd048"
+        },
+        "qcc": {
+          "bytes": 490304,
+          "path": "basilisk/src/qcc",
+          "sha256": "ed0fc9f53fb8070723b3aba0f272132118a21e702f720ae2c316ffa0d88239cc"
+        },
+        "redistance_overlay": {
+          "bytes": 365,
+          "path": "source_snapshot/redistance_overlay.json",
+          "sha256": "ce78d2b648cb1665105f36c1d3a38cd53252e734d1244f7c390c3034cc38aad4"
+        }
+      },
+      "usage": [
+        "usage: $REPO/generate/stationary_bubble/clsvof.sh [--imax 0..5] [--resolution 64|128|256] [--smoke|--formal]",
+        "          [--tau-max VALUE] --output PATH [--threads N]",
+        "          [--dry-run] [--compile-only]"
+      ]
+    },
+    "nn": {
+      "commands": {
+        "compile": {
+          "argv": [
+            "$REPO/basilisk/src/qcc",
+            "-disable-dimensions",
+            "-O2",
+            "-DSTATIONARY_LEVEL=6",
+            "-DSTATIONARY_TAU_MAX=1.0",
+            "-DKAPPA_OFFSET_CLAMP_FACTOR=1.0",
+            "-DKAPPA_OFFSET_PROBE_INTERVAL=0",
+            "-I.",
+            "stationary-clsvof.c",
+            "-o",
+            "stationary-clsvof",
+            "-lm"
+          ],
+          "cwd": "$WORK",
+          "display": "$REPO/basilisk/src/qcc -disable-dimensions -O2 -DSTATIONARY_LEVEL=6 -DSTATIONARY_TAU_MAX=1.0 -DKAPPA_OFFSET_CLAMP_FACTOR=1.0 -DKAPPA_OFFSET_PROBE_INTERVAL=0 -I. stationary-clsvof.c -o stationary-clsvof -lm > compile.stdout 2> compile.stderr",
+          "stderr": "compile.stderr",
+          "stdout": "compile.stdout"
+        },
+        "run": {
+          "argv": [
+            "./stationary-clsvof"
+          ],
+          "cwd": "$WORK",
+          "display": "./stationary-clsvof > stdout.txt 2> log",
+          "stderr": "log",
+          "stdout": "stdout.txt"
+        }
+      },
+      "default_parameters": {
+        "compile_only": 0,
+        "imax": 3,
+        "level": 6,
+        "model": "baseline_64_hgradient",
+        "openmp_threads": 1,
+        "resolution": 64,
+        "tau_max": 1.0
+      },
+      "entrypoint": "generate/stationary_bubble/nn.sh",
+      "role": "nn",
+      "sources": {
+        "case_source": {
+          "bytes": 3527,
+          "path": "generate/stationary_bubble/src/stationary-clsvof.c",
+          "sha256": "f114439a46e0f3c9dd0d6e629daa9bd33133c213161a48c5c0688f177b45c572"
+        },
+        "checkpoint_overlay": {
+          "bytes": 733,
+          "path": "source_snapshot/checkpoint_overlay.json",
+          "sha256": "f970e54febe455652878df4c80c274477f702256fe23d26d042073bc2239231b"
+        },
+        "compiled_case": {
+          "bytes": 7729,
+          "path": "source_snapshot/stationary-clsvof.c",
+          "sha256": "aa0184f5e0a42f75fe1c2f5fc72e5e4259d42fa2415035573a2ebdfa581b23ac"
+        },
+        "compiled_integral": {
+          "bytes": 6881,
+          "path": "source_snapshot/integral.h",
+          "sha256": "3f1250ac54075be8540327370bf6d69aaab74d147d7da82f336146c88e732949"
+        },
+        "compiled_two_phase": {
+          "bytes": 2264,
+          "path": "source_snapshot/two-phase-clsvof.h",
+          "sha256": "c0f21472c2d6acac0bdda0a2c43602273ee35d6c111cce4a98005ff9f6dbd048"
+        },
+        "model_export": {
+          "bytes": 1352,
+          "path": "source_snapshot/export_manifest.json",
+          "sha256": "2ca8d5d7ec47378210da49f27c11185377301fab0d7ffd51c60c6a6c927b5b40"
+        },
+        "nn_inference": {
+          "bytes": 1658,
+          "path": "source_snapshot/clsvof_mlp_infer.h",
+          "sha256": "ce280823f9464e9d8f047cd55f12f3b78e5f53e1b35997558865d6e0bfbb3d53"
+        },
+        "nn_runtime": {
+          "bytes": 7183,
+          "path": "source_snapshot/clsvof_nn_cell_curvature.h",
+          "sha256": "e5621e454f382b384d8358d9095bdc4d657bde18c255850163b334ac8637aef9"
+        },
+        "nn_stats": {
+          "bytes": 4275,
+          "path": "source_snapshot/kappa_offset_stats.h",
+          "sha256": "43a266a6ca3e982eac67b7707960ee053d65498ac5638f5ddc0272fca88a5e19"
+        },
+        "nn_weights": {
+          "bytes": 1256146,
+          "path": "source_snapshot/nn_weights.h",
+          "sha256": "c52015fbba38c58f3613d3f1627308ac78f1f25d029950781ae7b1833b347b20"
+        },
+        "qcc": {
+          "bytes": 490304,
+          "path": "basilisk/src/qcc",
+          "sha256": "ed0fc9f53fb8070723b3aba0f272132118a21e702f720ae2c316ffa0d88239cc"
+        },
+        "redistance_overlay": {
+          "bytes": 365,
+          "path": "source_snapshot/redistance_overlay.json",
+          "sha256": "ce78d2b648cb1665105f36c1d3a38cd53252e734d1244f7c390c3034cc38aad4"
+        }
+      },
+      "usage": [
+        "usage: $REPO/generate/stationary_bubble/nn.sh [--imax 0..5] [--resolution 64|128|256] [--model NAME]",
+        "          [--smoke|--formal] [--tau-max VALUE] --output PATH",
+        "          [--threads N] [--dry-run] [--compile-only]"
+      ]
+    },
+    "official": {
+      "commands": {
+        "compile": {
+          "argv": [
+            "$REPO/basilisk/src/qcc",
+            "-O2",
+            "-DSINGLE_LEVEL=6",
+            "official_single_wrapper.c",
+            "-o",
+            "stationary-official",
+            "-lm"
+          ],
+          "cwd": "$WORK",
+          "display": "$REPO/basilisk/src/qcc -O2 -DSINGLE_LEVEL=6 official_single_wrapper.c -o stationary-official -lm > compile.stdout 2> compile.stderr",
+          "stderr": "compile.stderr",
+          "stdout": "compile.stdout"
+        },
+        "run": {
+          "argv": [
+            "./stationary-official"
+          ],
+          "cwd": "$WORK",
+          "display": "./stationary-official > stdout.txt 2> log",
+          "stderr": "log",
+          "stdout": "stdout.txt"
+        }
+      },
+      "default_parameters": {
+        "compile_only": 0,
+        "imax": null,
+        "level": 6,
+        "model": null,
+        "openmp_threads": 1,
+        "resolution": 64
+      },
+      "entrypoint": "generate/stationary_bubble/official.sh",
+      "role": "official",
+      "sources": {
+        "official_wrapper": {
+          "bytes": 320,
+          "path": "source_snapshot/official_single_wrapper.c",
+          "sha256": "421544160b2d64b7f8a26045df0614484dc60c2411d6c03a6bd062ddaf4ee5c0"
+        },
+        "qcc": {
+          "bytes": 490304,
+          "path": "basilisk/src/qcc",
+          "sha256": "ed0fc9f53fb8070723b3aba0f272132118a21e702f720ae2c316ffa0d88239cc"
+        },
+        "stock_case": {
+          "bytes": 5465,
+          "path": "basilisk/src/test/spurious.c",
+          "sha256": "94c6921660939dff1ed93cda98d1f7ce01dd24173f4e5c09b125319ece440cb4"
+        }
+      },
+      "usage": [
+        "usage: $REPO/generate/stationary_bubble/official.sh [--resolution 64|128|256|512] [--smoke|--formal]",
+        "          --output PATH [--threads 1] [--dry-run] [--compile-only]"
+      ]
+    }
+  },
+  "schema_version": 2,
+  "source_of_truth": "runner --dry-run"
+}

@@ -19,9 +19,8 @@ from hpc.lib.integrity import atomic_json, inventory  # noqa: E402
 
 COPY_ROOTS = (
     Path("basilisk/src"),
-    Path("cases"),
+    Path("generate"),
     Path("dataset/model/c_exports"),
-    Path("tools/clsvof_model"),
     Path("hpc"),
     Path(".github"),
 )

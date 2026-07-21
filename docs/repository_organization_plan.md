@@ -1,14 +1,14 @@
 # CFD 仓库文件整理计划
 
-状态：执行中；runner/matrix 已建立，dataset/figures 实体迁移和旧目录退役未执行
+状态：**已由 2026-07-16 四-case 精简 dataset 重构取代；本文只保留历史决策背景**
 盘点日期：2026-07-12
 适用仓库：`/Users/jcy/research/cfd`
 
 修订记录：
 
 - v6（2026-07-12）：按云服务器批量运行需求，将新 NN cell-offset 灵敏度范围扩展为 `imax=0..10`，加入 stationary bubble，形成 `3 case × 4 resolution × 11 imax = 132` 行云矩阵。`--jobs N` 只控制独立单线程 row 的并发数；`imax=3` 仍只进入 matched dataset，其余 10 个值进入 nondefault dataset。旧 `20260710T172910Z` retained native 证据仍保持原 0..5/48-row 历史边界，不追写成 0..10。
-- v5（2026-07-12）：按用户决定锁定 D1/D2/D3。所有物理 case 采用相同的默认/非默认数据骨架；rising 明确建立 `nn_cell_offset_matched`。每个 case 只提供一个 `generate/nn_cell_offset.sh`，由 `--imax` 参数决定运行默认 `imax=3` 还是非默认 `imax=0,1,2,4,5`；跨 case matrix 只负责调度、并发、状态和审计，不再拥有第二套物理生成实现。stationary 旧三头文件 raw 采用 B：Phase 5 前完整保留，外部证据备份和等价性登记完成后再列入单独删除确认。
-- v4（2026-07-12）：审查 stationary `20260712T113747Z_nn_cell_offset` smoke 的实物证据。确认新单头文件与旧三头文件在 stationary N64 上汇总指标一致（仅 mode 名变化），完整 `La-12000-6` 字节相同，且 clamp/denominator guard 均为零；将它登记为当前受支持的 stationary smoke，旧 `143057Z` 降为等价性审计。与此同时，撤回“该 smoke 已证明全仓可直接共用同一 raw27 实现”的过强表述：旧 capwave/rising 的 stencil 行序和 rising `ny` 符号与当前共享头不同，必须先过 per-case raw27/符号/compile gate；若不通过，采用共享核心 + case adapter，不允许为了单头文件形式牺牲特征契约。新增 §11 待用户选择项。
+- v5（2026-07-12）：按用户决定锁定 D1/D2/D3。所有物理 case 采用相同的默认/非默认数据骨架；rising 明确建立 `nn_matched`。每个 case 只提供一个 `generate/nn.sh`，由 `--imax` 参数决定运行默认 `imax=3` 还是非默认 `imax=0,1,2,4,5`；跨 case matrix 只负责调度、并发、状态和审计，不再拥有第二套物理生成实现。stationary 旧三头文件 raw 采用 B：Phase 5 前完整保留，外部证据备份和等价性登记完成后再列入单独删除确认。
+- v4（2026-07-12）：审查 stationary `20260712T113747Z_nn` smoke 的实物证据。确认新单头文件与旧三头文件在 stationary N64 上汇总指标一致（仅 mode 名变化），完整 `La-12000-6` 字节相同，且 clamp/denominator guard 均为零；将它登记为当前受支持的 stationary smoke，旧 `143057Z` 降为等价性审计。与此同时，撤回“该 smoke 已证明全仓可直接共用同一 raw27 实现”的过强表述：旧 capwave/rising 的 stencil 行序和 rising `ny` 符号与当前共享头不同，必须先过 per-case raw27/符号/compile gate；若不通过，采用共享核心 + case adapter，不允许为了单头文件形式牺牲特征契约。新增 §11 待用户选择项。
 - v3（2026-07-12）：按 Codex 严格证据审计修订。旧 `20260710T172910Z` matrix bundle 当前仅保留 48 个 native row，删除“96/96 可直接迁移”和“10 reuse”表述；确认实际 `candidate_reuse=5` 且五行 retained manifest 均含 `reuse_validation`；将所有未来 NN 路径统一为共享 `clsvof_nn_cell_curvature.h` 的 cell-offset 语义；历史 direct capwave/rising/stationary 数据降为 audit-only，禁止重建为当前可执行方法；stationary 唯一 NN runner 锁定为现 `run_nn_smoke.sh`；rising 取回锚点固定为 `95c8076`；补 capwave runner 不可完全重建的自由度清单、分层 tar 备份范围和临时 worktree 全量差异结论。
 - v2（2026-07-12）：按仓库实测核查修订。主要变化：capwave/rising 生成代码按现状改为「重建/找回」而非「迁移」（§2.1、§5、Phase 2）；新增 `/private/tmp` 临时 worktree 处置（§5.1）并记录唯一一次已执行的抢救性复制（纯新增文件）；补 `_shared` 两单元间的编译依赖（§5、Phase 2）；补 dataset 内 figures/sources 的映射行（§5、Phase 4）；矩阵 NN 方法身份登记（§2.4、§6）；Phase 0 增加临时区清点与仓库外备份；Phase 2 验收测试基线改为当前实际可通过集合；报告迁移改为原文冻结。
 
@@ -72,7 +72,7 @@
 
 - `official_vof`
 - `official_clsvof`
-- `nn_cell_offset_matched`
+- `nn_matched`
 - `nondefault_redistance`
 
 时间戳和 `try_001` 只属于 smoke/探索过程，不属于正式 dataset 身份。
@@ -84,7 +84,7 @@
 ```text
 dataset/<case>/
 ├── official.../
-├── nn_cell_offset_matched/     # 默认 imax=3
+├── nn_matched/     # 默认 imax=3
 └── nondefault_redistance/      # imax=0,1,2,4,5,6,7,8,9,10
 ```
 
@@ -164,18 +164,18 @@ cfd/
 │   │   ├── official_vof/
 │   │   ├── official_clsvof/          # 官方默认 imax=3
 │   │   ├── legacy_nn_direct/         # 历史 direct-kreplace，仅 audit-only
-│   │   ├── nn_cell_offset_matched/   # 正确共享链路重跑后建立
+│   │   ├── nn_matched/   # 正确共享链路重跑后建立
 │   │   └── nondefault_redistance/    # 仅 imax=0,1,2,4,5,6,7,8,9,10
 │   │
 │   ├── rising_bubble/
 │   │   ├── official/
 │   │   ├── legacy_nn_direct/         # 当前旧 checkpoint 数据，role=audit-only
-│   │   ├── nn_cell_offset_matched/   # 新 imax=3 数据，与 capwave 对称
+│   │   ├── nn_matched/   # 新 imax=3 数据，与 capwave 对称
 │   │   └── nondefault_redistance/    # 仅 imax=0,1,2,4,5,6,7,8,9,10
 │   │
 │   ├── stationary_bubble/             # 结构已锁定；正式实验完成前不创建实体目录
 │   │   ├── official_clsvof/
-│   │   ├── nn_cell_offset_matched/
+│   │   ├── nn_matched/
 │   │   └── nondefault_redistance/
 │   │
 │   └── model/                         # 第一轮保持不动，避免破坏 C include 路径
@@ -239,9 +239,9 @@ datasets:
     role: audit-evidence
     redistance_imax: 3
 
-  nn_cell_offset_matched:
-    path: dataset/capwave/nn_cell_offset_matched
-    generator: cases/capwave/generate/nn_cell_offset.sh
+  nn_matched:
+    path: dataset/capwave/nn_matched
+    generator: cases/capwave/generate/nn.sh
     generator_args: ["--imax", "3"]
     generator_status: to-rebuild
     method_contract: cases/_shared/nn_cell_curvature/src/clsvof_nn_cell_curvature.h
@@ -250,7 +250,7 @@ datasets:
 
   nondefault_redistance:
     path: dataset/capwave/nondefault_redistance
-    generator: cases/capwave/generate/nn_cell_offset.sh
+    generator: cases/capwave/generate/nn.sh
     matrix_scheduler: cases/_shared/nondefault_redistance/run_matrix.py
     role: sensitivity
     nn_provider: cell_offset                # §2.4
@@ -278,9 +278,9 @@ smoke:
     current_results: experiments/stationary_clsvof_smoke/results/20260711T082337Z
     role: diagnostic
 
-  nn_cell_offset:
+  nn:
     runner: cases/stationary_bubble/smoke/run_nn_smoke.sh            # 现唯一 NN runner；共享 cell-offset 头文件
-    current_results: experiments/stationary_clsvof_smoke/results/20260712T113747Z_nn_cell_offset
+    current_results: experiments/stationary_clsvof_smoke/results/20260712T113747Z_nn
     header_sha256: 4e9509025d48dcbdf59f9407aa868321fdf54abd8129097fd17748dd78f5dc1b
     role: diagnostic
 
@@ -300,27 +300,27 @@ audit_only:
 
 | 当前路径 | 目标角色/路径 | 迁移规则 |
 | --- | --- | --- |
-| `experiments/capwave_clsvof_kreplace/` | `cases/capwave/` + `dataset/capwave/legacy_nn_direct/` | 旧 direct runner/provider 只作审计底稿，不重建成当前入口；历史结果与 manifest 登记为 audit-only。未来 `nn_cell_offset_matched` 从共享头文件新建并使用新实验身份 |
+| `experiments/capwave_clsvof_kreplace/` | `cases/capwave/` + `dataset/capwave/legacy_nn_direct/` | 旧 direct runner/provider 只作审计底稿，不重建成当前入口；历史结果与 manifest 登记为 audit-only。未来 `nn_matched` 从共享头文件新建并使用新实验身份 |
 | `experiments/rising_clsvof_kreplace/` | `cases/rising_bubble/` + `dataset/rising_bubble/legacy_nn_direct/` | 保留当前用户删除状态；历史读取锚点固定为 `git show 95c8076:experiments/rising_clsvof_kreplace/<path>`，不得用会漂移的 `HEAD`，也不得恢复旧 direct 链为当前入口 |
 | `experiments/stationary_clsvof_smoke/` | `cases/stationary_bubble/` | 运行代码归 `smoke/`，C/header/overlay 归 `src/`；现有结果先原地登记 |
 | `experiments/clsvof_redistance_imax_matrix/` | `cases/_shared/nondefault_redistance/` | 代码/config 保留；旧结果 bundle 只迁出 48 个 native row。旧 NN row 和 derived audit/figure 已删除，不得写成可迁移；未来 NN 用共享 cell-offset 链重跑 |
 | `experiments/clsvof_kappa_offset_conversion/` | `cases/_shared/nn_cell_curvature/` | 当前 cell-offset 核心候选是单头文件 `include/clsvof_nn_cell_curvature.h`；stationary N64 已验证。capwave/rising raw27 adapter 仍需 per-case gate，不能把 stationary 结果外推成全仓验证。该目录历史 diagnostic results 不自动晋级正式 dataset |
-| `dataset/official_data/capwave/raw/official_vof/` | `dataset/capwave/official_vof/` | 保留原始数据和来源文件 |
-| `dataset/official_data/capwave/raw/official_clsvof/` | `dataset/capwave/official_clsvof/` | 作为默认 `imax=3` 数据；其中 `capwave` 是 Mach-O arm64 编译产物（SHA-256 `e64737c2...798e`），先登记/备份，Phase 5 再单独决定是否删除 |
-| `dataset/official_data/capwave/raw/extended_*` | 并入对应 official dataset | 先按文件 hash 审计重复 N16-N128，再合并 N256/N512；不盲目覆盖 |
-| `dataset/official_data/capwave-clsvof/` | 待与 `official_clsvof` 去重 | 只有 hash/数值等价审计后才能删除重复副本 |
-| `dataset/official_data/rising_bubble/` | `dataset/rising_bubble/official/` | case1/case2 和方法变体继续保持可区分 |
-| `dataset/nn_data/rising-clsvof/` | `dataset/rising_bubble/legacy_nn_direct/` | 旧 direct checkpoint 数据，仅 audit-only；不重命名成 matched-resolution 正式结论 |
-| `dataset/official_data/staionary bubble/` | 暂不建立对应正式 dataset | 当前为空；确认无隐藏文件/引用后再处理拼写和空目录 |
+| 旧 capwave VOF 数值目录 | `dataset/capwave/reference/vof/` | 只保留 N16–N512 数值文件 |
+| 旧 capwave CLSVOF 数值目录 | `dataset/capwave/reference/clsvof/` | 只保留 N16–N512 数值文件；二进制和源码副本不迁移 |
+| 旧 capwave extended 副本 | 并入对应 `reference/{vof,clsvof}/` | 按语义键和 SHA-256 去重，不保留重复副本 |
+| 旧 capwave CLSVOF 重复目录 | `dataset/capwave/reference/clsvof/` | 哈希核验后只保留一份 |
+| 旧 rising official 数据目录 | `dataset/rising_bubble/{case1,case2}/reference/` | case1/case2 和参考类型保持可区分 |
+| 旧 rising direct NN 数据 | 不迁入 dataset | 旧 direct checkpoint 数据仅作历史审计，不包装成正式结论 |
+| 旧空 stationary 目录 | 不迁移 | 空目录不进入 dataset |
 | `tools/capwave/` | `figures/capwave/<topic>/` | plot 代码与生成图片同目录；通用工具才留 `tools/` |
 | `tools/rising bubble/` | `figures/rising_bubble/<topic>/` | 同上；含空格目录的改名放到最后阶段 |
 | `experiments/.../results/.../figures/` | `figures/<case-or-study>/<topic>/` | plot 脚本与图一起迁移；数据来源改指 canonical dataset |
 | `reports/` | `report/notes/` | 原文冻结不改（历史报告是证据快照），另附新旧路径映射附注；不直接删除旧目录 |
 | `tem/` | `tem/` | 继续承担 smoke/探索；任何 report 不得长期依赖 tem 路径 |
 | `/private/tmp/cfd-capwave-clsvof-kreplace/` | 见 §5.1 | git worktree（分支 `codex/capwave-clsvof-kreplace`）；已提交内容由分支保底，未提交差异与未导入结果已抢救；Phase 5 验收通过后才 `git worktree remove` |
-| `dataset/official_data/capwave/figures/`、`dataset/official_data/rising_bubble/figures/` | `figures/<case>/official_reproduction/` | gnuplot 脚本与其 `.svg`/`author_style` 输出同迁，脚本内 dataset 路径同步更新 |
-| `dataset/official_data/*/sources/` | 随对应 official dataset 保留 | 是 `summarize_canary.py` 与 matrix 汇总/绘图的读取依赖（`c1g3l4*.txt` 等），移动时同步更新引用 |
-| `basilisk/src/test/capwave-n512.c` | 登记进 capwave summary `sources`；后续迁入 `cases/capwave/src/` | 本地扩展文件，非官方；被 `dataset/official_data/capwave/README.md` 引用，迁移时一并更新 |
+| 旧 dataset 内 capwave/rising figures | `figures/<case>/official_reproduction/` | 绘图脚本与图留在 dataset 外，读取 canonical 数值路径 |
+| 旧 reference sources | 各 case 的 `reference/` | 只迁移 Hysing/Prosperetti 等数值文件，不迁移说明和源码 |
+| `basilisk/src/test/capwave-n512.c` | `cases/capwave/src/` 的生成输入候选 | 本地扩展源码不进入 dataset |
 | `basilisk/src/test/static_bubble` | Phase 5 删除清单 | 遗留已编译二进制（Mach-O arm64），非官方文件；删除需单独确认 |
 | `experiments/capwave_clsvof_kreplace/diagnostic_imports/`、`recovered_from_private_tmp/` | 原地保留，summary 登记 role=diagnostic/rescue | 临时区导入与抢救内容；Phase 5 再议去留 |
 
@@ -348,7 +348,7 @@ audit_only:
 未来恢复完整研究矩阵有两条互不混用的证据线：
 
 1. retained native：可以迁移 48 个 native row，其中非默认 `imax=0,1,2,4,5` 共 40 行，默认 `imax=3` 共 8 行；
-2. 新 NN cell-offset 云矩阵：必须用统一 cell-offset 核心和通过 per-case gate 的 raw27 adapter 运行 132 行；其中非默认 120 行进入三个 case 的 sensitivity dataset，默认 12 行分别进入三个 case 的 `nn_cell_offset_matched`。其中 capwave/rising 的 0..5 子集与旧 48-row native 证据范围重叠；stationary 和 imax=6..10 没有旧 native matrix，不得虚构对照。
+2. 新 NN cell-offset 云矩阵：必须用统一 cell-offset 核心和通过 per-case gate 的 raw27 adapter 运行 132 行；其中非默认 120 行进入三个 case 的 sensitivity dataset，默认 12 行分别进入三个 case 的 `nn_matched`。其中 capwave/rising 的 0..5 子集与旧 48-row native 证据范围重叠；stationary 和 imax=6..10 没有旧 native matrix，不得虚构对照。
 
 新 NN summary 必须携带 `nn_provider: cell_offset`、cell-offset core 与 raw27 adapter 的 SHA-256、checkpoint、guard/clamp 统计和新 matrix ID。禁止复用旧 NN 指标或旧 96-row 聚合结论。
 
@@ -410,11 +410,11 @@ native 0..5 matrix 可以冒充对照；其结果身份必须保持 NN cell-offs
 
 当前 `experiments/stationary_clsvof_smoke/` 明确是 N64 smoke，包含：
 
-- stock `clsvof_native`；
+- stock `clsvof`；
 - `clsvof_contour_analytic`；
 - 历史 direct `clsvof_nn_baseline_64_hgradient`；
 - 旧三头文件 `clsvof_nn_contour_offset_64`；
-- 当前单头文件 `clsvof_nn_cell_offset_64`；
+- 当前单头文件 `nn_64`；
 - 四组结果目录，其中只有 native/analytic 控制组和当前单头文件结果进入当前 smoke 比较；其余两组只作 audit/equivalence evidence。
 
 ### 7.1 已核验的 stationary 单头文件 smoke
@@ -429,14 +429,14 @@ native 0..5 matrix 可以冒充对照；其结果身份必须保持 NN cell-offs
 当前受支持结果：
 
 ```text
-experiments/stationary_clsvof_smoke/results/20260712T113747Z_nn_cell_offset/
+experiments/stationary_clsvof_smoke/results/20260712T113747Z_nn/
 ```
 
 核验事实：
 
 1. runner 实际复制 `experiments/clsvof_kappa_offset_conversion/include/clsvof_nn_cell_curvature.h`，并由生成后的 `integral.h` 在唯一 `ki` 位置调用 `kappa_offset_provider(point,d)`；
 2. 运行结果和归档头文件 SHA-256 均为 `4e9509025d48dcbdf59f9407aa868321fdf54abd8129097fd17748dd78f5dc1b`；
-3. 新旧 summary 除 mode 名 `clsvof_nn_cell_offset_64` / `clsvof_nn_contour_offset_64` 外，七项数值完全相同；
+3. 新旧 summary 除 mode 名 `nn_64` / `clsvof_nn_contour_offset_64` 外，七项数值完全相同；
 4. 新旧完整 `La-12000-6` SHA-256 均为 `35893bcf780c1ae0521c0d1aa07d81a839da951715af5ca7c26658e8c31a5bcb`，可判定为字节一致；
 5. 新 log 记录 `evaluations=3698968`、`clamp_hits=0`、`denominator_guard_hits=0`、`min_abs_denominator=0.9809494798605789`、`max_abs_d_over_h=0.48796347089887804`；
 6. 该证据证明 stationary N64 上的头文件重构保持行为，不证明 capwave/rising raw27 adapter 已正确，也不将 smoke 晋级 formal dataset。
@@ -495,8 +495,8 @@ experiments/stationary_clsvof_smoke/results/20260712T113747Z_nn_cell_offset/
 4. redistance matrix 的调度/审计代码移入 `_shared/nondefault_redistance`；
 5. 更新路径时保持 Basilisk 官方源码只读；
 6. 对被迁移代码运行原有测试、overlay 生成检查和“只编译不执行”的官方 case smoke；Basilisk binary 不保证支持只读 `--help`，不得用 `-help/--help` 触发意外求解；
-7. `nondefault_redistance` 与 `nn_cell_curvature` 同一批迁移，并同步更新 `run_row.py` 的硬编码依赖路径：共享 `clsvof_nn_cell_curvature.h`、`tools/clsvof_model/include/clsvof_mlp_infer.h`、`dataset/model/c_exports/baseline_*/nn_weights.h`、`basilisk/src/test/capwave-clsvof.c`、`basilisk/src/test/rising.c`，以及自身 `include/redistance_matrix_metrics.h` 与 `config/matrix.json`。
-8. capwave、rising、stationary 各自只保留一个 `generate/nn_cell_offset.sh`。脚本接受显式 `--imax <N>`（0..10）；`imax=3` 发布到该 case 的 `nn_cell_offset_matched`，其余值发布到 `nondefault_redistance/imax_<N>` 的 staging/目标位置。matrix 只能调用这些 per-case 脚本，不能复制一套 provider、compile flags 或 case patch 逻辑。
+7. `nondefault_redistance` 与 `nn_cell_curvature` 同一批迁移，并同步更新 `run_row.py` 的硬编码依赖路径：共享 `clsvof_nn_cell_curvature.h`、`tools/clsvof_model/include/clsvof_mlp_infer.h`、`experiments/clsvof_kappa_offset_conversion/models/c_exports/baseline_*/nn_weights.h`、`basilisk/src/test/capwave-clsvof.c`、`basilisk/src/test/rising.c`，以及自身 `include/redistance_matrix_metrics.h` 与 `config/matrix.json`。
+8. capwave、rising、stationary 各自只保留一个 `generate/nn.sh`。脚本接受显式 `--imax <N>`（0..10）；`imax=3` 发布到该 case 的 `nn_matched`，其余值发布到 `nondefault_redistance/imax_<N>` 的 staging/目标位置。matrix 只能调用这些 per-case 脚本，不能复制一套 provider、compile flags 或 case patch 逻辑。
 
 验收：新入口能调用旧数据路径或临时工作区；测试基线为当前实际可通过的集合，并额外要求 C/PyTorch forward parity、cell-offset 公式、overlay 唯一替换点和官方 case compile smoke 全部通过。raw27 不能只测数组形式的 golden fixture，还要分别测试 capwave/rising/stationary 的 solver adapter；rising 必须单独锁定 `ny` 符号。未通过这些 gate 时，不得在 summary 中写“全仓共用同一 raw27 实现”；不引用 2026-07-10 报告中已删除测试的计数。
 
@@ -509,7 +509,7 @@ experiments/stationary_clsvof_smoke/results/20260712T113747Z_nn_cell_offset/
 3. 至少再跑两次独立短 smoke，验证重复结果确定性；
 4. 至少跑一个 `imax!=3` 短 smoke，确认生成的本地 header 中参数确实改变，且输出仍进入 smoke/tem 而不是 formal dataset；
 5. 核验 manifest 中 case、method、purpose、imax、resolution、模型与输入哈希；
-6. formal 路由只能发布到 `dataset/<case>/nn_cell_offset_matched` 或 `nondefault_redistance/imax_N`，已存在目标拒绝覆盖；
+6. formal 路由只能发布到 `dataset/<case>/nn_matched` 或 `nondefault_redistance/imax_N`，已存在目标拒绝覆盖；
 7. 形成一份数据报告后，删除本轮新产生的 smoke result、staging 和 work；历史基准不随 smoke 清理删除。
 
 只有完整复现和重复 smoke 全部通过，才能把 runner 标为 `verified`。
@@ -520,8 +520,8 @@ experiments/stationary_clsvof_smoke/results/20260712T113747Z_nn_cell_offset/
 
 任务：
 
-1. 先整理 capwave official VOF/CLSVOF；旧 direct NN 结果进入 `legacy_nn_direct` audit-only，正确的 `nn_cell_offset_matched` 只在新运行完成并通过 gate 后建立；
-2. 再整理 rising official；旧 direct checkpoint ablation 进入 `legacy_nn_direct` audit-only；预留但不提前创建 `nn_cell_offset_matched`，只在新 `imax=3` 数据通过 gate 后发布；
+1. 先整理 capwave official VOF/CLSVOF；旧 direct NN 结果进入 `legacy_nn_direct` audit-only，正确的 `nn_matched` 只在新运行完成并通过 gate 后建立；
+2. 再整理 rising official；旧 direct checkpoint ablation 进入 `legacy_nn_direct` audit-only；预留但不提前创建 `nn_matched`，只在新 `imax=3` 数据通过 gate 后发布；
 3. 对 official/extended/capwave-clsvof 重复数据做 hash 和数值审计；
 4. 从 retained bundle 抽取 40 个 native 非默认行；新 cell-offset NN 40 行完成后再加入两个 case 的 `nondefault_redistance`，禁止从已删除的旧 NN 行补值；
 5. `imax=3` 只注册为 default reference，不复制到非默认目录；
@@ -535,9 +535,9 @@ experiments/stationary_clsvof_smoke/results/20260712T113747Z_nn_cell_offset/
 
 任务：
 
-1. 把 `tools/capwave`、`tools/rising bubble` 中的 case-specific plot（gnuplot）连同 `dataset/official_data/*/figures/` 中它们生成的图与 `author_style` 输出一起迁入 `figures/<case>/official_reproduction/`；
+1. 把 `tools/capwave`、`tools/rising bubble` 中的 case-specific plot（gnuplot）及旧 dataset 内图件迁入 `figures/<case>/official_reproduction/`；
 2. 把 redistance matrix 的 plot 脚本按图表主题拆分到 `figures/nondefault_redistance/`；旧 96-row derived figures 已删除，必须等新 cell-offset NN 行完成后从 retained native + 新 NN raw data 重建，不能迁移或引用旧图；
-3. 修改 plot 与分析脚本的数据入口，使其读取 canonical dataset，而不是旧 `experiments/*/results`；已知受影响引用：gnuplot 脚本读写 `dataset/official_data/*/{raw,sources,figures}`；`summarize_canary.py`（capwave/rising）与 matrix `summarize/plot` 读 `dataset/official_data/rising_bubble/sources/c*.txt`、`dataset/official_data/capwave-clsvof`；
+3. 修改 plot 与分析脚本的数据入口，使其读取 canonical dataset，而不是旧 `experiments/*/results`；最终数值读取各 case 的 `reference/` 或 `Nxxxx/imaxxx/<method>/`，完整日志读取 `hpc/results/`；
 4. 保留少量有意义的 smoke 图，其余候选先登记，后续再决定是否删除；
 5. 将作者明确选择的图复制到 `report/figures/`；
 6. 把当前 `reports/*.md` 复制到 `report/notes/`：原文冻结不改（历史报告是证据快照），另附一份新旧路径映射附注。
@@ -555,7 +555,7 @@ experiments/stationary_clsvof_smoke/results/20260712T113747Z_nn_cell_offset/
 3. 只有在确认 canonical/audit-only 登记完整后，才提出旧 results/diagnostic_imports/work 的删除清单；历史 direct 数据不要求“可由当前正确链路重建”，而要求 provenance 与失效说明可追溯；
 4. 单独处理 `.DS_Store`、`__pycache__`、`.pytest_cache`、`.qcc` 和 build 中间文件；
 5. 修复 `staionary bubble` 拼写和 `tools/rising bubble` 空格目录；
-6. `dataset/official_data/capwave/raw/official_clsvof/capwave` 和 `basilisk/src/test/static_bubble` 两个 Mach-O 二进制分别登记 hash，作为独立删除项；删除必须单独获得用户确认，不能把“执行整理计划”解释成自动删除许可。
+6. 旧 capwave CLSVOF 二进制和 `basilisk/src/test/static_bubble` 分别登记 hash；前者不迁入精简 dataset，后者仍按独立源码树清理边界处理。
 
 验收：旧目录没有仍被 summary、plot 或 report 引用；删除清单逐项可解释。
 
@@ -567,7 +567,7 @@ experiments/stationary_clsvof_smoke/results/20260712T113747Z_nn_cell_offset/
 4. 不把 smoke 重新命名为 formal；
 5. 不把 `imax=3` 归入 `nondefault_redistance`；
 6. 不删除当前 48-row native matrix bundle，直到 canonical native 数据、新 cell-offset NN 数据、全部图和 report 均通过重建检查；
-7. 不移动 `dataset/model`，直到所有 C include 和脚本引用另有专项迁移计划；
+7. 不移动 `experiments/clsvof_kappa_offset_conversion/models`，直到所有 C include 和脚本引用另有专项迁移计划；
 8. 不因目录名看起来临时就删除未跟踪结果；
 9. 不把选择论文图的判断自动化，`report/figures` 由作者人工选择；
 10. 不修改已归档报告正文，路径变化只通过附注映射表达；
@@ -605,7 +605,7 @@ experiments/stationary_clsvof_smoke/results/20260712T113747Z_nn_cell_offset/
 决定采用：
 
 ```text
-dataset/rising_bubble/nn_cell_offset_matched/
+dataset/rising_bubble/nn_matched/
 ```
 
 保存新 cell-offset 方法在默认 `imax=3` 下的确定数据；各 case 使用相同的默认/非默认数据骨架。
@@ -614,20 +614,20 @@ dataset/rising_bubble/nn_cell_offset_matched/
 
 决定采用 per-case 单一 generator，并把 `imax` 作为脚本参数：
 
-- `cases/capwave/generate/nn_cell_offset.sh --imax <N>`
-- `cases/rising_bubble/generate/nn_cell_offset.sh --imax <N>`
-- future `cases/stationary_bubble/generate/nn_cell_offset.sh --imax <N>`
+- `cases/capwave/generate/nn.sh --imax <N>`
+- `cases/rising_bubble/generate/nn.sh --imax <N>`
+- future `cases/stationary_bubble/generate/nn.sh --imax <N>`
 
 `imax=3` 进入 matched dataset；其余允许值 `0,1,2,4,5,6,7,8,9,10` 进入 nondefault dataset。matrix 只负责批量调用、并发、补跑、汇总和审计。
 
 ### D3：stationary 旧三头文件等价结果永久保留到什么程度——已决定
 
-决定采用 B：Phase 5 前完整保留；仓库外 evidence archive、summary、头文件 hash 和完整时间序列 hash 均确认后，只在仓库内保留新 `20260712T113747Z_nn_cell_offset` raw，加一条旧结果等价性登记。这样不重复长期保存两份字节一致的 2.26MB 时间序列。实际删除仍需单独确认。
+决定采用 B：Phase 5 前完整保留；仓库外 evidence archive、summary、头文件 hash 和完整时间序列 hash 均确认后，只在仓库内保留新 `20260712T113747Z_nn` raw，加一条旧结果等价性登记。这样不重复长期保存两份字节一致的 2.26MB 时间序列。实际删除仍需单独确认。
 
 ## 2026-07-12 执行记录
 
 - Phase 1 的 case/shared 骨架和单一 `summary.yaml` 已建立。
-- Phase 2 的三个 `nn_cell_offset.sh` 已建立并实际运行；capwave、rising
+- Phase 2 的三个 `nn.sh` 已建立并实际运行；capwave、rising
   Case 1、stationary 分别完成默认复现、重复 smoke 和非默认 imax 控制。
 - `_shared/nondefault_redistance/run_matrix.py` 已改为只调用 per-case shell；
   132 行 formal dry-run 已验证 0..10、三个 case、四个分辨率和全部唯一路由；

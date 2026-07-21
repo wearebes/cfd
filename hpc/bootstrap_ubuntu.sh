@@ -5,12 +5,12 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
 
 if [ "$(uname -s)" != Linux ] || [ "$(uname -m)" != x86_64 ]; then
-  printf 'error: bootstrap requires Ubuntu 22.04 x86_64\n' >&2
+  printf 'error: bootstrap requires Ubuntu 22.04 or 24.04 x86_64\n' >&2
   exit 2
 fi
 . /etc/os-release
-if [ "${ID:-}" != ubuntu ] || [ "${VERSION_ID:-}" != 22.04 ]; then
-  printf 'error: bootstrap requires Ubuntu 22.04, got %s %s\n' "${ID:-unknown}" "${VERSION_ID:-unknown}" >&2
+if [ "${ID:-}" != ubuntu ] || [[ "${VERSION_ID:-}" != 22.04 && "${VERSION_ID:-}" != 24.04 ]]; then
+  printf 'error: bootstrap requires Ubuntu 22.04 or 24.04, got %s %s\n' "${ID:-unknown}" "${VERSION_ID:-unknown}" >&2
   exit 2
 fi
 
@@ -26,7 +26,7 @@ fi
 "${sudo_cmd[@]}" apt-get update
 "${sudo_cmd[@]}" env DEBIAN_FRONTEND=noninteractive apt-get install -y \
   git build-essential gawk bison python3 python3-pytest time jq \
-  numactl util-linux ca-certificates file
+  numactl util-linux ca-certificates file openssl gnuplot-nox
 
 cd "$repo_root/basilisk/src"
 if [ -L config ] || [ -e config ]; then

@@ -39,10 +39,10 @@ REQUIRED = (
     "hpc/config/provenance.lock.json",
     ".github/workflows/ubuntu-hpc.yml",
     "docs/server/ubuntu22-hpc-operator-handoff.md",
-    "cases/rising_bubble/generate/native.sh",
-    "cases/rising_bubble/generate/nn_cell_offset.sh",
-    "cases/capwave/generate/native.sh",
-    "cases/stationary_bubble/generate/native.sh",
+    "generate/rising_bubble/clsvof.sh",
+    "generate/rising_bubble/nn.sh",
+    "generate/capwave/clsvof.sh",
+    "generate/stationary_bubble/clsvof.sh",
 )
 
 
@@ -104,13 +104,13 @@ def main() -> int:
     )
 
     bash_files = [ROOT / relative for relative in REQUIRED if relative.endswith(".sh")]
-    bash_files.extend((ROOT / "cases").glob("*/generate/*.sh"))
+    bash_files.extend((ROOT / "generate").glob("*/*.sh"))
     syntax = subprocess.run(
         ["bash", "-n", *map(str, bash_files)], text=True, capture_output=True
     )
     checks.append(check("bash_syntax", syntax.returncode == 0, syntax.stderr.strip()))
 
-    scan_roots = [ROOT / "hpc", ROOT / "cases"]
+    scan_roots = [ROOT / "hpc", ROOT / "generate"]
     source_files = [
         path
         for root in scan_roots
@@ -144,10 +144,10 @@ def main() -> int:
             "-m",
             "pytest",
             "hpc/tests",
-            "cases/_shared/nn_cell_curvature/tests",
-            "cases/rising_bubble/tests",
-            "cases/tests",
-            "cases/_shared/nondefault_redistance/tests",
+            "generate/_shared/nn_runtime/tests",
+            "generate/rising_bubble/tests",
+            "generate/tests",
+            "generate/_shared/nondefault_redistance/tests",
             "-q",
         ],
         cwd=ROOT,

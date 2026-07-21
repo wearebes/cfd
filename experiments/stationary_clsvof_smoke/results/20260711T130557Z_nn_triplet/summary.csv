@@ -1,2 +1,0 @@
-mode,samples,tau_final,u_star_max,delta_f_final,ca_max,ca_final,ca_tail_max
-clsvof_nn_baseline_64_hgradient,71133,0.999987,0.00850035,5.62031e-09,7.759722402815064e-05,3.623905885930722e-05,3.623905885930722e-05

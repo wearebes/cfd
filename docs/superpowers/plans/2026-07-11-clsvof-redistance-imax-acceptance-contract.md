@@ -27,7 +27,7 @@ The matrix is structurally valid only if all checks pass:
 - exactly 24 rows for each benchmark/method pair;
 - exactly 48 capwave rows;
 - exactly 48 rising Case 1 rows;
-- exactly two methods: `clsvof_native`, `clsvof_nn`;
+- exactly two methods: `clsvof`, `clsvof_nn`;
 - exactly four source-resolution labels: 64, 128, 256, 512;
 - NN checkpoint equals `baseline_<N>_hgradient` for every NN row;
 - rising resolution mapping is exactly:

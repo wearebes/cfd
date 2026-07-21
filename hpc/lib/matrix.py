@@ -7,7 +7,7 @@ from typing import Iterable
 
 
 BENCHMARKS = ("capwave", "rising_case1", "rising_case2", "stationary_bubble")
-METHODS = ("clsvof_native", "clsvof_nn_cell_offset")
+METHODS = ("clsvof", "nn")
 IMAX_VALUES = tuple(range(6))
 GENERAL_RESOLUTIONS = (64, 128, 256, 512)
 STATIONARY_RESOLUTIONS = (64, 128, 256)
@@ -60,7 +60,7 @@ class MatrixRow:
 
     @property
     def model_name(self) -> str | None:
-        if self.method == "clsvof_nn_cell_offset":
+        if self.method == "nn":
             return f"baseline_{self.resolution}_hgradient"
         return None
 
@@ -111,12 +111,12 @@ def result_relative_path(row: MatrixRow) -> Path:
 
 def generator_path(root: Path, row: MatrixRow) -> Path:
     script = (
-        "native.sh"
-        if row.method == "clsvof_native"
-        else "nn_cell_offset.sh"
+        "clsvof.sh"
+        if row.method == "clsvof"
+        else "nn.sh"
     )
     case_dir = "rising_bubble" if row.rising_case else row.benchmark
-    return root / "cases" / case_dir / "generate" / script
+    return root / "generate" / case_dir / script
 
 
 def generator_command(
@@ -125,6 +125,7 @@ def generator_command(
     *,
     purpose: str,
     output: Path,
+    threads: int = 1,
     dry_run: bool = False,
 ) -> list[str]:
     if purpose not in {"smoke", "formal"}:
@@ -133,12 +134,8 @@ def generator_command(
     if row.rising_case is not None:
         command.extend(["--case", str(row.rising_case)])
     command.extend([f"--{purpose}", "--imax", str(row.imax)])
-    if row.benchmark == "stationary_bubble":
-        assert row.level is not None
-        command.extend(["--level", str(row.level)])
-    else:
-        command.extend(["--resolution", str(row.resolution)])
-    command.extend(["--output", str(output)])
+    command.extend(["--resolution", str(row.resolution)])
+    command.extend(["--threads", str(threads), "--output", str(output)])
     if dry_run:
         command.append("--dry-run")
     return command

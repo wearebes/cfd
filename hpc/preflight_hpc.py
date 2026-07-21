@@ -105,6 +105,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    policy_path = args.policy.resolve()
+    try:
+        policy_relative = policy_path.relative_to(ROOT)
+    except ValueError as error:
+        raise SystemExit("--policy must be a file inside the repository") from error
     output = ROOT / "hpc/results" / args.matrix_id / "platform"
     output.mkdir(parents=True, exist_ok=True)
     failures: list[str] = []
@@ -127,9 +132,9 @@ def main(argv: list[str] | None = None) -> int:
 
     provenance, provenance_failures = verify_provenance(args.provenance)
     failures.extend(provenance_failures)
-    policy, policy_hash = load_policy(args.policy)
+    policy, policy_hash = load_policy(policy_path)
     shutil.copy2(args.provenance, output / "provenance.lock.json")
-    shutil.copy2(args.policy, output / "thread_policy.json")
+    shutil.copy2(policy_path, output / "thread_policy.json")
     qcc = ROOT / "basilisk/src/qcc"
     if not qcc.is_file() or not os.access(qcc, os.X_OK):
         failures.append("basilisk/src/qcc is missing or not executable")
@@ -144,6 +149,7 @@ def main(argv: list[str] | None = None) -> int:
         "disk": ["df", "-h", str(ROOT)],
         "qcc_file": ["file", str(qcc)],
         "gcc": ["gcc", "--version"],
+        "gnuplot": ["gnuplot", "--version"],
     }.items():
         executable = shutil.which(command[0])
         if executable is None:
@@ -153,7 +159,7 @@ def main(argv: list[str] | None = None) -> int:
                 "stdout": "",
                 "stderr": "command not found",
             }
-            if name in {"lscpu", "numactl", "qcc_file", "gcc"}:
+            if name in {"lscpu", "numactl", "qcc_file", "gcc", "gnuplot"}:
                 failures.append(f"required command missing: {command[0]}")
             continue
         command_reports[name] = run([executable, *command[1:]])
@@ -163,6 +169,33 @@ def main(argv: list[str] | None = None) -> int:
             command_reports[name]["stdout"] + command_reports[name]["stderr"],
             encoding="utf-8",
         )
+
+    gnuplot = shutil.which("gnuplot")
+    fit_data = output / "gnuplot_fit_smoke.dat"
+    fit_data.write_text("0 1\n1 3\n2 5\n3 7\n", encoding="utf-8")
+    fit_log = output / "gnuplot_fit_smoke.log"
+    if gnuplot:
+        fit_expression = (
+            f"set fit logfile '{fit_log}'; "
+            "f(x)=a*x+b; a=1; b=0; "
+            f"fit f(x) '{fit_data}' via a,b; "
+            "if (abs(a-2)>1e-8 || abs(b-1)>1e-8) exit 1; print a,b"
+        )
+        command_reports["gnuplot_fit"] = run([gnuplot, "-e", fit_expression])
+    else:
+        command_reports["gnuplot_fit"] = {
+            "command": ["gnuplot", "-e", "fit smoke"],
+            "returncode": 127,
+            "stdout": "",
+            "stderr": "command not found",
+        }
+    if command_reports["gnuplot_fit"]["returncode"] != 0:
+        failures.append("preflight command failed: gnuplot_fit")
+    (output / "gnuplot_fit.txt").write_text(
+        command_reports["gnuplot_fit"]["stdout"]
+        + command_reports["gnuplot_fit"]["stderr"],
+        encoding="utf-8",
+    )
 
     payload = {
         "schema_version": 1,
@@ -195,7 +228,7 @@ def main(argv: list[str] | None = None) -> int:
         "matrix_id": args.matrix_id,
         "requested_cpus": args.cpus,
         "visible_cpu_count": len(visible),
-        "policy_path": str(args.policy.relative_to(ROOT)),
+        "policy_path": str(policy_relative),
         "policy_sha256": policy_hash,
         "measured_openmp_scaling": False,
         "note": "Initial policy only; formal release still requires target-host scaling canaries.",

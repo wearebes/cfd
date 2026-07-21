@@ -1,7 +1,0 @@
-work/
-debug/work_t0*/
-results/*/
-!results/.gitkeep
-__pycache__/
-tests/__pycache__/
-debug/__pycache__/

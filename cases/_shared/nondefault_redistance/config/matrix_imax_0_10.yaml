@@ -1,8 +1,0 @@
-schema_version: 1
-deprecated: true
-name: nn_cell_offset_imax_0_10_deprecated
-replacement: hpc/config/matrix_180.json
-reason: >-
-  The accepted formal scope is now native plus NN cell-offset, imax 0-5,
-  two rising cases, and stationary N64-N256. This file is retained only so
-  older notes do not resolve to a missing path.

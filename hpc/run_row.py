@@ -77,6 +77,12 @@ def validate_generator_manifest(path: Path, row: Any, threads: int) -> dict[str,
     if not manifest_path.is_file():
         raise RuntimeError("generator did not produce manifest.json")
     payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if payload.get("status") != "completed":
+        raise RuntimeError(
+            f"generator manifest is not completed: {payload.get('status')}"
+        )
+    if not payload.get("plan", {}).get("plan_sha256"):
+        raise RuntimeError("generator manifest has no resolved plan hash")
     expected = {
         "benchmark": row.benchmark,
         "method": row.method,
@@ -166,7 +172,12 @@ def main(argv: list[str] | None = None) -> int:
     generated = work / "generated"
     work.mkdir(parents=True, exist_ok=False)
     command = generator_command(
-        ROOT, row, purpose="formal", output=generated, dry_run=args.dry_run
+        ROOT,
+        row,
+        purpose="formal",
+        output=generated,
+        threads=args.threads,
+        dry_run=args.dry_run,
     )
     if args.dry_run:
         print(

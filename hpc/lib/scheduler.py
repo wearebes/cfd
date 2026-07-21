@@ -87,8 +87,8 @@ def estimate_cost(row: MatrixRow) -> float:
     ]
     if row.benchmark == "capwave":
         base = {
-            "clsvof_native": {64: 23, 128: 254, 256: 1800, 512: 24404},
-            "clsvof_nn_cell_offset": {
+            "clsvof": {64: 23, 128: 254, 256: 1800, 512: 24404},
+            "nn": {
                 64: 26,
                 128: 207,
                 256: 1917,
@@ -97,12 +97,12 @@ def estimate_cost(row: MatrixRow) -> float:
         }[row.method][row.resolution]
     elif row.benchmark.startswith("rising_case"):
         base_case1 = {
-            "clsvof_native": {64: 4, 128: 23, 256: 148, 512: 2925},
-            "clsvof_nn_cell_offset": {64: 8, 128: 44, 256: 281, 512: 5557},
+            "clsvof": {64: 4, 128: 23, 256: 148, 512: 2925},
+            "nn": {64: 8, 128: 44, 256: 281, 512: 5557},
         }[row.method][row.resolution]
         base = base_case1 * (2.0 if row.benchmark == "rising_case2" else 1.0)
     else:
-        n64 = 2611 if row.method == "clsvof_native" else 1255
+        n64 = 2611 if row.method == "clsvof" else 1255
         base = n64 * (row.resolution / 64.0) ** 3.25
     return base * imax_factor
 

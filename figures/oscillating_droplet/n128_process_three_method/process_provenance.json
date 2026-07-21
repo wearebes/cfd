@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "case": "oscillating_droplet",
+  "N": 128,
+  "clsvof_nn_imax": 3,
+  "phases": [
+    {
+      "index": 0,
+      "label": "0",
+      "target_time": 0.0
+    },
+    {
+      "index": 1,
+      "label": "T/4",
+      "target_time": 0.02028903029296296
+    },
+    {
+      "index": 2,
+      "label": "T/2",
+      "target_time": 0.04057806058592593
+    },
+    {
+      "index": 3,
+      "label": "3T/4",
+      "target_time": 0.06086709087888889
+    },
+    {
+      "index": 4,
+      "label": "T",
+      "target_time": 0.08115612117185185
+    }
+  ],
+  "methods": [
+    "clsvof",
+    "nn",
+    "vof_hf"
+  ],
+  "source_sha256": {
+    "clsvof_host": "e828c680129faf6d24a6bf6d3634c7aec81b4fa1f3ebb768518accf7ac4b393f",
+    "vof_hf_host": "b1d4eafbf4945b960cb776d150265de97b22cba46abed8e62c522a2358fa4603",
+    "process_contours": "374b5e6faf0a98bea8cfa24cf9677f95aff17a1c3d9868dde3f4f1762b939a4a"
+  },
+  "commands": {
+    "clsvof": [
+      "/opt/anaconda3/bin/python3",
+      "/Users/jcy/research/cfd/cases/oscillating_droplet/nn/generate/run_row.py",
+      "--method",
+      "native",
+      "--level",
+      "7",
+      "--imax",
+      "3",
+      "--output",
+      "/var/folders/9n/9q66rrvj49n3rrgvpxtv8tdm0000gn/T/oscillating-process-u7xyh566/clsvof",
+      "--t-end",
+      "0.08115612117185185",
+      "--no-fit",
+      "--snapshots"
+    ],
+    "nn": [
+      "/opt/anaconda3/bin/python3",
+      "/Users/jcy/research/cfd/cases/oscillating_droplet/nn/generate/run_row.py",
+      "--method",
+      "nn",
+      "--level",
+      "7",
+      "--imax",
+      "3",
+      "--output",
+      "/var/folders/9n/9q66rrvj49n3rrgvpxtv8tdm0000gn/T/oscillating-process-u7xyh566/nn",
+      "--t-end",
+      "0.08115612117185185",
+      "--no-fit",
+      "--snapshots"
+    ],
+    "vof_hf": [
+      "/Users/jcy/research/cfd/basilisk/src/qcc",
+      "-O2",
+      "-DMTRACE=3",
+      "-Wall",
+      "-Wno-unused-function",
+      "-pipe",
+      "-DLEVEL=7",
+      "source.c",
+      "-o",
+      "oscillation-vof-hf",
+      "-lm",
+      "&&",
+      "./oscillation-vof-hf"
+    ]
+  },
+  "note": "Matched output-instrumented short reruns; quantitative metrics use the archived full t=1 traces."
+}

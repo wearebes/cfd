@@ -22,10 +22,10 @@ from hpc.lib.scheduler import available_cpu_ids, load_policy  # noqa: E402
 
 
 CORRECTNESS_ROWS = (
-    MatrixRow("capwave", "clsvof_nn_cell_offset", 64, 3),
-    MatrixRow("rising_case1", "clsvof_nn_cell_offset", 64, 3),
-    MatrixRow("rising_case2", "clsvof_nn_cell_offset", 64, 3),
-    MatrixRow("stationary_bubble", "clsvof_nn_cell_offset", 64, 3),
+    MatrixRow("capwave", "nn", 64, 3),
+    MatrixRow("rising_case1", "nn", 64, 3),
+    MatrixRow("rising_case2", "nn", 64, 3),
+    MatrixRow("stationary_bubble", "nn", 64, 3),
 )
 
 
@@ -59,7 +59,9 @@ def run_one(
     cpu_ids: list[int],
     output: Path,
 ) -> dict[str, Any]:
-    command = generator_command(ROOT, row, purpose="smoke", output=output)
+    command = generator_command(
+        ROOT, row, purpose="smoke", output=output, threads=threads
+    )
     taskset = shutil.which("taskset")
     if taskset is None:
         raise RuntimeError("taskset is required for target-host canaries")
@@ -113,6 +115,11 @@ def run_one(
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    policy_path = args.policy.resolve()
+    try:
+        policy_relative = policy_path.relative_to(ROOT)
+    except ValueError as error:
+        raise SystemExit("--policy must be a file inside the repository") from error
     if args.cpus < 1:
         raise SystemExit("--cpus must be positive")
     cpu_ids = available_cpu_ids()
@@ -121,7 +128,7 @@ def main(argv: list[str] | None = None) -> int:
             f"requested {args.cpus} CPUs but only {len(cpu_ids)} are visible"
         )
     cpu_ids = cpu_ids[: args.cpus]
-    _, policy_hash = load_policy(args.policy)
+    _, policy_hash = load_policy(policy_path)
     root = ROOT / "hpc/work" / args.matrix_id / "canaries"
     root.mkdir(parents=True, exist_ok=True)
     records: list[dict[str, Any]] = []
@@ -138,7 +145,7 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     scaling_row = MatrixRow(
-        "stationary_bubble", "clsvof_nn_cell_offset", 64, 3
+        "stationary_bubble", "nn", 64, 3
     )
     scaling_records = []
     for threads in candidates(args.cpus):
@@ -205,7 +212,7 @@ def main(argv: list[str] | None = None) -> int:
         "matrix_id": args.matrix_id,
         "requested_cpus": args.cpus,
         "visible_cpu_count": len(available_cpu_ids()),
-        "policy_path": str(args.policy.relative_to(ROOT)),
+        "policy_path": str(policy_relative),
         "policy_sha256": policy_hash,
         "measured_openmp_scaling": not failures and len(successful_scaling) >= 2,
         "openmp_speedup_by_threads": speedup_by_threads,

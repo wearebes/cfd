@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "matrix_name": "clsvof_native_nn_cell_offset_imax_0_5",
+  "matrix_name": "clsvof_nn_imax_0_5",
   "expected_rows": 180,
   "benchmarks": {
     "capwave": [64, 128, 256, 512],
@@ -8,7 +8,7 @@
     "rising_case2": [64, 128, 256, 512],
     "stationary_bubble": [64, 128, 256]
   },
-  "methods": ["clsvof_native", "clsvof_nn_cell_offset"],
+  "methods": ["clsvof", "nn"],
   "imax": [0, 1, 2, 3, 4, 5],
   "forbidden_rows": ["stationary_bubble/N0512"]
 }

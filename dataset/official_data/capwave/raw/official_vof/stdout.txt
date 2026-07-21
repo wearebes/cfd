@@ -1,8 +1,0 @@
-
-# Multigrid, 738 steps, 0.151917 CPU, 0.1532 real, 1.23e+06 points.step/s, 17 var
-
-# Multigrid, 740 steps, 0.337098 CPU, 0.3431 real, 2.21e+06 points.step/s, 17 var
-
-# Multigrid, 759 steps, 1.10259 CPU, 1.181 real, 2.63e+06 points.step/s, 17 var
-
-# Multigrid, 2222 steps, 10.0538 CPU, 10.75 real, 3.39e+06 points.step/s, 17 var

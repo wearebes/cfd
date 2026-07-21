@@ -40,8 +40,8 @@ OpenMP inside that row. The authoritative server procedure is
 Exactly two methods are formal:
 
 ```text
-clsvof_native
-clsvof_nn_cell_offset
+clsvof
+nn
 ```
 
 Diagnostic analytic, legacy direct-NN, `rising_k_provider`, contour-oracle, and
@@ -78,9 +78,9 @@ Structural invariants:
 Examples:
 
 ```text
-rising_case1__clsvof_nn_cell_offset__N0256__imax03
-rising_case2__clsvof_nn_cell_offset__N0256__imax03
-stationary_bubble__clsvof_native__N0128__imax05
+rising_case1__nn__N0256__imax03
+rising_case2__nn__N0256__imax03
+stationary_bubble__clsvof__N0128__imax05
 ```
 
 The row ID is immutable and is used by the matrix, result path, staging path,
@@ -88,7 +88,7 @@ resume logic, logs, and package manifest.
 
 ## 3. Current-state findings that the implementation must address
 
-1. `cases/rising_bubble/generate/nn_cell_offset.sh` is hard-coded to Hysing
+1. `cases/rising_bubble/generate/nn.sh` is hard-coded to Hysing
    Case 1 and does not pass `-DCASE2=1`.
 2. Capwave, rising Case 1, and stationary already copy the same canonical
    `cases/_shared/nn_cell_curvature/src/clsvof_nn_cell_curvature.h`.
@@ -146,12 +146,12 @@ hpc/
 Case-local additions/changes:
 
 ```text
-cases/capwave/generate/native.sh                     # new
-cases/capwave/generate/nn_cell_offset.sh             # OpenMP/hash interface
-cases/rising_bubble/generate/native.sh               # new, --case 1|2
-cases/rising_bubble/generate/nn_cell_offset.sh       # add --case 1|2
-cases/stationary_bubble/generate/native.sh            # new
-cases/stationary_bubble/generate/nn_cell_offset.sh    # N512 rejection/OpenMP/hash
+cases/capwave/generate/clsvof.sh                     # new
+cases/capwave/generate/nn.sh             # OpenMP/hash interface
+cases/rising_bubble/generate/clsvof.sh               # new, --case 1|2
+cases/rising_bubble/generate/nn.sh       # add --case 1|2
+cases/stationary_bubble/generate/clsvof.sh            # new
+cases/stationary_bubble/generate/nn.sh    # N512 rejection/OpenMP/hash
 cases/_shared/nn_cell_curvature/src/
   clsvof_nn_cell_curvature.h                          # thread-safe statistics
 cases/_shared/nn_cell_curvature/tests/
@@ -239,8 +239,8 @@ passes, and `python3 hpc/run_matrix.py --dry-run` reports exactly 180 rows.
 
 ### Files
 
-- `cases/rising_bubble/generate/nn_cell_offset.sh`
-- `cases/rising_bubble/generate/native.sh`
+- `cases/rising_bubble/generate/nn.sh`
+- `cases/rising_bubble/generate/clsvof.sh`
 - `cases/rising_bubble/summary.yaml`
 - `hpc/tests/test_rising_cases.py`
 
@@ -298,9 +298,9 @@ rising Case 2 NN     N64 imax3
 
 ### Files
 
-- `cases/capwave/generate/native.sh`
-- `cases/rising_bubble/generate/native.sh`
-- `cases/stationary_bubble/generate/native.sh`
+- `cases/capwave/generate/clsvof.sh`
+- `cases/rising_bubble/generate/clsvof.sh`
+- `cases/stationary_bubble/generate/clsvof.sh`
 - existing NN generators
 - `hpc/lib/integrity.py`
 - `hpc/run_row.py`

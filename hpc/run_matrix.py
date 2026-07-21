@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -16,7 +17,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from hpc.lib.integrity import atomic_json  # noqa: E402
-from hpc.lib.matrix import formal_rows, generator_path  # noqa: E402
+from hpc.lib.matrix import BENCHMARKS, formal_rows, generator_path  # noqa: E402
 from hpc.lib.scheduler import (  # noqa: E402
     available_cpu_ids,
     load_policy,
@@ -42,11 +43,38 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--policy", type=Path, default=ROOT / "hpc/config/thread_policy.json"
     )
     parser.add_argument("--phase", choices=["n64", "remaining", "all"], default="all")
+    parser.add_argument(
+        "--benchmark",
+        action="append",
+        choices=BENCHMARKS,
+        help="limit the run to one or more benchmarks (repeatable)",
+    )
+    parser.add_argument(
+        "--resolution",
+        action="append",
+        type=int,
+        choices=(64, 128, 256, 512),
+        help="limit the run to one or more resolutions (repeatable)",
+    )
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--max-active-rows", type=positive_int, default=1)
     parser.add_argument("--poll-seconds", type=float, default=1.0)
     return parser.parse_args(argv)
+
+
+def filter_benchmarks(rows: list[Any], benchmarks: list[str] | None) -> list[Any]:
+    if not benchmarks:
+        return rows
+    selected = set(benchmarks)
+    return [row for row in rows if row.benchmark in selected]
+
+
+def filter_resolutions(rows: list[Any], resolutions: list[int] | None) -> list[Any]:
+    if not resolutions:
+        return rows
+    selected = set(resolutions)
+    return [row for row in rows if row.resolution in selected]
 
 
 def preflight_sources(rows: list[Any]) -> None:
@@ -71,7 +99,8 @@ def run_phase(args: argparse.Namespace, rows: list[Any]) -> int:
             f"requested {args.cpus} CPUs but only {len(visible)} are visible"
         )
     free_cpus = visible[: args.cpus]
-    queue = phase_rows(rows, args.phase)
+    pinning_available = shutil.which("taskset") is not None
+    queue = list(rows)
     active: dict[subprocess.Popen[str], tuple[Any, list[int], Any]] = {}
     records: list[dict[str, Any]] = []
     result_root = ROOT / "hpc/results" / args.matrix_id
@@ -120,11 +149,13 @@ def run_phase(args: argparse.Namespace, rows: list[Any]) -> int:
                         args.matrix_id,
                         "--threads",
                         str(threads),
-                        "--cpu-list",
-                        ",".join(map(str, allocation)),
                         "--policy-sha256",
                         policy_hash,
                     ]
+                    if pinning_available:
+                        command.extend(
+                            ["--cpu-list", ",".join(map(str, allocation))]
+                        )
                     if args.resume:
                         command.append("--resume")
                     process = subprocess.Popen(
@@ -159,6 +190,7 @@ def run_phase(args: argparse.Namespace, rows: list[Any]) -> int:
                     "policy_sha256": policy_hash,
                     "cpu_pool": args.cpus,
                     "max_active_rows": args.max_active_rows,
+                    "cpu_pinning": pinning_available,
                     "free_cpus": free_cpus,
                     "queued": [row.row_id for row in queue],
                     "active": [row.row_id for row, _, _ in active.values()],
@@ -178,7 +210,8 @@ def run_phase(args: argparse.Namespace, rows: list[Any]) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    all_rows = formal_rows()
+    all_rows = filter_benchmarks(formal_rows(), args.benchmark)
+    all_rows = filter_resolutions(all_rows, args.resolution)
     selected = phase_rows(all_rows, args.phase)
     policy, policy_hash = load_policy(args.policy)
     preflight_sources(selected)
@@ -199,6 +232,8 @@ def main(argv: list[str] | None = None) -> int:
                 {
                     "matrix_id": args.matrix_id,
                     "phase": args.phase,
+                    "benchmarks": sorted(set(args.benchmark or BENCHMARKS)),
+                    "resolutions": sorted(set(args.resolution or (64, 128, 256, 512))),
                     "row_count": len(selected),
                     "cpu_pool": args.cpus,
                     "max_active_rows": args.max_active_rows,

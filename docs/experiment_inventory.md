@@ -11,7 +11,7 @@ Purpose: keep every CFD run identifiable before results are interpreted. A row i
 | `original` | Stock Basilisk case, no local `integral.h` overlay. |
 | `native_wrapper` | Local overlay is compiled, but provider returns `distance_curvature(point, d)`. This is the equivalence control. |
 | `native_perturbed` | Local overlay is compiled and returns `distance_curvature(point, d) * 1.001`. This is a liveness control only. |
-| `nn_baseline_<N>_hgradient` | Overlay provider builds raw27 features, runs the exported MLP header from `dataset/model/c_exports/baseline_<N>_hgradient/nn_weights.h`, converts `h*kappa` to `kappa`, then applies the configured clamp. |
+| `nn_baseline_<N>_hgradient` | Overlay provider builds raw27 features, runs the exported MLP header from `experiments/clsvof_kappa_offset_conversion/models/c_exports/baseline_<N>_hgradient/nn_weights.h`, converts `h*kappa` to `kappa`, then applies the configured clamp. |
 | `raw27` | `[phi9/Delta, nx9, ny9]`; exact stencil order and `ny` sign are implementation-specific and must be recorded for each experiment family. |
 | `scale` | NN output is `h*kappa`; solver curvature is `kappa = hkappa / Delta`. |
 | `clamp` | Current k-replacement experiments use `abs(kappa) <= 1/Delta` unless a run explicitly records otherwise. |

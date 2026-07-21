@@ -26,7 +26,7 @@ def make_smoke(path: Path, *, case2: bool, method: str) -> None:
     (path / "compile.stderr").write_text("", encoding="utf-8")
     stats = (
         "kappa_offset_provider_stats evaluations=10\n"
-        if method == "clsvof_nn_cell_offset"
+        if method == "nn"
         else ""
     )
     (path / "log").write_text(stats, encoding="utf-8")
@@ -34,7 +34,7 @@ def make_smoke(path: Path, *, case2: bool, method: str) -> None:
 
 def test_inspect_accepts_case2_nn_openmp_contract(tmp_path: Path) -> None:
     smoke = tmp_path / "case2_nn"
-    make_smoke(smoke, case2=True, method="clsvof_nn_cell_offset")
+    make_smoke(smoke, case2=True, method="nn")
     record = inspect(smoke, EXPECTED[3])
     assert record["failures"] == []
     assert record["t_final"] == 3.0
@@ -43,7 +43,7 @@ def test_inspect_accepts_case2_nn_openmp_contract(tmp_path: Path) -> None:
 
 def test_inspect_rejects_case2_without_compile_define(tmp_path: Path) -> None:
     smoke = tmp_path / "case2_native"
-    make_smoke(smoke, case2=True, method="clsvof_native")
+    make_smoke(smoke, case2=True, method="clsvof")
     manifest_path = smoke / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     manifest["compile_defines"].remove("CASE2=1")

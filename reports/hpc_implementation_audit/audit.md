@@ -14,7 +14,7 @@ Status: **READY_FOR_UBUNTU_CI**
 | thread_policy | PASS | policy_sha256=912344722a74e94d267a530cd5a7bfa2897387a5d78dd03811403c28df6595a5 max_threads=64 |
 | bash_syntax | PASS |  |
 | forbidden_runtime_patterns | PASS | {"absolute_conda_path": [], "formal_imax_0_10": [], "linux_shasum_dependency": []} |
-| local_test_suite | PASS | 80 passed, 3 skipped in 11.27s |
+| local_test_suite | PASS | 94 passed, 3 skipped in 16.84s |
 
 ## External release gates
 

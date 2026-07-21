@@ -1,0 +1,206 @@
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.349471 sum: 13.7855 nrelax: 100 tolerance: 0.315448
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.368671 sum: 14.3223 nrelax: 100 tolerance: 0.36014
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.449368 sum: 17.4974 nrelax: 100 tolerance: 0.398529
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.465254 sum: 18.1375 nrelax: 100 tolerance: 0.439378
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.695154 sum: 27.3032 nrelax: 100 tolerance: 0.460808
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.840534 sum: 33.5406 nrelax: 100 tolerance: 0.517846
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.759453 sum: 30.5514 nrelax: 100 tolerance: 0.529959
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.686235 sum: 26.8722 nrelax: 100 tolerance: 0.529959
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.611267 sum: 23.6353 nrelax: 100 tolerance: 0.542502
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.691034 sum: 27.6911 nrelax: 100 tolerance: 0.529508
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.648245 sum: 24.9256 nrelax: 100 tolerance: 0.529508
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.556465 sum: 20.1812 nrelax: 100 tolerance: 0.502349
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.504732 sum: 18.3475 nrelax: 100 tolerance: 0.48868
+0.625 0.300771
+0.622143 0.3125
+
+0.619351 0.3125
+0.625 0.323785
+
+0.65625 0.279476
+0.652742 0.28125
+
+0.625 0.30367
+0.638158 0.28125
+
+0.625 0.314866
+0.65625 0.338739
+
+0.6875 0.278426
+0.66616 0.28125
+
+0.65625 0.282462
+0.660066 0.28125
+
+0.65625 0.327287
+0.6875 0.333874
+
+0.6875 0.278995
+0.71875 0.276204
+
+0.6875 0.333897
+0.71875 0.336615
+
+0.71875 0.276181
+0.75 0.273374
+
+0.71875 0.336415
+0.75 0.33547
+
+0.75 0.273481
+0.78125 0.27049
+
+0.75 0.335147
+0.78125 0.331585
+
+0.78125 0.270594
+0.8125 0.266995
+
+0.78125 0.331247
+0.8125 0.32639
+
+0.8125 0.267031
+0.84375 0.262545
+
+0.8125 0.32613
+0.84375 0.321177
+
+0.84375 0.262761
+0.875 0.256886
+
+0.84375 0.321008
+0.875 0.31682
+
+0.90625 0.249249
+0.903203 0.25
+
+0.875 0.256873
+0.902955 0.25
+
+0.875 0.316767
+0.90625 0.313787
+
+0.90625 0.249181
+0.9375 0.23965
+
+0.9375 0.312361
+0.918461 0.3125
+
+0.90625 0.313789
+0.930244 0.3125
+
+0.9375 0.240053
+0.96875 0.227899
+
+0.96875 0.311172
+0.941451 0.3125
+
+1 0.211838
+0.986749 0.21875
+
+0.96875 0.228344
+0.987144 0.21875
+
+0.96875 0.311444
+1 0.308378
+
+1 0.214561
+1.03125 0.188195
+
+1 0.307835
+1.03125 0.303741
+
+1.04849 0
+1.04912 0.03125
+
+1.04912 0.03125
+1.05101 0.0625
+
+1.05129 0.0625
+1.05388 0.09375
+
+1.05487 0.09375
+1.05562 0.125
+
+1.05731 0.125
+1.05087 0.15625
+
+1.05242 0.15625
+1.03232 0.1875
+
+1.03125 0.188366
+1.03204 0.1875
+
+1.03125 0.303907
+1.0625 0.299539
+
+1.0625 0.300063
+1.09375 0.29404
+
+1.09375 0.293812
+1.125 0.285543
+
+1.15625 0.274797
+1.1387 0.28125
+
+1.125 0.286226
+1.13853 0.28125
+
+1.15625 0.274233
+1.1875 0.25916
+
+1.21875 0.241161
+1.20424 0.25
+
+1.1875 0.2596
+1.20326 0.25
+
+1.25 0.217667
+1.24874 0.21875
+
+1.21875 0.240907
+1.24663 0.21875
+
+1.28125 0.185729
+1.27977 0.1875
+
+1.25 0.216376
+1.27858 0.1875
+
+1.3125 0.139728
+1.30279 0.15625
+
+1.28125 0.183603
+1.30246 0.15625
+
+1.34375 0.0588821
+1.34313 0.0625
+
+1.34307 0.0625
+1.33383 0.09375
+
+1.3339 0.09375
+1.32051 0.125
+
+1.3125 0.138554
+1.32045 0.125
+
+1.35011 0
+1.34834 0.03125
+
+1.34375 0.0579467
+1.34835 0.03125
+

@@ -43,12 +43,12 @@ Scientific and configuration surfaces:
 hpc/config/matrix_180.json
 hpc/config/thread_policy.json
 hpc/config/provenance.lock.json
-cases/rising_bubble/generate/native.sh
-cases/rising_bubble/generate/nn_cell_offset.sh
-cases/capwave/generate/native.sh
-cases/capwave/generate/nn_cell_offset.sh
-cases/stationary_bubble/generate/native.sh
-cases/stationary_bubble/generate/nn_cell_offset.sh
+cases/rising_bubble/generate/clsvof.sh
+cases/rising_bubble/generate/nn.sh
+cases/capwave/generate/clsvof.sh
+cases/capwave/generate/nn.sh
+cases/stationary_bubble/generate/clsvof.sh
+cases/stationary_bubble/generate/nn.sh
 cases/_shared/nn_cell_curvature/src/clsvof_nn_cell_curvature.h
 cases/_shared/nn_cell_curvature/src/kappa_offset_stats.h
 ```
@@ -356,7 +356,7 @@ logs and a manifest with formal identity, platform, toolchain (gcc version and
 count.
 
 Stationary rows carry one extra level: the generator emits results under an
-inner `clsvof_native/` or `nn_cell_offset/` mode directory plus `summary.csv`
+inner `clsvof/` or `nn/` mode directory plus `summary.csv`
 and `summary.json`, so the primary series lives at
 `stationary_bubble/N####/imax##/<method>/<mode>/La-12000-<level>`. This nesting
 is intentional (`summarize_smoke.py` iterates per-mode subdirectories); capwave

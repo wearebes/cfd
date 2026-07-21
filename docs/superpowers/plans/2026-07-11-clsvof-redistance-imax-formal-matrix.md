@@ -102,7 +102,7 @@ It must be labelled `imax0_no_eikonal`, not `no_clsvof`.
 
 | Formal method | Curvature provider | NN model policy |
 | --- | --- | --- |
-| `clsvof_native` | `distance_curvature(point, d)` through the accepted native wrapper | none |
+| `clsvof` | `distance_curvature(point, d)` through the accepted native wrapper | none |
 | `clsvof_nn` | accepted benchmark-specific NN provider | `baseline_<N>_hgradient` matched to the same source-resolution label `N` |
 
 The existing benchmark-specific feature contracts are frozen rather than
@@ -157,9 +157,9 @@ The formal matrix contains:
 
 | Benchmark | Method | Resolutions | `imax` values | Formal cells |
 | --- | --- | ---: | ---: | ---: |
-| capwave | `clsvof_native` | 4 | 6 | 24 |
+| capwave | `clsvof` | 4 | 6 | 24 |
 | capwave | `clsvof_nn` | 4 | 6 | 24 |
-| rising Case 1 | `clsvof_native` | 4 | 6 | 24 |
+| rising Case 1 | `clsvof` | 4 | 6 | 24 |
 | rising Case 1 | `clsvof_nn` | 4 | 6 | 24 |
 | **Total** |  |  |  | **96** |
 
@@ -318,9 +318,9 @@ Suggested result layout:
 results/<matrix_id>/
   matrix_manifest.json
   matrix_status.csv
-  capwave/N0064/imax00/clsvof_native/
+  capwave/N0064/imax00/clsvof/
   capwave/N0064/imax00/clsvof_nn/
-  rising_case1/N0064/imax00/clsvof_native/
+  rising_case1/N0064/imax00/clsvof/
   rising_case1/N0064/imax00/clsvof_nn/
   ...
   tables/

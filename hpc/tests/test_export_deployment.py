@@ -10,7 +10,7 @@ from hpc.export_deployment import is_macho, should_skip
 def test_export_skips_build_products_and_runtime_outputs(tmp_path: Path) -> None:
     ordinary = tmp_path / "file.c"
     ordinary.write_text("int x;\n", encoding="utf-8")
-    assert not should_skip(Path("cases/file.c"), ordinary)
+    assert not should_skip(Path("generate/file.c"), ordinary)
     assert should_skip(Path("basilisk/src/qcc"), ordinary)
     assert should_skip(Path("basilisk/src/config.osx"), ordinary)
     assert should_skip(Path("basilisk/src/qcc.dSYM"), tmp_path)

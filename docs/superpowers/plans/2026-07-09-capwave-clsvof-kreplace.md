@@ -6,7 +6,7 @@
 
 **Architecture:** The implementation creates an external experiment workspace under `experiments/capwave_clsvof_kreplace/`. Each run copies the stock `basilisk/src/test/capwave-clsvof.c` and `prosperetti.h` into a temporary work directory, generates a local `integral.h` overlay from the stock `basilisk/src/integral.h`, and relies on C include precedence so the copied case uses the overlay. The overlay keeps the original surface-tension tensor and face-force path unchanged, replacing only `double ki = distance_curvature (point, d);` with `double ki = capwave_k_provider (point, d);`.
 
-**Tech Stack:** Bash, Python 3 standard library, Basilisk `qcc` through `tools/basilisk-run`, C99 headers, generated float32 NN weights in `dataset/model/c_exports/`, and the existing `tools/clsvof_model_export/include/clsvof_mlp_infer.h`.
+**Tech Stack:** Bash, Python 3 standard library, Basilisk `qcc` through `tools/basilisk-run`, C99 headers, generated float32 NN weights in `experiments/clsvof_kappa_offset_conversion/models/c_exports/`, and the existing `tools/clsvof_model_export/include/clsvof_mlp_infer.h`.
 
 ---
 
@@ -17,7 +17,7 @@
 - The run source must be copied from `basilisk/src/test/capwave-clsvof.c` for each run.
 - The surface-tension implementation must be copied from `basilisk/src/integral.h` for each run.
 - The only semantic replacement in the generated `integral.h` overlay is the source of `ki`.
-- First canary uses `dataset/model/c_exports/baseline_128_hgradient/nn_weights.h`.
+- First canary uses `experiments/clsvof_kappa_offset_conversion/models/c_exports/baseline_128_hgradient/nn_weights.h`.
 - First canary keeps the original capwave sweep unless a compile/runtime failure requires a shorter debug run. If a shorter debug run is introduced, keep it in a separate debug script and do not call it the official canary.
 
 ## File Structure
@@ -325,7 +325,7 @@ C
   -I"$tmpdir" \
   -I"$repo_root/experiments/capwave_clsvof_kreplace/include" \
   -I"$repo_root/tools/clsvof_model_export/include" \
-  -I"$repo_root/dataset/model/c_exports/baseline_128_hgradient" \
+  -I"$repo_root/experiments/clsvof_kappa_offset_conversion/models/c_exports/baseline_128_hgradient" \
   "$tmpdir/header_smoke.c" \
   -o "$tmpdir/header_smoke_nn" \
   -lm
@@ -532,7 +532,7 @@ run_case "$work_root/nn_baseline_128_hgradient" \
   -DCAPWAVE_K_CLAMP_FACTOR=1.0 \
   -I"$repo_root/experiments/capwave_clsvof_kreplace/include" \
   -I"$repo_root/tools/clsvof_model_export/include" \
-  -I"$repo_root/dataset/model/c_exports/baseline_128_hgradient"
+  -I"$repo_root/experiments/clsvof_kappa_offset_conversion/models/c_exports/baseline_128_hgradient"
 archive_case nn_baseline_128_hgradient "$work_root/nn_baseline_128_hgradient"
 
 cat > "$results_root/manifest.json" <<JSON
@@ -540,7 +540,7 @@ cat > "$results_root/manifest.json" <<JSON
   "source_case": "basilisk/src/test/capwave-clsvof.c",
   "source_integral": "basilisk/src/integral.h",
   "replacement": "double ki = distance_curvature (point, d) -> double ki = capwave_k_provider (point, d)",
-  "nn_weights": "dataset/model/c_exports/baseline_128_hgradient/nn_weights.h",
+  "nn_weights": "experiments/clsvof_kappa_offset_conversion/models/c_exports/baseline_128_hgradient/nn_weights.h",
   "modes": ["original", "native_wrapper", "nn_baseline_128_hgradient"],
   "clamp": "abs(kappa) <= 1/Delta"
 }
@@ -584,7 +584,7 @@ The canary runs three modes:
   `distance_curvature(point, d)`.
 - `nn_baseline_128_hgradient`: same generated local `integral.h`, but the
   provider returns NN `hkappa / Delta` from
-  `dataset/model/c_exports/baseline_128_hgradient/nn_weights.h`.
+  `experiments/clsvof_kappa_offset_conversion/models/c_exports/baseline_128_hgradient/nn_weights.h`.
 
 The NN path clamps `abs(kappa) <= 1/Delta` during the first canary.
 ```
@@ -814,9 +814,9 @@ nn_baseline_512_hgradient
 Each mode uses the same copied stock case and generated overlay, changing only the include directory:
 
 ```bash
--I"$repo_root/dataset/model/c_exports/baseline_64_hgradient"
--I"$repo_root/dataset/model/c_exports/baseline_256_hgradient"
--I"$repo_root/dataset/model/c_exports/baseline_512_hgradient"
+-I"$repo_root/experiments/clsvof_kappa_offset_conversion/models/c_exports/baseline_64_hgradient"
+-I"$repo_root/experiments/clsvof_kappa_offset_conversion/models/c_exports/baseline_256_hgradient"
+-I"$repo_root/experiments/clsvof_kappa_offset_conversion/models/c_exports/baseline_512_hgradient"
 ```
 
 - [ ] **Step 3: Extend the summarizer modes**
