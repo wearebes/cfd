@@ -28,7 +28,7 @@ METHODS = ("CLSVOF", "NN")
 DATASET_NAME = "vof_clsvof_nn_benchmarks_v1"
 FORMAL_ROW_COUNT = 397
 SMOKE_ROW_COUNT = 56
-DEFAULT_POLICY = ROOT / "generate/resource_policy.wsl-32.json"
+DEFAULT_POLICY = ROOT / "generate/resource_policy.linux-auto.json"
 ACTIVE_PROCESS_GROUPS: set[subprocess.Popen[str]] = set()
 FINAL_ROW_FILES = {
     "capwave": {"timeseries.csv", "fields.csv.gz", "run.log"},
@@ -44,6 +44,13 @@ FINAL_ROW_FILES = {
 }
 
 
+def available_logical_cpus() -> int:
+    """Return CPUs available to this process, respecting Linux affinity/cgroups."""
+    if hasattr(os, "sched_getaffinity"):
+        return max(1, len(os.sched_getaffinity(0)))
+    return os.cpu_count() or 1
+
+
 def configured_qcc() -> Path:
     return Path(
         os.environ.get("BASILISK_QCC", str(ROOT / "basilisk/src/qcc"))
@@ -52,14 +59,18 @@ def configured_qcc() -> Path:
 
 def host_record() -> dict[str, object]:
     qcc = configured_qcc()
-    logical_cpus = os.cpu_count() or 0
+    logical_cpus = available_logical_cpus()
     return {
         "platform": platform.platform(),
         "system": platform.system(),
         "release": platform.release(),
         "machine": platform.machine(),
         "logical_cpus": logical_cpus,
-        "wsl_distro": os.environ.get("WSL_DISTRO_NAME"),
+        "linux_distribution": (
+            platform.freedesktop_os_release().get("PRETTY_NAME")
+            if platform.system() == "Linux"
+            else None
+        ),
         "python": sys.version.split()[0],
         "python_executable": str(Path(sys.executable).resolve()),
         "qcc": str(qcc),
@@ -75,13 +86,18 @@ def load_resource_policy(path: Path | None = None) -> dict[str, object]:
     policy = json.loads(source.read_text(encoding="utf-8"))
     if policy.get("schema_version") != 1:
         raise ValueError("resource policy schema_version must be 1")
-    cpu_slots = policy.get("cpu_slots")
-    if not isinstance(cpu_slots, int) or cpu_slots < 1:
-        raise ValueError("resource policy cpu_slots must be a positive integer")
+    configured_slots = policy.get("cpu_slots")
+    if configured_slots == "auto":
+        cpu_slots = available_logical_cpus()
+    elif isinstance(configured_slots, int) and configured_slots > 0:
+        cpu_slots = configured_slots
+    else:
+        raise ValueError("resource policy cpu_slots must be 'auto' or a positive integer")
+    policy["cpu_slots_config"] = configured_slots
+    policy["cpu_slots"] = cpu_slots
+    policy["detected_logical_cpus"] = available_logical_cpus()
     if policy.get("vof_hf_threads") != 1:
         raise ValueError("VOF-HF must remain single-threaded")
-    if policy.get("policy_status") not in {"review_candidate", "approved"}:
-        raise ValueError("resource policy status must be review_candidate or approved")
     raw_threads = policy.get("threads_per_row")
     if not isinstance(raw_threads, dict):
         raise ValueError("resource policy lacks threads_per_row")
@@ -89,9 +105,9 @@ def load_resource_policy(path: Path | None = None) -> dict[str, object]:
     if set(raw_threads) != expected:
         raise ValueError(f"threads_per_row keys must be {sorted(expected)}")
     for resolution, threads in raw_threads.items():
-        if not isinstance(threads, int) or threads < 1 or threads > cpu_slots:
+        if not isinstance(threads, int) or threads < 1:
             raise ValueError(
-                f"invalid threads_per_row[{resolution}]={threads!r} for {cpu_slots} slots"
+                f"invalid threads_per_row[{resolution}]={threads!r}"
             )
     policy["policy_path"] = str(source)
     policy["policy_sha256"] = sha256(source)
@@ -103,35 +119,21 @@ def row_threads(row: "CampaignRow", policy: dict[str, object]) -> int:
         return 1
     threads = policy["threads_per_row"]
     assert isinstance(threads, dict)
-    return int(threads[str(row.resolution)])
+    return min(int(threads[str(row.resolution)]), int(policy["cpu_slots"]))
 
 
 def verify_execution_host(policy: dict[str, object]) -> None:
     contract = policy.get("host_contract")
-    if not isinstance(contract, dict) or contract.get("environment") != "WSL":
-        raise ValueError("resource policy must declare the reviewed WSL host")
-    is_wsl = platform.system() == "Linux" and "microsoft" in platform.release().lower()
-    if not is_wsl:
+    if not isinstance(contract, dict) or contract.get("environment") != "Linux":
+        raise ValueError("resource policy must declare a Linux host")
+    if platform.system() != "Linux":
         raise ValueError(
-            "smoke/formal execution is restricted to the reviewed WSL host; "
+            "solver execution requires Linux; "
             "layout, check and plan remain available on this machine"
         )
-    expected = int(contract["logical_cpus"])
-    actual = os.cpu_count() or 0
-    if actual != expected:
-        raise ValueError(f"WSL logical CPU mismatch: expected {expected}, got {actual}")
     qcc = configured_qcc()
     if not qcc.is_file() or not os.access(qcc, os.X_OK):
-        raise ValueError("Linux qcc is missing; run generate/setup_wsl.sh --install")
-
-
-def verify_run_approval(policy: dict[str, object], purpose: str) -> None:
-    """Keep the expensive formal campaign locked until human review approves it."""
-    if purpose == "formal" and policy.get("policy_status") != "approved":
-        raise ValueError(
-            "formal resource policy is not approved; keep policy_status="
-            "review_candidate until the 56-row WSL smoke is reviewed"
-        )
+        raise ValueError("Linux qcc is missing; run generate/setup_linux.sh --install")
 
 
 def terminate_process_groups(
@@ -1603,7 +1605,6 @@ def run_campaign(
     purpose: str,
     policy: dict[str, object],
 ) -> None:
-    verify_run_approval(policy, purpose)
     verify_execution_host(policy)
     metadata_dir = campaign_root / "_meta"
     campaign_path = metadata_dir / "run.json"

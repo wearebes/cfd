@@ -9,13 +9,13 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
 if [ -n "${CFD_PYTHON:-}" ]; then
   python="$CFD_PYTHON"
-elif [ -x "$repo_root/build/wsl-venv/bin/python" ]; then
-  python="$repo_root/build/wsl-venv/bin/python"
+elif [ -x "$repo_root/build/linux-venv/bin/python" ]; then
+  python="$repo_root/build/linux-venv/bin/python"
 else
   python=python3
 fi
 if [ -z "${BASILISK_QCC:-}" ] && \
-   [ -x "$repo_root/build/wsl-toolchain/basilisk/src/qcc" ]; then
-  export BASILISK_QCC="$repo_root/build/wsl-toolchain/basilisk/src/qcc"
+   [ -x "$repo_root/build/linux-toolchain/basilisk/src/qcc" ]; then
+  export BASILISK_QCC="$repo_root/build/linux-toolchain/basilisk/src/qcc"
 fi
 exec "$python" "$script_dir/_shared/campaign.py" "$@"

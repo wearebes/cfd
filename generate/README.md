@@ -7,28 +7,27 @@ these scripts.
 `generate/job.sh` is the only campaign entrypoint. It creates a new dataset
 under `data/` and never overwrites the historical `dataset/` tree.
 
-## WSL installation and commands
+## Linux installation and commands
 
-Run this once inside the reviewed Windows/WSL host:
+Run this once on the Ubuntu/Linux execution host:
 
 ```bash
-bash generate/setup_wsl.sh --install
-bash generate/setup_wsl.sh --check
+bash generate/setup_linux.sh --install
+bash generate/setup_linux.sh --check
 ```
 
 `requirements.txt` installs the Python-only dependency (`pytest`). GCC,
 OpenMP, gnuplot, system monitoring tools and the Linux `qcc` binary cannot be
-installed by pip, so `setup_wsl.sh` installs and checks them. The setup copies
-the bundled Basilisk source into ignored `build/wsl-toolchain/`, switches that
+installed by pip, so `setup_linux.sh` installs and checks them. The setup copies
+the bundled Basilisk source into ignored `build/linux-toolchain/`, switches that
 copy to Basilisk's `config.gcc`, and builds a Linux-native `qcc`. It also creates
-the ignored `build/wsl-venv/`. `job.sh` finds both automatically; no export is
+the ignored `build/linux-venv/`. `job.sh` finds both automatically; no export is
 required.
 
-The reviewed host contract is WSL with 32 visible logical CPUs. `--check`
-refuses another CPU count and runs both a two-thread GCC/OpenMP probe and a
-minimal `qcc` compile/run probe. The repository and generated data must live on
-the WSL Linux filesystem (for example under `~/research/`), not under `/mnt/c`
-or another Windows-mounted filesystem; the preflight rejects that layout.
+The execution contract is native Linux with at least one visible CPU.
+`cpu_slots=auto` uses every CPU available to the process; per-row thread ceilings
+are clamped to that total. `--check` runs both a two-thread GCC/OpenMP probe and
+a minimal `qcc` compile/run probe. Slow Windows-mounted filesystems are rejected.
 
 Campaign commands:
 
@@ -43,15 +42,12 @@ bash generate/job.sh formal
 bash generate/job.sh verify --scope formal
 ```
 
-`layout`, `check` and `plan` do not run a solver. `smoke` is the 56-row
-review campaign described below. `formal` is permitted only after its artifacts have
-been reviewed, the implementation has been committed, and the user explicitly
-starts it. The checked-in policy remains `review_candidate`, so formal is
-hard-blocked until review explicitly changes it to `approved`. Formal startup
-also refuses a dirty worktree; resume requires the same
+`layout`, `check` and `plan` do not run a solver. `smoke` is the optional 56-row
+review campaign described below. `formal` starts the complete matrix when the
+user explicitly invokes it. Formal startup refuses a dirty worktree; resume requires the same
 Git commit, source lock and resource policy. Nothing commits automatically.
 Historical `dataset/` outputs do not need to be committed. The formal campaign
-should run from a fresh, clean WSL checkout after the reviewed implementation
+should run from a fresh, clean Linux checkout after the reviewed implementation
 commit; this preserves the strict clean-worktree gate without forcing unrelated
 Mac-side research artifacts into Git.
 
@@ -100,7 +96,7 @@ The case sources retain their reviewed physical constants. Generated
 CLSVOF/NN pairs use the same case host, N, `imax`, horizon, compiler flags and
 thread allocation; NN changes only the active curvature provider and model.
 
-## Parallel execution on the 32-core WSL host
+## Parallel execution on Linux
 
 The campaign is deliberately not a serial loop. It has two stages:
 
@@ -108,7 +104,8 @@ The campaign is deliberately not a serial loop. It has two stages:
    processes.
 2. Run multiple solved rows concurrently under one 32-slot scheduler.
 
-The solve policy in `resource_policy.wsl-32.json` is:
+The solve policy in `resource_policy.linux-auto.json` uses all CPUs visible to
+the process. On the current 32-CPU host it resolves to:
 
 | row | threads/slots | maximum simultaneous rows when homogeneous |
 |---|---:|---:|
@@ -119,9 +116,10 @@ The solve policy in `resource_policy.wsl-32.json` is:
 | CLSVOF/NN N256 | 8 | 4 |
 | CLSVOF/NN N512 | 16 | 2 |
 
-This is a throughput-first candidate for 32 physical cores: it keeps multiple
+This is a throughput-first policy for a 32-CPU allocation: it keeps multiple
 rows active at every N instead of assigning all cores to one two-dimensional
-N512 row. The scheduler launches any queued row that fits the remaining slots. VOF-HF
+N512 row. On smaller Linux allocations each per-row value is automatically
+clamped to the available slots. The scheduler launches any queued row that fits the remaining slots. VOF-HF
 rows are introduced early as one-slot backfill instead of leaving a serial
 tail. It records the actual allocation and host CPU/memory/swap samples in
 `_meta/resource_usage.csv`; `_meta/resource_summary.json` reports mean measured
@@ -277,7 +275,7 @@ result is scientifically accepted. User/Claude review remains a separate gate.
 The intended release sequence is:
 
 ```text
-implementation review -> WSL setup/check -> job.sh check -> 56-row smoke
--> user/Claude artifact review -> one complete Git commit
--> explicit formal start -> 397-row verification -> external data backup
+clean Git checkout -> Linux setup/check -> job.sh check
+-> explicit formal start -> 397-row verification -> user/Claude review
+-> external data backup
 ```

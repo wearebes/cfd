@@ -146,31 +146,35 @@ def test_batch_execution_settings_are_recorded_in_source() -> None:
 
 def test_resource_policy_keeps_vof_serial_and_scales_matched_rows() -> None:
     policy = CAMPAIGN.load_resource_policy()
-    assert policy["cpu_slots"] == 32
+    slots = CAMPAIGN.available_logical_cpus()
+    assert policy["cpu_slots_config"] == "auto"
+    assert policy["cpu_slots"] == slots
     assert CAMPAIGN.row_threads(CAMPAIGN.VOFHFRow("capwave", None, 512), policy) == 1
     assert CAMPAIGN.row_threads(
         CAMPAIGN.Row("capwave", None, 32, 3, "CLSVOF"), policy
-    ) == 2
+    ) == min(2, slots)
     assert CAMPAIGN.row_threads(
         CAMPAIGN.Row("oscillating_droplet", None, 512, 3, "NN"), policy
-    ) == 16
+    ) == min(16, slots)
 
 
-def test_solver_campaign_is_restricted_to_reviewed_wsl_host(monkeypatch) -> None:
+def test_solver_campaign_requires_linux(monkeypatch) -> None:
     policy = CAMPAIGN.load_resource_policy()
     monkeypatch.setattr(CAMPAIGN.platform, "system", lambda: "Darwin")
     monkeypatch.setattr(CAMPAIGN.platform, "release", lambda: "macOS")
-    with pytest.raises(ValueError, match="restricted to the reviewed WSL host"):
+    with pytest.raises(ValueError, match="requires Linux"):
         CAMPAIGN.verify_execution_host(policy)
 
 
-def test_formal_campaign_is_locked_until_review_approves_policy() -> None:
+def test_solver_campaign_accepts_generic_linux(monkeypatch) -> None:
     policy = CAMPAIGN.load_resource_policy()
-    with pytest.raises(ValueError, match="formal resource policy is not approved"):
-        CAMPAIGN.verify_run_approval(policy, "formal")
-    CAMPAIGN.verify_run_approval(policy, "smoke")
-    approved = dict(policy, policy_status="approved")
-    CAMPAIGN.verify_run_approval(approved, "formal")
+    monkeypatch.setattr(CAMPAIGN.platform, "system", lambda: "Linux")
+    monkeypatch.setattr(CAMPAIGN, "configured_qcc", lambda: ROOT / "generate/job.sh")
+    CAMPAIGN.verify_execution_host(policy)
+
+
+def test_formal_campaign_has_no_smoke_approval_gate() -> None:
+    assert not hasattr(CAMPAIGN, "verify_run_approval")
 
 
 def test_process_group_cleanup_stops_a_live_child() -> None:
@@ -195,7 +199,7 @@ def test_vof_command_ignores_nonserial_thread_argument() -> None:
     assert command[command.index("--threads") + 1] == "1"
 
 
-def test_runner_paths_match_git_casing_for_wsl() -> None:
+def test_runner_paths_match_git_casing_for_linux() -> None:
     campaign_root = ROOT / "tem/test_runner_paths"
     capillary = CAMPAIGN.Row("capwave", None, 32, 3, "CLSVOF").command(
         campaign_root, "smoke", 4
@@ -212,7 +216,8 @@ def test_scheduler_uses_vof_rows_as_early_backfill_not_serial_tail() -> None:
     indexed = list(enumerate(CAMPAIGN.formal_rows(), 1))
     ordered = CAMPAIGN.scheduler_order(indexed, policy)
     assert all(row.method == "VOF-HF" for _, row in ordered[:29])
-    assert all(CAMPAIGN.row_threads(row, policy) == 16 for _, row in ordered[-10:])
+    tail_threads = min(16, int(policy["cpu_slots"]))
+    assert all(CAMPAIGN.row_threads(row, policy) == tail_threads for _, row in ordered[-10:])
 
 
 def _two_stage_fixture(tmp_path: Path) -> tuple[object, Path, object]:

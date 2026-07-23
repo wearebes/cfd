@@ -1,9 +1,9 @@
 # generate 最终实施候选：用户 / Claude 审核包
 
 日期：2026-07-23
-状态：**Claude 的上一轮先决工程修复已实施；本轮任务矩阵已按用户新要求扩展，正在等待用户 / Claude 最终审核；尚未运行新的 56 项 smoke；尚未提交 Git；禁止启动 397 项 formal。**
+状态：**任务矩阵已按用户要求固定；执行环境已改为通用 Ubuntu/Linux；用户已明确选择直接运行 397 项 formal；尚未提交 Git。**
 
-本文件用于审核“会跑哪些任务、以什么设置运行、如何占满 WSL CPU、最终保存什么数据、如何复现”。真实入口为 `generate/job.sh`，详细使用说明为 `generate/README.md`。
+本文件用于审核“会跑哪些任务、以什么设置运行、如何使用 Linux CPU、最终保存什么数据、如何复现”。真实入口为 `generate/job.sh`，详细使用说明为 `generate/README.md`。
 
 ## 1. 需要审核的最终结论
 
@@ -14,8 +14,8 @@
 - Stationary 只跑 `imax=0`，N32/64/128/256，固定到 `tau=2`，精确保留 `tau=1`；不因收敛提前结束。
 - NN 严格使用与 N 匹配的 `baseline_<N>_hgradient`。
 - 正式矩阵 397 项；smoke 56 项。
-- WSL 目标机合同为 32 physical cores / 32 logical CPUs；调度器按 32 CPU slots 并行装填任务，不串行逐项跑。
-- repo 与 `data/` 必须位于 WSL 原生 Linux 文件系统，拒绝 `/mnt/c` 一类 Windows mount。
+- 执行合同为通用 Linux；`cpu_slots=auto` 自动读取进程可用 CPU。当前目标容器为32 CPU，调度器按32 slots并行装填任务。
+- repo 与 `data/` 应位于原生或容器 Linux 文件系统；拒绝低性能 Windows mount。
 - 每个 row 保存中点与终点两份完整场数据，可重画速度/压力/涡量/界面/曲率热力图。
 - 最终 row 只保留 4–5 个科学文件；中间 raw/metrics 文件验证后删除，信息进入 `manifest.json`。
 
@@ -83,7 +83,7 @@ smoke 与 formal 使用同一物理终点、同一 row schema、同一资源 pol
 
 这是面向整批 wall time 的吞吐优先候选：所有 N 都允许至少两个 row 并发，避免二维 N512 单行独占 32 核。调度硬约束为 `sum(allocated_slots) <= 32`；只要队列中有能放入剩余 slots 的 row 就启动。`OMP_DYNAMIC=false`，同 N 的 CLSVOF/NN 分配相同线程。
 
-`_meta/resource_usage.csv` 每秒记录 phase、active rows、allocated slots、实际 CPU%、available memory、swap；`resource_summary.json` 汇总 32 slots 满配时的实测 CPU 平均值。slots 满配是实现可保证的合同；真实 CPU% 会因 solver 串行段和 I/O 短暂下降，因此必须看 WSL smoke 证据后才能批准 policy。
+`_meta/resource_usage.csv` 每秒记录 phase、active rows、allocated slots、实际 CPU%、available memory、swap；`resource_summary.json` 汇总满配 slots 时的实测 CPU 平均值。真实 CPU% 会因 solver 串行段和 I/O 短暂下降，以正式运行记录为准。
 
 ### 5.3 编译与求解绑定
 
@@ -96,20 +96,20 @@ smoke 与 formal 使用同一物理终点、同一 row schema、同一资源 pol
 - 对应 `_meta/builds/<row>` 临时编译目录随后删除。
 - 每个 compiler/solver 使用独立 process group；SIGINT、SIGTERM、SIGHUP 会终止所有活动组，避免中断后留下孤儿进程。
 
-## 6. WSL 环境
+## 6. Ubuntu/Linux 环境
 
 ```bash
-bash generate/setup_wsl.sh --install
-bash generate/setup_wsl.sh --check
+bash generate/setup_linux.sh --install
+bash generate/setup_linux.sh --check
 ```
 
 - `generate/requirements.txt`：只安装 `pytest>=8,<9`。
-- `setup_wsl.sh`：apt 安装 GCC/build tools、gnuplot、sysstat、Python venv 等。
-- Basilisk 源复制到 ignored `build/wsl-toolchain/basilisk/`，使用官方 `config.gcc` 构建 Linux `qcc`；不直接复用 Mac 二进制。
-- venv 位于 ignored `build/wsl-venv/`。
+- `setup_linux.sh`：兼容 root 容器和普通 sudo 用户，apt 安装 GCC/build tools、gnuplot、sysstat、Python venv 等。
+- Basilisk 源复制到 ignored `build/linux-toolchain/basilisk/`，使用官方 `config.gcc` 构建 Linux `qcc`；不复用 Mac 二进制。
+- venv 位于 ignored `build/linux-venv/`。
 - `job.sh` 自动选择两者，无需手工 export。
-- `--check` 要求 `nproc=32`，并运行 GCC/OpenMP 2-thread probe 与最小 qcc compile/run probe。
-- `--check` 同时拒绝 `/mnt/c`、`drvfs`、`9p` 等 Windows 文件系统路径。
+- `--check` 自动记录 `nproc`，并运行 GCC/OpenMP 2-thread probe 与最小 qcc compile/run probe。
+- 每行线程数自动截断到当前可用 CPU；32 CPU 容器使用第5节所列策略。
 
 不能只用 `requirements.txt`，因为 pip 不能安装 GCC、OpenMP runtime、gnuplot、apt packages 或 Basilisk qcc。
 
@@ -195,8 +195,8 @@ active_curvature,active_curvature_valid
 - Capillary、Rising、Stationary、Oscillating 的 CLSVOF/NN，共 8 个 GCC/OpenMP threads=4 compile-only：通过。
 - `requirements.txt` 以本机已安装依赖做 `pip --dry-run --no-index`：通过。
 - shell syntax / Python bytecode checks：通过。
-- compile-only 中发现并修复：snapshot event iteration scope、Rising curvature include、Mac GCC feature macros；WSL toolchain 已明确使用 `config.gcc`。
-- Claude 审核后的先决修复：六个 runner 统一为大写 Git 路径；`oscillation.ref` 纳入 source lock；formal 明确拒绝未提交的 campaign 输入（含 N32 C export）；中断时清理活动 process groups；WSL 拒绝 Windows-mounted 工作目录。
+- compile-only 中发现并修复：snapshot event iteration scope、Rising curvature include、Mac GCC feature macros；Linux toolchain 使用 `config.gcc`。
+- Claude 审核后的先决修复：六个 runner 统一为大写 Git 路径；`oscillation.ref` 纳入 source lock；formal 明确拒绝未提交的 campaign 输入（含 N32 C export）；中断时清理活动 process groups。
 - Oscillating uniform feasibility compile-only：VOF-HF、CLSVOF、NN 使用 `-grid=multigrid` 的 N32 host 均编译通过；现在已加入正式矩阵，但尚未运行科学轨迹。
 - 所有本轮 `/private/tmp`、失败 compile work、Python/pytest 临时产物均已清理。
 
@@ -204,26 +204,20 @@ active_curvature,active_curvature_valid
 
 ## 11. 仍需用户 / Claude 审核、目前保持不动的部分
 
-1. `resource_policy.wsl-32.json` 当前是 `review_candidate`；实际 WSL CPU% 和吞吐量只能由 56 项 smoke 给证据。
+1. `resource_policy.linux-auto.json` 使用自动 CPU slots；实际 CPU% 和吞吐量由正式运行记录给出。
 2. `fields.csv.gz` 的 formal 总大小只有保守估计；以 smoke 实测为准。
 3. CLSVOF、NN、VOF-HF 的新科学结果尚不存在；`analysis_ready` 只表示数据完整可画图，不表示物理上批准。
 4. 本轮不迁移、不删除旧 `dataset/`；旧版同名 v1 smoke 已按用户明确授权删除，新 smoke 将从空路径开始。
 5. Oscillating 的 adaptive VOF-HF 只承担官方参考；uniform VOF-HF/CLSVOF/NN 才承担同网格直接比较，目录明确分开，绘图时不得混淆这两个角色。
-6. 未经用户 / Claude 审核，不再修改任务矩阵、线程表、字段 schema，不启动 smoke，不提交 Git。
-
-代码还会在 `policy_status != approved` 时硬性拒绝 formal；只有 smoke 审核通过后才修改该状态并纳入完整提交。
+6. 任务矩阵、线程上限和字段 schema 已冻结；用户已明确授权直接 formal。
 
 ## 12. 审核后的执行顺序
 
 ```text
-当前代码/计划审核
--> WSL setup_wsl.sh --install / --check
+提交并拉取当前代码
+-> Linux setup_linux.sh --install / --check
 -> job.sh check
--> 用户授权运行 56-row smoke
--> 用户 + Claude 审核数据结构、场大小、CPU 利用率和科学结果
--> 修正并重新验证（若需要）
--> 用户同意后提交一个完整 Git 版本
--> 用户再次明确授权 formal
--> WSL 上运行 397 rows
+-> Linux 上运行 397 rows
 -> verify + READY.json
+-> 用户 + Claude 审核数据结构、CPU利用率和科学结果
 ```
