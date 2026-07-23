@@ -1,0 +1,6 @@
+label,target_tau,actual_tau,actual_time,iteration,status,dump_path
+tau_0,0,0,0,0,written,checkpoints/tau_0.dump
+tau_0p01,0.01,0.01000941899573168,0.78457501316044331,712,written,checkpoints/tau_0p01.dump
+tau_0p1,0.10000000000000001,0.10000984073910663,7.8391385301702687,7114,written,checkpoints/tau_0p1.dump
+tau_0p5,0.5,0.5000070290961558,39.192386850896767,35567,written,checkpoints/tau_0p5.dump
+terminal,1,1,78.383671769061706,71133,written,checkpoints/terminal.dump

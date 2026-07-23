@@ -1,0 +1,38 @@
+
+
+*******************************************************************************
+Tue Jul 21 16:50:56 2026
+
+
+FIT:    data read from 'k-5'
+        format = z
+        #datapoints = 1294
+        residuals are weighted equally (unit weight)
+
+function used for fitting: k(x)
+	k(t)=a*exp(-b*t)*(1.-cos(c*t))
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b             c            
+   0 1.5144542497e-03   0.00e+00  3.90e-03    3.000000e-04   1.500000e+00   1.548419e+02
+  11 4.6801397875e-04   0.00e+00  3.90e+05    3.768344e-04  -1.333764e+00   1.549018e+02
+
+After 11 iterations the fit converged.
+final sum of squares of residuals : 0.000468014
+rel. change during last iteration : 0
+
+degrees of freedom    (FIT_NDF)                        : 1291
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.000602097
+variance of residuals (reduced chisquare) = WSSR/ndf   : 3.62521e-07
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a               = 0.000376834      +/- 1.831e-05    (4.859%)
+b               = -1.33376         +/- 0.0649       (4.866%)
+c               = 154.902          +/- 0.03829      (0.02472%)
+
+correlation matrix of the fit parameters:
+                a      b      c      
+a               1.000 
+b               0.944  1.000 
+c               0.004 -0.003  1.000 

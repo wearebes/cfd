@@ -1,0 +1,13 @@
+row,case,benchmark,method,resolution,imax,official_artifacts,metrics,plot_rows,checkpoints_written,checkpoints_not_reached,restore_checks,status
+imax00/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,0,6,14,1294,6,0,6,PASS
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,6,24,1294,6,0,6,PASS
+imax01/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,1,6,14,1294,6,0,6,PASS
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,6,24,1294,6,0,6,PASS
+imax02/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,2,6,14,1294,6,0,6,PASS
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,6,24,1294,6,0,6,PASS
+imax03/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,3,6,14,1294,6,0,6,PASS
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,6,24,1294,6,0,6,PASS
+imax04/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,4,6,14,1294,6,0,6,PASS
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,6,24,1294,6,0,6,PASS
+imax05/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,5,6,14,1294,6,0,6,PASS
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,6,24,1294,6,0,6,PASS

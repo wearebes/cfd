@@ -1,272 +1,40 @@
-{
-  "case": "rising_bubble",
-  "generated_by": "generate/_shared/render_summaries.py",
-  "interfaces": {
-    "clsvof": {
-      "commands": {
-        "compile": {
-          "argv": [
-            "$REPO/basilisk/src/qcc",
-            "-O2",
-            "-DLEVELSET=1",
-            "-DCLSVOF=1",
-            "-DLEVEL=6",
-            "rising-clsvof.c",
-            "-o",
-            "rising-clsvof",
-            "-lm"
-          ],
-          "cwd": "$WORK",
-          "display": "$REPO/basilisk/src/qcc -O2 -DLEVELSET=1 -DCLSVOF=1 -DLEVEL=6 rising-clsvof.c -o rising-clsvof -lm > compile.stdout 2> compile.stderr",
-          "stderr": "compile.stderr",
-          "stdout": "compile.stdout"
-        },
-        "run": {
-          "argv": [
-            "./rising-clsvof"
-          ],
-          "cwd": "$WORK",
-          "display": "./rising-clsvof > stdout.txt 2> log",
-          "stderr": "log",
-          "stdout": "stdout.txt"
-        }
-      },
-      "default_parameters": {
-        "actual_grid": "64x16",
-        "benchmark_case": "hysing_case_1",
-        "compile_only": 0,
-        "imax": 3,
-        "level": 6,
-        "model": null,
-        "openmp_threads": 1,
-        "resolution": 64
-      },
-      "entrypoint": "generate/rising_bubble/clsvof.sh",
-      "role": "clsvof",
-      "sources": {
-        "checkpoint_overlay": {
-          "bytes": 627,
-          "path": "source_snapshot/checkpoint_overlay.json",
-          "sha256": "2d2b57141cf1503fb5ec9958060b57f81f156156e5761852c59b591de8fa25f2"
-        },
-        "compiled_case": {
-          "bytes": 12784,
-          "path": "source_snapshot/rising-clsvof.c",
-          "sha256": "f60d8803326ccec703d53ec6aab9b9ce46251b96998aa46d7931bc30677d9bfc"
-        },
-        "compiled_integral": {
-          "bytes": 6839,
-          "path": "source_snapshot/integral.h",
-          "sha256": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395"
-        },
-        "compiled_two_phase": {
-          "bytes": 2264,
-          "path": "source_snapshot/two-phase-clsvof.h",
-          "sha256": "c0f21472c2d6acac0bdda0a2c43602273ee35d6c111cce4a98005ff9f6dbd048"
-        },
-        "metrics_overlay": {
-          "bytes": 583,
-          "path": "source_snapshot/rising_metrics_overlay.json",
-          "sha256": "e7b25f947807f1ac23669025c0999a1b2ac91205aa8671f1520f8d6b20a31350"
-        },
-        "qcc": {
-          "bytes": 490304,
-          "path": "basilisk/src/qcc",
-          "sha256": "ed0fc9f53fb8070723b3aba0f272132118a21e702f720ae2c316ffa0d88239cc"
-        },
-        "redistance_overlay": {
-          "bytes": 365,
-          "path": "source_snapshot/redistance_overlay.json",
-          "sha256": "ce78d2b648cb1665105f36c1d3a38cd53252e734d1244f7c390c3034cc38aad4"
-        },
-        "stock_case": {
-          "bytes": 7488,
-          "path": "basilisk/src/test/rising.c",
-          "sha256": "d47183004112d07cce518ee308c069b02a0600ba75303d251a1604575b6b5863"
-        }
-      },
-      "usage": [
-        "usage: $REPO/generate/rising_bubble/clsvof.sh --case 1|2 [--imax 0..5] [--resolution 64|128|256|512]",
-        "          [--smoke|--formal] --output PATH [--threads N]",
-        "          [--dry-run] [--compile-only]"
-      ]
-    },
-    "nn": {
-      "commands": {
-        "compile": {
-          "argv": [
-            "$REPO/basilisk/src/qcc",
-            "-O2",
-            "-DLEVELSET=1",
-            "-DCLSVOF=1",
-            "-DLEVEL=6",
-            "-DKAPPA_OFFSET_CLAMP_FACTOR=1.0",
-            "-DKAPPA_OFFSET_PROBE_INTERVAL=0",
-            "-disable-dimensions",
-            "-I.",
-            "rising-clsvof.c",
-            "-o",
-            "rising-clsvof",
-            "-lm"
-          ],
-          "cwd": "$WORK",
-          "display": "$REPO/basilisk/src/qcc -O2 -DLEVELSET=1 -DCLSVOF=1 -DLEVEL=6 -DKAPPA_OFFSET_CLAMP_FACTOR=1.0 -DKAPPA_OFFSET_PROBE_INTERVAL=0 -disable-dimensions -I. rising-clsvof.c -o rising-clsvof -lm > compile.stdout 2> compile.stderr",
-          "stderr": "compile.stderr",
-          "stdout": "compile.stdout"
-        },
-        "run": {
-          "argv": [
-            "./rising-clsvof"
-          ],
-          "cwd": "$WORK",
-          "display": "./rising-clsvof > stdout.txt 2> log",
-          "stderr": "log",
-          "stdout": "stdout.txt"
-        }
-      },
-      "default_parameters": {
-        "actual_grid": "64x16",
-        "benchmark_case": "hysing_case_1",
-        "compile_only": 0,
-        "imax": 3,
-        "level": 6,
-        "model": "baseline_64_hgradient",
-        "openmp_threads": 1,
-        "resolution": 64
-      },
-      "entrypoint": "generate/rising_bubble/nn.sh",
-      "role": "nn",
-      "sources": {
-        "checkpoint_overlay": {
-          "bytes": 627,
-          "path": "source_snapshot/checkpoint_overlay.json",
-          "sha256": "2d2b57141cf1503fb5ec9958060b57f81f156156e5761852c59b591de8fa25f2"
-        },
-        "compiled_case": {
-          "bytes": 12784,
-          "path": "source_snapshot/rising-clsvof.c",
-          "sha256": "f60d8803326ccec703d53ec6aab9b9ce46251b96998aa46d7931bc30677d9bfc"
-        },
-        "compiled_integral": {
-          "bytes": 6881,
-          "path": "source_snapshot/integral.h",
-          "sha256": "3f1250ac54075be8540327370bf6d69aaab74d147d7da82f336146c88e732949"
-        },
-        "compiled_two_phase": {
-          "bytes": 2264,
-          "path": "source_snapshot/two-phase-clsvof.h",
-          "sha256": "c0f21472c2d6acac0bdda0a2c43602273ee35d6c111cce4a98005ff9f6dbd048"
-        },
-        "metrics_overlay": {
-          "bytes": 583,
-          "path": "source_snapshot/rising_metrics_overlay.json",
-          "sha256": "e7b25f947807f1ac23669025c0999a1b2ac91205aa8671f1520f8d6b20a31350"
-        },
-        "model_export": {
-          "bytes": 1352,
-          "path": "source_snapshot/export_manifest.json",
-          "sha256": "2ca8d5d7ec47378210da49f27c11185377301fab0d7ffd51c60c6a6c927b5b40"
-        },
-        "nn_inference": {
-          "bytes": 1658,
-          "path": "source_snapshot/clsvof_mlp_infer.h",
-          "sha256": "ce280823f9464e9d8f047cd55f12f3b78e5f53e1b35997558865d6e0bfbb3d53"
-        },
-        "nn_runtime": {
-          "bytes": 7183,
-          "path": "source_snapshot/clsvof_nn_cell_curvature.h",
-          "sha256": "e5621e454f382b384d8358d9095bdc4d657bde18c255850163b334ac8637aef9"
-        },
-        "nn_stats": {
-          "bytes": 4275,
-          "path": "source_snapshot/kappa_offset_stats.h",
-          "sha256": "43a266a6ca3e982eac67b7707960ee053d65498ac5638f5ddc0272fca88a5e19"
-        },
-        "nn_weights": {
-          "bytes": 1256146,
-          "path": "source_snapshot/nn_weights.h",
-          "sha256": "c52015fbba38c58f3613d3f1627308ac78f1f25d029950781ae7b1833b347b20"
-        },
-        "qcc": {
-          "bytes": 490304,
-          "path": "basilisk/src/qcc",
-          "sha256": "ed0fc9f53fb8070723b3aba0f272132118a21e702f720ae2c316ffa0d88239cc"
-        },
-        "redistance_overlay": {
-          "bytes": 365,
-          "path": "source_snapshot/redistance_overlay.json",
-          "sha256": "ce78d2b648cb1665105f36c1d3a38cd53252e734d1244f7c390c3034cc38aad4"
-        },
-        "stock_case": {
-          "bytes": 7488,
-          "path": "basilisk/src/test/rising.c",
-          "sha256": "d47183004112d07cce518ee308c069b02a0600ba75303d251a1604575b6b5863"
-        }
-      },
-      "usage": [
-        "usage: $REPO/generate/rising_bubble/nn.sh --case 1|2 [--imax 0..5] [--resolution 64|128|256|512]",
-        "          [--model NAME] [--smoke|--formal] --output PATH",
-        "          [--threads N] [--dry-run] [--compile-only]"
-      ]
-    },
-    "official": {
-      "commands": {
-        "compile": {
-          "argv": [
-            "$REPO/basilisk/src/qcc",
-            "-O2",
-            "-DLEVEL=6",
-            "rising.c",
-            "-o",
-            "rising-official",
-            "-lm"
-          ],
-          "cwd": "$WORK",
-          "display": "$REPO/basilisk/src/qcc -O2 -DLEVEL=6 rising.c -o rising-official -lm > compile.stdout 2> compile.stderr",
-          "stderr": "compile.stderr",
-          "stdout": "compile.stdout"
-        },
-        "run": {
-          "argv": [
-            "./rising-official"
-          ],
-          "cwd": "$WORK",
-          "display": "./rising-official > stdout.txt 2> log",
-          "stderr": "log",
-          "stdout": "stdout.txt"
-        }
-      },
-      "default_parameters": {
-        "actual_grid": "64x16",
-        "benchmark_case": "hysing_case_1",
-        "compile_only": 0,
-        "imax": null,
-        "level": 6,
-        "model": null,
-        "openmp_threads": 1,
-        "resolution": 64
-      },
-      "entrypoint": "generate/rising_bubble/official.sh",
-      "role": "official",
-      "sources": {
-        "qcc": {
-          "bytes": 490304,
-          "path": "basilisk/src/qcc",
-          "sha256": "ed0fc9f53fb8070723b3aba0f272132118a21e702f720ae2c316ffa0d88239cc"
-        },
-        "stock_case": {
-          "bytes": 7488,
-          "path": "basilisk/src/test/rising.c",
-          "sha256": "d47183004112d07cce518ee308c069b02a0600ba75303d251a1604575b6b5863"
-        }
-      },
-      "usage": [
-        "usage: $REPO/generate/rising_bubble/official.sh --case 1|2 [--resolution 64|128|256|512]",
-        "          [--smoke|--formal] --output PATH [--threads 1]",
-        "          [--dry-run] [--compile-only]"
-      ]
-    }
-  },
-  "schema_version": 2,
-  "source_of_truth": "runner --dry-run"
-}
+schema_version: 5
+case: rising_bubble
+campaign_entry: generate/job.sh
+
+runners:
+  VOF-HF: generate/rising_bubble/VOF-HF.sh
+  CLSVOF: generate/rising_bubble/CLSVOF.sh
+  NN: generate/rising_bubble/NN.sh
+
+sources:
+  stock_case: basilisk/src/test/rising.c
+
+formal_matrix:
+  benchmark_cases: [hysing_case_1, hysing_case_2]
+  resolutions: [32, 64, 128, 256, 512]
+  actual_grid: N_by_N_over_4
+  default_imax: 3
+  sensitivity_imax: [0, 1, 2, 4, 5, 10, 15, 20]
+  grid_strategy: uniform
+  methods: [CLSVOF, NN]
+  rows: 180
+  vof_hf_rows: 10
+
+outputs:
+  final: [manifest.json, timeseries.csv, interface_t3.csv.gz, fields.csv.gz, run.log]
+  intermediate_validated_then_removed: [history.dat, interface.dat, circularity.csv, metrics.csv, plot_data.csv]
+  shared_reference: _meta/references/hysing/
+
+official_difference:
+  role: formal_vof_hf_reference_separate_from_180_paired_rows
+  resolutions: [32, 64, 128, 256, 512]
+  stock_method: VOF height-function curvature
+  stock_default_grid: 256x64
+  generated_method: single-grid LEVELSET plus CLSVOF with requested imax
+  extension: grids other than 256x64 are source-compatible grid extensions
+  nn_change: only the active distance_curvature provider is replaced
+
+completion_gate:
+  terminal_time: 3
+  check: history and circularity both span t=0 through t=3 and final facets exist

@@ -1,0 +1,192 @@
+{
+  "N": 32,
+  "artifacts": {
+    "two_phase_clsvof_sha256": "dfd3d0cefe8141a193d47a7b42b0234e2fba3cda8b64bca7ed28c610c138bef2"
+  },
+  "benchmark": "oscillating_droplet",
+  "case": "oscillating_droplet",
+  "case_id": "oscillating_droplet",
+  "cells_per_diameter": 12.8,
+  "checkpoint_overlay_sha256": "62ca19ca01d7a63af7ba476336a8fa90473b7cb293219f7d92e63bdcf5dc025e",
+  "checkpoint_sha256": null,
+  "clamp_factor": null,
+  "compile_command": "cp /Users/jcy/research/cfd/tem/dataset_completion_20260721/oscillating/precompiled/N0032/clsvof/oscillation oscillation",
+  "compile_returncode": 0,
+  "compile_reused": true,
+  "completed_at": "2026-07-21T08:51:18.060970+00:00",
+  "created_at": "2026-07-21T08:51:15.876358+00:00",
+  "denominator_guard": null,
+  "dependency_hashes": {
+    "basilisk/src/integral.h": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395",
+    "basilisk/src/qcc": "ed0fc9f53fb8070723b3aba0f272132118a21e702f720ae2c316ffa0d88239cc",
+    "basilisk/src/redistance.h": "3f60a716118bd651d594ea3b0beae521c5ca7c7ac15929ad49ac8fc50449dc6e",
+    "basilisk/src/two-phase-clsvof.h": "c0f21472c2d6acac0bdda0a2c43602273ee35d6c111cce4a98005ff9f6dbd048",
+    "generate/_shared/build_scientific_artifacts.py": "99c075e22f577b9972417156a72feb00e5325de085a77133164afb2ddffda82a",
+    "generate/_shared/make_checkpoint_overlay.py": "2bf86b059dff3ff162bea898293a908e45aa23b42f66faf435a37a7dbd569d5d",
+    "generate/_shared/run_manifest.py": "412fb33f36c1c00b972988eec918b001d381a34816ac9888881ee3deda398542",
+    "generate/oscillating_droplet/clsvof_extension/oscillation-clsvof.c": "fe9a0c6c87a6296e18d7cdcc2e47a69c662b26109ba7c9be9cfe127e0cfbdfa0",
+    "generate/oscillating_droplet/nn/generate/make_runtime_redistance_overlay.py": "83c08540a1d5e5e8ecfedca769c521a7e73dc585d924334e2de04c2193698adf",
+    "generate/oscillating_droplet/nn/src/oscillation-nn-single-level.c": "97563ad11900aae7bf48bdf04f1b009f328f8d058795bbcd2befaeac2c2d766c",
+    "generate/oscillating_droplet/nn/src/oscillation_raw27_adapter.h": "07a59d9f0c7caf925fd54d562d4bb0f10fb3fa8d148e01a5fc1d45d6b33d6eea",
+    "tem/dataset_completion_20260721/oscillating/precompiled/N0032/clsvof/oscillation": "2615f431ec258e01e0588dd1981cc77a4db49de2bf145ddf1c5f2a472c1c7542"
+  },
+  "elapsed_seconds": 2.082277666999289,
+  "ended_at": "2026-07-21T08:51:17.966004+00:00",
+  "evidence_level": "formal",
+  "export_manifest_sha256": null,
+  "feature_order": "phi9+nx9+ny9",
+  "fit_enabled": true,
+  "generated_integral_sha256": null,
+  "generated_single_level_source_sha256": "bd7b4e784f5490d7d85713b884f884c6bef704426d60a584a0f8ce196b926159",
+  "generated_two_phase_clsvof_sha256": "dfd3d0cefe8141a193d47a7b42b0234e2fba3cda8b64bca7ed28c610c138bef2",
+  "generator": "generate/oscillating_droplet/nn/generate/run_row.py",
+  "git": {
+    "changed_path_count": 100,
+    "commit": "106e2d7d1023ad16aae5003236897654d68fe14f",
+    "dirty": true
+  },
+  "host_source_sha256": "fe9a0c6c87a6296e18d7cdcc2e47a69c662b26109ba7c9be9cfe127e0cfbdfa0",
+  "imax": 5,
+  "legacy_method_id": "CLSVOF",
+  "level": 5,
+  "method": "clsvof",
+  "method_id": "clsvof",
+  "method_role": "method",
+  "method_variant": "standard",
+  "model": null,
+  "model_name": null,
+  "model_output": null,
+  "model_phi_sign": "outside_positive",
+  "nn_provider": null,
+  "numerical_failure": null,
+  "official_coverage_complete": true,
+  "openmp_threads": 1,
+  "oscillation_adapter_sha256": "07a59d9f0c7caf925fd54d562d4bb0f10fb3fa8d148e01a5fc1d45d6b33d6eea",
+  "plan": {
+    "benchmark": "oscillating_droplet",
+    "case": "oscillating_droplet",
+    "commands": {
+      "compile": {
+        "argv": [
+          "cp",
+          "/Users/jcy/research/cfd/tem/dataset_completion_20260721/oscillating/precompiled/N0032/clsvof/oscillation",
+          "oscillation"
+        ],
+        "cwd": "$WORK",
+        "display": "cp /Users/jcy/research/cfd/tem/dataset_completion_20260721/oscillating/precompiled/N0032/clsvof/oscillation oscillation > compile.stdout 2> compile.stderr",
+        "stderr": "compile.stderr",
+        "stdout": "compile.stdout"
+      },
+      "run": {
+        "argv": [
+          "./oscillation"
+        ],
+        "cwd": "$WORK",
+        "display": "./oscillation > out 2> runtime.stderr.txt",
+        "stderr": "runtime.stderr.txt",
+        "stdout": "out"
+      }
+    },
+    "environment": {
+      "OMP_NUM_THREADS": 1,
+      "OSCILLATION_REDISTANCE_IMAX": 5
+    },
+    "generator": {
+      "path": "generate/oscillating_droplet/nn/generate/run_row.py",
+      "sha256": "93b28bebc080888f9e2564c02ffeabd74b33d533c6fc5435999d085003ad3e10"
+    },
+    "method": "clsvof",
+    "output": "/Users/jcy/research/cfd/tem/dataset_completion_20260721/oscillating/N0032/imax_5/clsvof",
+    "parameters": {
+      "compile_only": false,
+      "fit_enabled": true,
+      "imax": 5,
+      "level": 5,
+      "method_variant": "standard",
+      "model": null,
+      "openmp_threads": 1,
+      "resolution": 32,
+      "snapshots_enabled": false,
+      "t_end": 1.0
+    },
+    "plan_sha256": "9f58906db1f34da652a9c7f2de5998acae7fab2e06c01db6b229d4b7d730cb64",
+    "purpose": "formal",
+    "sources": {
+      "checkpoint_overlay": {
+        "bytes": 909,
+        "path": "source_snapshot/checkpoint_overlay.json",
+        "sha256": "62ca19ca01d7a63af7ba476336a8fa90473b7cb293219f7d92e63bdcf5dc025e"
+      },
+      "compiled_case": {
+        "bytes": 9383,
+        "path": "source_snapshot/source.c",
+        "sha256": "bd7b4e784f5490d7d85713b884f884c6bef704426d60a584a0f8ce196b926159"
+      },
+      "compiled_two_phase": {
+        "bytes": 2290,
+        "path": "source_snapshot/two-phase-clsvof.h",
+        "sha256": "dfd3d0cefe8141a193d47a7b42b0234e2fba3cda8b64bca7ed28c610c138bef2"
+      },
+      "host_case": {
+        "bytes": 2744,
+        "path": "generate/oscillating_droplet/clsvof_extension/oscillation-clsvof.c",
+        "sha256": "fe9a0c6c87a6296e18d7cdcc2e47a69c662b26109ba7c9be9cfe127e0cfbdfa0"
+      },
+      "oscillation_adapter": {
+        "bytes": 357,
+        "path": "source_snapshot/oscillation_raw27_adapter.h",
+        "sha256": "07a59d9f0c7caf925fd54d562d4bb0f10fb3fa8d148e01a5fc1d45d6b33d6eea"
+      },
+      "precompiled_executable": {
+        "bytes": 381416,
+        "path": "/Users/jcy/research/cfd/tem/dataset_completion_20260721/oscillating/precompiled/N0032/clsvof/oscillation",
+        "sha256": "2615f431ec258e01e0588dd1981cc77a4db49de2bf145ddf1c5f2a472c1c7542"
+      },
+      "qcc": {
+        "bytes": 490304,
+        "path": "basilisk/src/qcc",
+        "sha256": "ed0fc9f53fb8070723b3aba0f272132118a21e702f720ae2c316ffa0d88239cc"
+      },
+      "redistance_overlay": {
+        "bytes": 474,
+        "path": "source_snapshot/redistance_overlay.json",
+        "sha256": "b26e64fed6f98e9a57d3707a4e5d5860f9384226744bc4324a64143154751504"
+      },
+      "single_level_case": {
+        "bytes": 5067,
+        "path": "generate/oscillating_droplet/nn/src/oscillation-nn-single-level.c",
+        "sha256": "97563ad11900aae7bf48bdf04f1b009f328f8d058795bbcd2befaeac2c2d766c"
+      },
+      "stock_integral": {
+        "bytes": 6839,
+        "path": "source_snapshot/integral.stock.h",
+        "sha256": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395"
+      }
+    }
+  },
+  "precompiled_executable_sha256": "2615f431ec258e01e0588dd1981cc77a4db49de2bf145ddf1c5f2a472c1c7542",
+  "provider_stats": null,
+  "purpose": "formal",
+  "raw27_order": "j:+1..-1, i:-1..+1",
+  "redistance_imax": 5,
+  "redistance_overlay_sha256": "b26e64fed6f98e9a57d3707a4e5d5860f9384226744bc4324a64143154751504",
+  "reference_id": null,
+  "resolution": 32,
+  "run_returncode": 0,
+  "schema_version": 2,
+  "scientific_artifacts_schema_version": 1,
+  "scientific_artifacts_sha256": "166dd0d01595d205c0adbd3b601c39f60bce9652ca104980d57ae57d25f29d0d",
+  "shared_provider_sha256": null,
+  "single_level_source_sha256": "97563ad11900aae7bf48bdf04f1b009f328f8d058795bbcd2befaeac2c2d766c",
+  "snapshots_enabled": false,
+  "solver_d_sign": "inside_positive",
+  "solver_output": "distance_curvature(point,d)",
+  "solver_to_model_sign": null,
+  "started_at": "2026-07-21T08:51:15.883625+00:00",
+  "status": "completed",
+  "stock_integral_sha256": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395",
+  "t_end": 1.0,
+  "two_phase_clsvof_sha256": "c0f21472c2d6acac0bdda0a2c43602273ee35d6c111cce4a98005ff9f6dbd048",
+  "wall_seconds": 2.082277666999289,
+  "weights_sha256": null
+}

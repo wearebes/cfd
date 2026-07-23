@@ -1,0 +1,125 @@
+{
+  "artifacts": [
+    {
+      "bytes": 14059,
+      "columns": [
+        "tau",
+        "amplitude"
+      ],
+      "path": "wave-32",
+      "publish": true,
+      "publish_name": "wave.dat",
+      "role": "official_raw",
+      "sha256": "8a0d22c2b0767257c328377b631aee40f98f23f7c98d188dd61daae0960c5ca7",
+      "units": [
+        "1",
+        "L0"
+      ]
+    },
+    {
+      "bytes": 13,
+      "columns": [
+        "points_per_wavelength",
+        "relative_rms_error"
+      ],
+      "path": "log",
+      "publish": true,
+      "publish_name": "official_error.dat",
+      "role": "official_raw",
+      "sha256": "cc57f43f78d7512b140bc58887da907d452210911ad7a1aa6fd7e65f519c2c83",
+      "units": [
+        "cells_per_wavelength",
+        "1"
+      ]
+    },
+    {
+      "bytes": 19228,
+      "path": "prosperetti.h",
+      "publish": true,
+      "publish_name": "prosperetti.h",
+      "role": "official_reference",
+      "sha256": "5bd86a34b8bbd199dd417e69781db2e53831cbc82d6c0bc68bc5d64f4d68dbf9"
+    },
+    {
+      "bytes": 615,
+      "path": "metrics.csv",
+      "publish": true,
+      "publish_name": "metrics.csv",
+      "role": "derived_metrics",
+      "sha256": "704bf3a1aeb5305438c80a6186b0d417f681c2ccea166fddc3fa6e137519904a"
+    },
+    {
+      "bytes": 37453,
+      "path": "plot_data.csv",
+      "publish": true,
+      "publish_name": "plot_data.csv",
+      "role": "derived_plot",
+      "sha256": "a0c55d1f21580b25133b8290d0393a7e1efe29407859467bef6a13ac735c5533"
+    },
+    {
+      "bytes": 692,
+      "path": "checkpoint_index.csv",
+      "publish": true,
+      "publish_name": "checkpoint_index.csv",
+      "role": "checkpoint_index",
+      "sha256": "1d9a681dbb633353f18c8916c38d6e49aebadfa19cb4afdf1eb93d8918a059e0"
+    },
+    {
+      "bytes": 92962,
+      "path": "checkpoints/tau_0.dump",
+      "publish": true,
+      "publish_name": "checkpoints/tau_0.dump",
+      "role": "checkpoint",
+      "sha256": "761c7c9719f713355eed013870a56cfbbf6f04f1aab8140faa1250215b0587ef"
+    },
+    {
+      "bytes": 92962,
+      "path": "checkpoints/tau_2pi.dump",
+      "publish": true,
+      "publish_name": "checkpoints/tau_2pi.dump",
+      "role": "checkpoint",
+      "sha256": "59166369c7383e868be3e4a1388c45a35ef4ccd846d3e9e844dd5ac3d6e744fb"
+    },
+    {
+      "bytes": 92962,
+      "path": "checkpoints/tau_4pi.dump",
+      "publish": true,
+      "publish_name": "checkpoints/tau_4pi.dump",
+      "role": "checkpoint",
+      "sha256": "389f49df2a2c68e1d61f58efc49d56ed822637e4baffbb1bbbed8d2832d4ea97"
+    },
+    {
+      "bytes": 92962,
+      "path": "checkpoints/tau_6pi.dump",
+      "publish": true,
+      "publish_name": "checkpoints/tau_6pi.dump",
+      "role": "checkpoint",
+      "sha256": "9d50c814665c6d84097f7ebc1412cd286b9e9a70897dfb3a4021ea10db00cf85"
+    },
+    {
+      "bytes": 92962,
+      "path": "checkpoints/terminal.dump",
+      "publish": true,
+      "publish_name": "checkpoints/terminal.dump",
+      "role": "checkpoint",
+      "sha256": "06a440a06b44f610891ab2bc4e7e52199e8ebe6eb2650ba4c7cfbc7570a3789b"
+    }
+  ],
+  "benchmark": "capwave",
+  "case": "capwave",
+  "checkpoint_sha256": null,
+  "expected_official_publish_names": [
+    "official_error.dat",
+    "prosperetti.h",
+    "wave.dat"
+  ],
+  "imax": 4,
+  "method": "clsvof",
+  "missing_official_publish_names": [],
+  "model_id": null,
+  "model_resolution": null,
+  "official_artifact_count": 3,
+  "official_coverage_complete": true,
+  "resolution": 32,
+  "schema_version": 1
+}

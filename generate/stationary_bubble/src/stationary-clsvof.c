@@ -1,9 +1,10 @@
 /**
- * N64 stationary-bubble smoke case derived from Basilisk test/spurious.c.
+ * Single-resolution stationary-bubble case derived from Basilisk
+ * test/spurious.c.
  *
  * This case intentionally uses the official CLSVOF update path.  The native
- * build includes Basilisk's integral.h unchanged.  The analytic build uses a
- * local integral.h overlay that swaps only the active ki provider.
+ * build includes Basilisk's integral.h unchanged.  The NN build uses a local
+ * integral.h overlay that swaps only the active ki provider.
  */
 
 #define JACOBI 1
@@ -19,7 +20,11 @@
 #endif
 
 #ifndef STATIONARY_TAU_MAX
-# define STATIONARY_TAU_MAX 1.
+# define STATIONARY_TAU_MAX 2.
+#endif
+
+#ifndef METHOD_NN
+# define METHOD_NN 0
 #endif
 
 #define DIAMETER 0.8
@@ -27,10 +32,12 @@
 #define LAPLACE 12000.
 #define MU sqrt(DIAMETER/LAPLACE)
 #define TMAX (STATIONARY_TAU_MAX*sq(DIAMETER)/MU)
+#define TAU_ONE_TIME (sq(DIAMETER)/MU)
 
 scalar fn[];
 FILE * fp = NULL;
-const char * stationary_stop_reason = "tau_limit";
+FILE * milestones_fp = NULL;
+const char * stationary_stop_reason = "fixed_tau_limit";
 double stationary_stop_tau = -1.;
 int stationary_stop_iteration = -1;
 
@@ -55,6 +62,16 @@ event init (i = 0)
   char name[80];
   sprintf (name, "La-%g-%d", LAPLACE, STATIONARY_LEVEL);
   fp = fopen (name, "w");
+  milestones_fp = fopen ("milestones.csv", "w");
+  if (!fp || !milestones_fp) {
+    perror ("stationary output");
+    exit (1);
+  }
+  fprintf (milestones_fp,
+           "milestone,tau,iteration,u_star,shape_error_avg,shape_error_rms,"
+           "shape_error_max,official_style_ekmax,active_provider_ekmax,"
+           "active_provider_samples\n");
+  fflush (milestones_fp);
 
   // d = r - R: the bubble is d < 0 and d = 0 is the circular interface.
   foreach()
@@ -69,13 +86,6 @@ event init (i = 0)
 event logfile (i++; t <= TMAX)
 {
   double df = change (f, fn);
-  if (i > 1 && df < 1e-10) {
-    stationary_stop_reason = "converged_df_lt_1e-10";
-    stationary_stop_tau = MU*t/sq(DIAMETER);
-    stationary_stop_iteration = i;
-    return 1;
-  }
-
   scalar un[];
   foreach()
     un[] = norm (u);
@@ -84,19 +94,20 @@ event logfile (i++; t <= TMAX)
   fflush (fp);
 }
 
-event error (t = end)
+typedef struct {
+  double u_star;
+  double shape_error_avg;
+  double shape_error_rms;
+  double shape_error_max;
+  double official_style_ekmax;
+  double active_provider_ekmax;
+  int active_provider_samples;
+} stationary_diagnostics;
+
+static stationary_diagnostics stationary_measure (void)
 {
-  if (stationary_stop_tau < 0.) {
-    stationary_stop_tau = MU*t/sq(DIAMETER);
-    stationary_stop_iteration = i;
-  }
-  /*
-   * two-phase-clsvof.h sets f = 1 where d > 0.  With d = r - R this
-   * is the liquid outside the bubble, whereas the official spurious.c
-   * diagnostic uses a volume fraction which is one inside the bubble.
-   * Build that official-compatible fraction without changing the solver's
-   * signed-distance convention or trajectory.
-   */
+  /* two-phase-clsvof.h sets f=1 outside for d=r-R, while the stock
+   * spurious.c diagnostic uses a fraction which is one inside the bubble. */
   scalar bubble[];
   foreach()
     bubble[] = 1. - f[];
@@ -107,29 +118,106 @@ event error (t = end)
   scalar fref[], un[], ef[], kappa[];
   fraction (fref, sq(RADIUS) - sq(x) - sq(y));
   curvature (bubble, kappa);
-  double ekmax = 0.;
-  foreach (reduction(max:ekmax)) {
+  double official_ekmax = 0.;
+  foreach (reduction(max:official_ekmax)) {
     un[] = norm(u);
     ef[] = bubble[] - fref[];
     if (kappa[] != nodata) {
       double ek = fabs(kappa[] - 1./radius);
-      if (ek > ekmax)
-        ekmax = ek;
+      if (ek > official_ekmax)
+        official_ekmax = ek;
     }
   }
+
+  /* Match the cells used by integral.h's active diagonal-stress provider.
+   * The diagnostic NN call deliberately records neither stats nor probes. */
+  double active_ekmax = 0.;
+  int active_samples = 0;
+  foreach (reduction(max:active_ekmax) reduction(+:active_samples)) {
+    int active = 0;
+    for (int offset = -1; offset <= 1; offset += 2) {
+      if (d[]*(d[] + d[offset]) < 0. ||
+          d[]*(d[] + d[0,offset]) < 0.)
+        active = 1;
+    }
+    if (active) {
+#if METHOD_NN
+      double active_kappa = kappa_offset_provider_diagnostic (point, d);
+#else
+      double active_kappa = distance_curvature (point, d);
+#endif
+      double ek = fabs(active_kappa - 1./radius);
+      if (ek > active_ekmax)
+        active_ekmax = ek;
+      active_samples++;
+    }
+  }
+
   norm ne = normf (ef);
+  stationary_diagnostics diagnostics = {
+    normf(un).max*sqrt(DIAMETER), ne.avg, ne.rms, ne.max,
+    official_ekmax, active_ekmax, active_samples
+  };
+  return diagnostics;
+}
+
+static stationary_diagnostics stationary_write_milestone
+  (const char * label, double tau, int iteration)
+{
+  stationary_diagnostics diagnostics = stationary_measure ();
+  fprintf (milestones_fp,
+           "%s,%.17g,%d,%.17g,%.17g,%.17g,%.17g,%.17g,%.17g,%d\n",
+           label, tau, iteration, diagnostics.u_star,
+           diagnostics.shape_error_avg, diagnostics.shape_error_rms,
+           diagnostics.shape_error_max, diagnostics.official_style_ekmax,
+           diagnostics.active_provider_ekmax,
+           diagnostics.active_provider_samples);
+  fflush (milestones_fp);
+  return diagnostics;
+}
+
+event tau_one_milestone (t = TAU_ONE_TIME)
+{
+  stationary_write_milestone ("tau_1", 1., i);
+}
+
+/*
+ * An explicit time event makes Basilisk shorten the last timestep to TMAX.
+ * Relying only on the logfile condition would stop after the first step past
+ * TMAX, and CLSVOF/NN rows could then end at slightly different tau values.
+ */
+event fixed_horizon (t = TMAX)
+{
+  stationary_stop_tau = MU*t/sq(DIAMETER);
+  stationary_stop_iteration = i;
+  return 1;
+}
+
+event error (t = end)
+{
+  if (stationary_stop_tau < 0.) {
+    stationary_stop_tau = MU*t/sq(DIAMETER);
+    stationary_stop_iteration = i;
+  }
+  stationary_diagnostics diagnostics = stationary_write_milestone
+    ("terminal", stationary_stop_tau, stationary_stop_iteration);
   fprintf (stderr, "%d %g %g %g %g %g %g\n",
-           STATIONARY_LEVEL, LAPLACE, normf(un).max*sqrt(DIAMETER),
-           ne.avg, ne.rms, ne.max, ekmax);
+           STATIONARY_LEVEL, LAPLACE, diagnostics.u_star,
+           diagnostics.shape_error_avg, diagnostics.shape_error_rms,
+           diagnostics.shape_error_max, diagnostics.official_style_ekmax);
   FILE * termination_fp = fopen ("termination.csv", "w");
   if (!termination_fp) {
     perror ("termination.csv");
     exit (1);
   }
-  fprintf (termination_fp, "reason,actual_terminal_tau,iteration\n");
-  fprintf (termination_fp, "%s,%.17g,%d\n", stationary_stop_reason,
-           stationary_stop_tau, stationary_stop_iteration);
+  fprintf (termination_fp,
+           "reason,requested_terminal_tau,actual_terminal_tau,iteration\n");
+  fprintf (termination_fp, "%s,%.17g,%.17g,%d\n", stationary_stop_reason,
+           (double) STATIONARY_TAU_MAX, stationary_stop_tau,
+           stationary_stop_iteration);
   fclose (termination_fp);
   if (fp)
     fclose (fp);
+  if (milestones_fp)
+    fclose (milestones_fp);
 }

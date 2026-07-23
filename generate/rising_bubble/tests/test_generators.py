@@ -8,8 +8,8 @@ import pytest
 
 
 ROOT = Path(__file__).resolve().parents[3]
-NN = ROOT / "generate/rising_bubble/nn.sh"
-NATIVE = ROOT / "generate/rising_bubble/clsvof.sh"
+NN = ROOT / "generate/rising_bubble/NN.sh"
+NATIVE = ROOT / "generate/rising_bubble/CLSVOF.sh"
 
 
 def dry_run(script: Path, case: int, imax: int = 3, resolution: int = 64):
@@ -49,17 +49,17 @@ def test_case1_and_case2_have_distinct_paths_and_flags(script: Path) -> None:
 
 
 @pytest.mark.parametrize("script", [NN, NATIVE])
-@pytest.mark.parametrize("imax", [0, 5])
+@pytest.mark.parametrize("imax", [0, 5, 10, 15, 20])
 def test_imax_boundaries_are_accepted(script: Path, imax: int) -> None:
     assert dry_run(script, 1, imax=imax).returncode == 0
 
 
 @pytest.mark.parametrize("script", [NN, NATIVE])
-@pytest.mark.parametrize("imax", [-1, 6, 10])
+@pytest.mark.parametrize("imax", [-1, 6, 9, 11, 21])
 def test_imax_outside_formal_contract_is_rejected(script: Path, imax: int) -> None:
     completed = dry_run(script, 1, imax=imax)
     assert completed.returncode == 2
-    assert "0 through 5" in completed.stderr
+    assert "must be one of" in completed.stderr
 
 
 @pytest.mark.parametrize("script", [NN, NATIVE])

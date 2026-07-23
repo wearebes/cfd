@@ -14,14 +14,14 @@ ROOT = Path(__file__).resolve().parents[4]
 STOCK = ROOT / "basilisk/src/two-phase-clsvof.h"
 
 
-@pytest.mark.parametrize("imax", range(6))
+@pytest.mark.parametrize("imax", MODULE.ALLOWED_IMAX)
 def test_builds_cloud_matrix_imax_range(imax: int) -> None:
     source = STOCK.read_text(encoding="utf-8")
     output = MODULE.build_overlay_text(source, imax, metrics=False)
     assert f"redistance (d, imax = {imax}, phixxmin = HUGE);" in output
 
 
-@pytest.mark.parametrize("imax", [-1, 6, 11, 100])
+@pytest.mark.parametrize("imax", [-1, 6, 9, 11, 16, 100])
 def test_rejects_values_outside_cloud_matrix(imax: int) -> None:
     with pytest.raises(ValueError, match="imax"):
         MODULE.build_overlay_text(STOCK.read_text(encoding="utf-8"), imax)

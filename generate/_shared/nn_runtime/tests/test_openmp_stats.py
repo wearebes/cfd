@@ -68,6 +68,14 @@ def test_probe_openmp_critical_has_required_structured_block() -> None:
     ), "OpenMP critical must be followed by a structured block"
 
 
+def test_diagnostic_provider_does_not_record_stats_or_probes() -> None:
+    source = PROVIDER.read_text(encoding="utf-8")
+    assert "kappa_offset_provider_value (point, d, 1, 1)" in source
+    assert "kappa_offset_provider_value (point, d, 0, 0)" in source
+    assert "if (record_stats)" in source
+    assert "if (record_probe && kappa_offset_probe_now ())" in source
+
+
 @pytest.mark.parametrize("threads", [2, 4, 8])
 def test_openmp_statistics_match_serial(tmp_path: Path, threads: int) -> None:
     serial = run(compile_harness(tmp_path, openmp=False), 1)

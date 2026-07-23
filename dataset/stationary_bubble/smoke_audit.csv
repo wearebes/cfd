@@ -1,0 +1,7 @@
+row,case,benchmark,method,resolution,imax,official_artifacts,metrics,plot_rows,checkpoints_written,checkpoints_not_reached,restore_checks,status
+N0032/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,32,0,3,12,5270,4,1,4,PASS
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,3,22,5832,4,1,4,PASS
+N0064/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,64,0,3,12,71134,5,0,5,PASS
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,3,22,71134,5,0,5,PASS
+N0128/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,128,0,3,12,201196,5,0,5,PASS
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,3,22,201196,5,0,5,PASS

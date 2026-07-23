@@ -1,0 +1,20 @@
+metric,value,unit,scope,time,definition,source_artifact,origin
+actual_terminal_time,3.0,T0,terminal,3.0,last official history time,stdout.txt,derived_from_official
+relative_volume_change_final,0.00145968,1,terminal,3.0,(V-V0)/V0,stdout.txt,derived_from_official
+relative_volume_change_max_abs,0.00145968,1,global,,max(abs((V-V0)/V0)),stdout.txt,derived_from_official
+center_of_mass_x_final,1.07639,L0,terminal,3.0,integral(x dV)/V,stdout.txt,derived_from_official
+rise_velocity_x_final,0.204241,L0/T0,terminal,3.0,integral(u_x dV)/V,stdout.txt,derived_from_official
+rise_velocity_x_max,0.233789,L0/T0,global,,max center-of-mass rise velocity,stdout.txt,derived_from_official
+interface_facets,42,segments,terminal,3.0,number of t=3 output_facets segments,log,derived_from_official
+circularity_min,0.8491226060077078,1,global,,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+circularity_final,0.8941499992181706,1,terminal,3.0,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+provider_evaluations,1316,count,provider_runtime,,kappa_offset_provider_stats evaluations,log,repo_extension
+provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,log,repo_extension
+provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,log,repo_extension
+provider_min_abs_denominator,0.7149541125274613,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,log,repo_extension
+provider_max_abs_d_over_h,0.49984636377988884,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,log,repo_extension
+provider_grad_samples,1316,count,provider_runtime,,kappa_offset_provider_stats grad_samples,log,repo_extension
+provider_grad_min,0.7998445519869548,1,provider_runtime,,kappa_offset_provider_stats grad_min,log,repo_extension
+provider_grad_mean,0.9809221608175559,1,provider_runtime,,kappa_offset_provider_stats grad_mean,log,repo_extension
+provider_grad_std,0.030855387663563022,1,provider_runtime,,kappa_offset_provider_stats grad_std,log,repo_extension
+provider_grad_max,1.0092537478140928,1,provider_runtime,,kappa_offset_provider_stats grad_max,log,repo_extension

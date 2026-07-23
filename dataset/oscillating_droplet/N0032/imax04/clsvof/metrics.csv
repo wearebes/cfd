@@ -1,0 +1,15 @@
+metric,value,unit,scope,time,definition,source_artifact,origin
+actual_terminal_time,1.0002278213294162,T0,terminal,1.0002278213294162,terminal solver-state time,checkpoint_index.csv,repo_extension
+last_kinetic_energy_sample_time,0.999448,T0,terminal_sampling,0.999448,last official kinetic-energy sample time,k-5,derived_from_official
+diameter_cells,12.8,cells_per_diameter,official_resolution,,D/L0*N,manifest.json,benchmark_identity
+max_kinetic_energy,0.000827298,energy,global,,max(K(t)),k-5,derived_from_official
+fit_a,0.000354839,energy,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+fit_a_stderr,7.498e-06,energy,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+fit_b,-0.191396,T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+fit_b_stderr,0.03468,T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+fit_c,155.045,rad*T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+fit_c_stderr,0.02916,rad*T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+frequency_error_signed,0.00131030277183131,1,global,,c/(2*omega0)-1,error,official
+frequency_error_abs_percent,0.13103027718313098,%,global,,100*abs(c/(2*omega0)-1),error,derived
+equivalent_laplace,3071057.75951524,1,global,,30^2/(b^2*D^3),laplace,official
+fit_damping_regime,nonphysical_growth,category,fit_quality,,sign(b): b>0 is exponential damping,fit.log,derived

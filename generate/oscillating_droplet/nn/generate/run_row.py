@@ -28,15 +28,18 @@ HERE = Path(__file__).resolve()
 CASE = HERE.parents[1]
 ROOT = HERE.parents[4]
 BASILISK = ROOT / "basilisk/src"
-SOURCE = CASE / "src/oscillation-nn-single-level.c"
+QCC = Path(os.environ.get("BASILISK_QCC", str(BASILISK / "qcc"))).resolve()
 ADAPTER = CASE / "src/oscillation_raw27_adapter.h"
 SHARED = ROOT / "generate/_shared/nn_runtime/src"
 MANIFEST_TOOL = ROOT / "generate/_shared/run_manifest.py"
 RUNTIME_REDISTANCE_OVERLAY = HERE.parent / "make_runtime_redistance_overlay.py"
-CHECKPOINT_OVERLAY = ROOT / "generate/_shared/make_checkpoint_overlay.py"
+METHOD_HOST_OVERLAY = HERE.parent / "make_official_method_host.py"
 SCIENTIFIC_BUILDER = ROOT / "generate/_shared/build_scientific_artifacts.py"
+FINALIZER = ROOT / "generate/_shared/finalize_row.py"
+FIELD_OVERLAY = ROOT / "generate/_shared/append_field_snapshots.py"
+FIELD_HEADER = ROOT / "generate/_shared/field_snapshots.h"
 INFER = SHARED / "clsvof_mlp_infer.h"
-HOST = ROOT / "generate/oscillating_droplet/clsvof_extension/oscillation-clsvof.c"
+HOST = ROOT / "basilisk/src/test/oscillation.c"
 
 
 def utc_now() -> str:
@@ -80,22 +83,33 @@ def parse_stats(stderr: str) -> dict[str, int | float] | None:
     return values
 
 
-def required_files(level: int, fit: bool, snapshots: bool = False) -> list[str]:
-    names = [
+def raw_required_files(level: int) -> list[str]:
+    return [
         f"k-{level}",
         "out",
         "runtime.stderr.txt",
         "command.txt",
-        "checkpoint_index.csv",
+        f"fit-{level}",
+        "fit.log",
+        "error",
+        "laplace",
+        "log",
+        "termination.csv",
+        "fields.csv",
     ]
-    if fit:
-        names.extend([f"fit-{level}", "fit.log", "error", "laplace", "log"])
-    if snapshots:
-        names.extend(
-            ["snapshot_times.csv"]
-            + [f"interface-{index:02d}.dat" for index in range(5)]
-        )
-    return names
+
+
+def canonicalize_raw_artifacts(work: Path, level: int) -> None:
+    renames = {
+        f"k-{level}": "timeseries.dat",
+        "out": "solver.stdout.txt",
+        f"fit-{level}": "fit_curve.dat",
+        "error": "error.dat",
+        "laplace": "laplace.dat",
+        "log": "fit_summary.dat",
+    }
+    for source_name, target_name in renames.items():
+        (work / source_name).replace(work / target_name)
 
 
 def positive_int(value: str) -> int:
@@ -111,21 +125,31 @@ def prepare_sources(
     method_nn: bool,
     model_dir: Path | None,
 ) -> None:
-    (work / "checkpoints").mkdir(parents=True, exist_ok=True)
     subprocess.run(
         [
             sys.executable,
-            str(CHECKPOINT_OVERLAY),
-            str(SOURCE),
+            str(METHOD_HOST_OVERLAY),
+            str(HOST),
             str(work / "source.c"),
-            "--case",
-            "oscillating_droplet",
             "--provenance",
-            str(work / "checkpoint_overlay.json"),
+            str(work / "method_host_overlay.json"),
         ],
         check=True,
         cwd=ROOT,
     )
+    subprocess.run(
+        [
+            sys.executable,
+            str(FIELD_OVERLAY),
+            str(work / "source.c"),
+            "--case",
+            "oscillating_droplet",
+            "--clsvof",
+        ],
+        check=True,
+        cwd=ROOT,
+    )
+    shutil.copy2(FIELD_HEADER, work / FIELD_HEADER.name)
     shutil.copy2(ADAPTER, work / ADAPTER.name)
     shutil.copy2(BASILISK / "integral.h", work / "integral.stock.h")
     subprocess.run(
@@ -167,11 +191,12 @@ def snapshot_sources(work: Path, method_nn: bool) -> None:
     snapshot.mkdir()
     names = [
         "source.c",
+        "method_host_overlay.json",
         ADAPTER.name,
         "integral.stock.h",
         "two-phase-clsvof.h",
-        "checkpoint_overlay.json",
         "redistance_overlay.json",
+        FIELD_HEADER.name,
     ]
     if method_nn:
         names.extend(
@@ -216,33 +241,33 @@ def plan_arguments(
         "--output",
         str(output),
         "--generator",
-        str(HERE),
+        str(ROOT / "generate/oscillating_droplet" / f"{args.method}.sh"),
         "--generator-logical",
-        "generate/oscillating_droplet/nn/generate/run_row.py",
+        f"generate/oscillating_droplet/{args.method}.sh",
     ]
     parameters: dict[str, object] = {
         "resolution": 1 << level,
         "level": level,
         "imax": args.imax,
+        "grid_strategy": args.grid,
+        "experiment_role": "default" if args.imax == 3 else "sensitivity",
         "model": model_name,
         "openmp_threads": args.threads,
         "compile_only": args.compile_only,
-        "t_end": args.t_end,
-        "fit_enabled": not args.no_fit,
-        "snapshots_enabled": args.snapshots,
+        "compile_reused": bool(args.precompiled),
     }
     for key, value in parameters.items():
         values.extend(["--parameter", f"{key}={json.dumps(value)}"])
     sources: list[tuple[str, str, Path]] = [
-        ("host_case", "generate/oscillating_droplet/clsvof_extension/oscillation-clsvof.c", HOST),
-        ("single_level_case", "generate/oscillating_droplet/nn/src/oscillation-nn-single-level.c", SOURCE),
+        ("official_host_case", "basilisk/src/test/oscillation.c", HOST),
         ("compiled_case", "source_snapshot/source.c", work / "source.c"),
+        ("method_host_overlay", "source_snapshot/method_host_overlay.json", work / "method_host_overlay.json"),
         ("oscillation_adapter", f"source_snapshot/{ADAPTER.name}", work / ADAPTER.name),
         ("stock_integral", "source_snapshot/integral.stock.h", work / "integral.stock.h"),
         ("compiled_two_phase", "source_snapshot/two-phase-clsvof.h", work / "two-phase-clsvof.h"),
-        ("checkpoint_overlay", "source_snapshot/checkpoint_overlay.json", work / "checkpoint_overlay.json"),
         ("redistance_overlay", "source_snapshot/redistance_overlay.json", work / "redistance_overlay.json"),
-        ("qcc", "basilisk/src/qcc", BASILISK / "qcc"),
+        ("field_snapshots", f"source_snapshot/{FIELD_HEADER.name}", work / FIELD_HEADER.name),
+        ("qcc", "toolchain/qcc", QCC),
     ]
     if method_nn:
         assert model_dir is not None and checkpoint is not None
@@ -285,6 +310,8 @@ def plan_arguments(
             f"OSCILLATION_REDISTANCE_IMAX={args.imax}",
             "--run-env",
             f"OMP_NUM_THREADS={args.threads}",
+            "--run-env",
+            "OMP_DYNAMIC=false",
         ]
     )
     for item in compile_cmd:
@@ -310,20 +337,20 @@ def merge_manifest(path: Path, fields: dict[str, Any]) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--method", choices=("clsvof", "nn", "probe"), required=True)
+    parser.add_argument("--method", choices=("CLSVOF", "NN"), required=True)
     resolution = parser.add_mutually_exclusive_group(required=True)
-    resolution.add_argument("--resolution", type=int, choices=(64, 128, 256, 512))
-    resolution.add_argument("--level", type=int, choices=(6, 7, 8, 9), help=argparse.SUPPRESS)
-    parser.add_argument("--imax", type=int, choices=range(6), default=3)
+    resolution.add_argument("--resolution", type=int, choices=(32, 64, 128, 256, 512))
+    resolution.add_argument("--level", type=int, choices=(5, 6, 7, 8, 9), help=argparse.SUPPRESS)
+    parser.add_argument(
+        "--imax", type=int, choices=(0, 1, 2, 3, 4, 5, 10, 15, 20), default=3
+    )
+    parser.add_argument("--grid", choices=("adaptive", "uniform"), default="uniform")
     parser.add_argument("--model")
     purpose = parser.add_mutually_exclusive_group()
     purpose.add_argument("--smoke", action="store_true")
     purpose.add_argument("--formal", action="store_true")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--threads", type=positive_int, default=1)
-    parser.add_argument("--t-end", type=float, default=1.0)
-    parser.add_argument("--no-fit", action="store_true")
-    parser.add_argument("--snapshots", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--compile-only", action="store_true")
     parser.add_argument("--precompiled", type=Path)
@@ -331,30 +358,40 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.compile_only and args.precompiled:
         parser.error("--compile-only and --precompiled are mutually exclusive")
-    if args.formal and (args.method == "probe" or args.t_end != 1.0 or args.no_fit):
-        parser.error("formal rows require method clsvof|nn, --t-end 1.0 and fitting")
+    if args.formal and args.compile_only and os.environ.get("CFD_CAMPAIGN_BUILD") != "1":
+        parser.error("--formal cannot be combined with --compile-only")
+    if args.precompiled and os.environ.get("CFD_CAMPAIGN_PRECOMPILED") != "1":
+        parser.error("--precompiled is reserved for the verified campaign scheduler")
+    if args.formal and args.grid != "uniform":
+        parser.error("formal oscillating CLSVOF/NN rows require --grid uniform")
     level = args.level if args.level is not None else args.resolution.bit_length() - 1
     resolution_value = 1 << level
-    method_nn = args.method in {"nn", "probe"}
+    method_nn = args.method == "NN"
     if args.model and not method_nn:
-        parser.error("--model is only valid for nn or probe")
+        parser.error("--model is only valid for NN")
     model_name = args.model or (
         f"baseline_{resolution_value}_hgradient" if method_nn else None
     )
+    if args.formal and method_nn and model_name != f"baseline_{resolution_value}_hgradient":
+        parser.error(
+            f"formal NN rows require model baseline_{resolution_value}_hgradient"
+        )
     model_dir = ROOT / "dataset/model/c_exports" / model_name if model_name else None
     checkpoint = ROOT / "dataset/model" / f"{model_name}.pt" if model_name else None
 
     dependencies = [
-        SOURCE,
         ADAPTER,
         HOST,
         BASILISK / "integral.h",
         BASILISK / "two-phase-clsvof.h",
         BASILISK / "redistance.h",
-        BASILISK / "qcc",
+        QCC,
         RUNTIME_REDISTANCE_OVERLAY,
-        CHECKPOINT_OVERLAY,
+        METHOD_HOST_OVERLAY,
+        FIELD_OVERLAY,
+        FIELD_HEADER,
         SCIENTIFIC_BUILDER,
+        FINALIZER,
         MANIFEST_TOOL,
     ]
     if method_nn:
@@ -375,37 +412,38 @@ def main(argv: list[str] | None = None) -> int:
     missing = [str(path) for path in dependencies if not path.is_file()]
     if missing:
         raise SystemExit("missing dependencies:\n" + "\n".join(missing))
+    if method_nn:
+        assert model_dir is not None
+        export = json.loads(
+            (model_dir / "export_manifest.json").read_text(encoding="utf-8")
+        )
+        if export.get("name") != model_name:
+            raise SystemExit(
+                "model export identity mismatch: "
+                f"{export.get('name')} != {model_name}"
+            )
 
     output = args.output.resolve()
     if not args.dry_run and output.exists():
         raise SystemExit(f"output already exists: {output}")
 
-    fit = not args.no_fit
     defines = [
         f"-DLEVEL={level}",
-        f"-DT_END={args.t_end:.17g}",
-        f"-DENABLE_FIT={1 if fit else 0}",
-        f"-DENABLE_SNAPSHOTS={1 if args.snapshots else 0}",
         f"-DMETHOD_NN={1 if method_nn else 0}",
     ]
-    if args.method == "probe":
-        defines.extend(
-            ["-DKAPPA_OFFSET_PROBE_ONLY=1", "-DKAPPA_OFFSET_INITIAL_PROBE_SAMPLES=512"]
-        )
-    if args.precompiled:
-        compile_cmd = ["cp", str(args.precompiled.resolve()), "oscillation"]
-    else:
-        compile_cmd = [
-            str(BASILISK / "qcc"),
-            "-O2",
-            "-DMTRACE=3",
-            "-Wall",
-            "-Wno-unused-function",
-            "-pipe",
-        ]
-        if args.threads > 1:
-            compile_cmd.append("-fopenmp")
-        compile_cmd.extend([*defines, "source.c", "-o", "oscillation", "-lm"])
+    compile_cmd = [
+        str(QCC),
+        "-O2",
+        "-DMTRACE=3",
+        "-Wall",
+        "-Wno-unused-function",
+        "-pipe",
+    ]
+    if args.grid == "uniform":
+        compile_cmd.append("-grid=multigrid")
+    if args.threads > 1:
+        compile_cmd.append("-fopenmp")
+    compile_cmd.extend([*defines, "source.c", "-o", "oscillation", "-lm"])
     run_cmd = [] if args.compile_only else ["./oscillation"]
 
     temporary: tempfile.TemporaryDirectory[str] | None = None
@@ -451,6 +489,7 @@ def main(argv: list[str] | None = None) -> int:
         environment["BASILISK"] = str(BASILISK)
         environment["OSCILLATION_REDISTANCE_IMAX"] = str(args.imax)
         environment["OMP_NUM_THREADS"] = str(args.threads)
+        environment["OMP_DYNAMIC"] = "FALSE"
         if args.precompiled:
             shutil.copy2(args.precompiled.resolve(), work / "oscillation")
             compile_completed = subprocess.CompletedProcess(
@@ -469,24 +508,20 @@ def main(argv: list[str] | None = None) -> int:
 
         common_fields: dict[str, Any] = {
             "case_id": "oscillating_droplet",
-            "method_id": "CLSVOF" if args.method == "clsvof" else (
-                "CLSVOF_NN_PROBE_ONLY" if args.method == "probe" else "CLSVOF_NN_CELL_OFFSET"
-            ),
+            "method_id": args.method,
             "evidence_level": "formal" if args.formal else "smoke",
             "level": level,
             "N": resolution_value,
             "cells_per_diameter": 0.2 / 0.5 * resolution_value,
-            "t_end": args.t_end,
-            "fit_enabled": fit,
-            "snapshots_enabled": args.snapshots,
+            "t_end": 1.0,
+            "fit_enabled": True,
             "model_name": model_name,
             "checkpoint_sha256": sha256(checkpoint) if checkpoint else None,
             "weights_sha256": sha256(model_dir / "nn_weights.h") if model_dir else None,
             "export_manifest_sha256": sha256(model_dir / "export_manifest.json") if model_dir else None,
             "host_source_sha256": sha256(HOST),
-            "single_level_source_sha256": sha256(SOURCE),
             "generated_single_level_source_sha256": sha256(work / "source.c"),
-            "checkpoint_overlay_sha256": sha256(work / "checkpoint_overlay.json"),
+            "method_host_overlay_sha256": sha256(work / "method_host_overlay.json"),
             "two_phase_clsvof_sha256": sha256(BASILISK / "two-phase-clsvof.h"),
             "generated_two_phase_clsvof_sha256": sha256(work / "two-phase-clsvof.h"),
             "redistance_overlay_sha256": sha256(work / "redistance_overlay.json"),
@@ -505,6 +540,7 @@ def main(argv: list[str] | None = None) -> int:
             "denominator_guard": 0.25 if method_nn else None,
             "clamp_factor": 1.0 if method_nn else None,
             "redistance_imax": args.imax,
+            "grid_strategy": args.grid,
             "compile_reused": bool(args.precompiled),
             "precompiled_executable_sha256": sha256(args.precompiled.resolve()) if args.precompiled else None,
             "compile_command": shlex.join(compile_cmd),
@@ -532,12 +568,13 @@ def main(argv: list[str] | None = None) -> int:
                 "created_at": utc_now(),
             }
             atomic_json(work / "compile_manifest.json", compile_manifest)
+            if compiled:
+                shutil.copy2(work / "oscillation", work / "executable")
             common_fields.update(
                 {
                     "run_returncode": None,
                     "ended_at": utc_now(),
                     "wall_seconds": time.monotonic() - started_epoch,
-                    "provider_stats": None,
                 }
             )
             merge_manifest(manifest_path, common_fields)
@@ -573,19 +610,11 @@ def main(argv: list[str] | None = None) -> int:
             if (work / "runtime.stderr.txt").is_file()
             else ""
         )
-        numerical_failure_lines = [
-            line
-            for line in runtime_stderr.splitlines()
-            if line.startswith("OSCILLATION_NUMERICAL_FAILURE ")
-        ]
         stats = parse_stats(runtime_stderr) if method_nn and run_returncode == 0 else None
         artifacts_complete = all(
             (work / name).is_file()
             and (name == "runtime.stderr.txt" or (work / name).stat().st_size > 0)
-            for name in required_files(level, fit, args.snapshots)
-        ) and all(
-            path.is_file() and path.stat().st_size > 0
-            for path in [work / "checkpoints/terminal.dump", work / "checkpoint_overlay.json"]
+            for name in raw_required_files(level)
         )
         completed = (
             compile_completed.returncode == 0
@@ -598,8 +627,6 @@ def main(argv: list[str] | None = None) -> int:
                 "run_returncode": run_returncode,
                 "ended_at": utc_now(),
                 "wall_seconds": elapsed,
-                "provider_stats": stats,
-                "numerical_failure": numerical_failure_lines[-1] if numerical_failure_lines else None,
             }
         )
         merge_manifest(manifest_path, common_fields)
@@ -615,8 +642,14 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps({"output": str(output), "status": "failed"}, sort_keys=True))
             return 1
 
+        canonicalize_raw_artifacts(work, level)
         subprocess.run(
             [sys.executable, str(SCIENTIFIC_BUILDER), str(work)],
+            check=True,
+            cwd=ROOT,
+        )
+        subprocess.run(
+            [sys.executable, str(FINALIZER), str(work)],
             check=True,
             cwd=ROOT,
         )
@@ -628,6 +661,29 @@ def main(argv: list[str] | None = None) -> int:
             "--elapsed-seconds",
             str(elapsed),
         )
+        transient_names = [
+            "oscillation",
+            "source.c",
+            "method_host_overlay.json",
+            ADAPTER.name,
+            "integral.stock.h",
+            "two-phase-clsvof.h",
+            "redistance_overlay.json",
+            FIELD_HEADER.name,
+        ]
+        if method_nn:
+            transient_names.extend(
+                [
+                    "integral.h",
+                    "clsvof_nn_cell_curvature.h",
+                    "kappa_offset_stats.h",
+                    "clsvof_mlp_infer.h",
+                    "nn_weights.h",
+                    "export_manifest.json",
+                ]
+            )
+        for name in transient_names:
+            (work / name).unlink(missing_ok=True)
         print(
             json.dumps(
                 {

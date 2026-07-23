@@ -1,0 +1,117 @@
+{
+  "artifacts": {
+    "integral_sha256": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395",
+    "two_phase_clsvof_sha256": "633310827cf3434e9bcd1b91022c735027eadc2c874546e3ff88e505d9027d82"
+  },
+  "benchmark": "stationary_bubble",
+  "case": "stationary_bubble",
+  "completed_at": "2026-07-21T08:02:10.721761+00:00",
+  "created_at": "2026-07-21T08:01:59.286941+00:00",
+  "elapsed_seconds": 11.0,
+  "generator": "generate/stationary_bubble/clsvof.sh",
+  "git": {
+    "changed_path_count": 61,
+    "commit": "106e2d7d1023ad16aae5003236897654d68fe14f",
+    "dirty": true
+  },
+  "imax": 0,
+  "level": 5,
+  "method": "clsvof",
+  "model": null,
+  "official_coverage_complete": true,
+  "openmp_threads": 1,
+  "plan": {
+    "benchmark": "stationary_bubble",
+    "case": "stationary_bubble",
+    "commands": {
+      "compile": {
+        "argv": [
+          "/Users/jcy/research/cfd/basilisk/src/qcc",
+          "-O2",
+          "-DSTATIONARY_LEVEL=5",
+          "-DSTATIONARY_TAU_MAX=1.0",
+          "stationary-clsvof.c",
+          "-o",
+          "stationary-clsvof",
+          "-lm"
+        ],
+        "cwd": "$WORK",
+        "display": "/Users/jcy/research/cfd/basilisk/src/qcc -O2 -DSTATIONARY_LEVEL=5 -DSTATIONARY_TAU_MAX=1.0 stationary-clsvof.c -o stationary-clsvof -lm > compile.stdout 2> compile.stderr",
+        "stderr": "compile.stderr",
+        "stdout": "compile.stdout"
+      },
+      "run": {
+        "argv": [
+          "./stationary-clsvof"
+        ],
+        "cwd": "$WORK",
+        "display": "./stationary-clsvof > stdout.txt 2> log",
+        "stderr": "log",
+        "stdout": "stdout.txt"
+      }
+    },
+    "environment": {},
+    "generator": {
+      "path": "generate/stationary_bubble/clsvof.sh",
+      "sha256": "74948c4f2140f0a71245a7571e2f73dfe9614b4b15dbb6ba0bd5010e99ab27bd"
+    },
+    "method": "clsvof",
+    "output": "/private/tmp/claude-501/-Users-jcy-research-cfd/f77afd01-0fb6-4db9-8eff-a8ee1a02cb11/scratchpad/n32_raw/stationary_imax00_clsvof",
+    "parameters": {
+      "compile_only": 0,
+      "imax": 0,
+      "level": 5,
+      "model": null,
+      "openmp_threads": 1,
+      "resolution": 32,
+      "tau_max": 1.0
+    },
+    "plan_sha256": "36688b47a97fb58596c23bd2a2a0fce8c670f303b1cfaf202ecd00e6b6780ce1",
+    "purpose": "formal",
+    "sources": {
+      "case_source": {
+        "bytes": 3527,
+        "path": "generate/stationary_bubble/src/stationary-clsvof.c",
+        "sha256": "f114439a46e0f3c9dd0d6e629daa9bd33133c213161a48c5c0688f177b45c572"
+      },
+      "checkpoint_overlay": {
+        "bytes": 733,
+        "path": "source_snapshot/checkpoint_overlay.json",
+        "sha256": "f970e54febe455652878df4c80c274477f702256fe23d26d042073bc2239231b"
+      },
+      "compiled_case": {
+        "bytes": 7729,
+        "path": "source_snapshot/stationary-clsvof.c",
+        "sha256": "aa0184f5e0a42f75fe1c2f5fc72e5e4259d42fa2415035573a2ebdfa581b23ac"
+      },
+      "compiled_integral": {
+        "bytes": 6839,
+        "path": "source_snapshot/integral.h",
+        "sha256": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395"
+      },
+      "compiled_two_phase": {
+        "bytes": 2264,
+        "path": "source_snapshot/two-phase-clsvof.h",
+        "sha256": "633310827cf3434e9bcd1b91022c735027eadc2c874546e3ff88e505d9027d82"
+      },
+      "qcc": {
+        "bytes": 490304,
+        "path": "basilisk/src/qcc",
+        "sha256": "ed0fc9f53fb8070723b3aba0f272132118a21e702f720ae2c316ffa0d88239cc"
+      },
+      "redistance_overlay": {
+        "bytes": 365,
+        "path": "source_snapshot/redistance_overlay.json",
+        "sha256": "fbca9925f739c11384d682901b46ecc0af84c1d3ab678ff56176b1ca651a5507"
+      }
+    }
+  },
+  "purpose": "formal",
+  "resolution": 32,
+  "schema_version": 2,
+  "scientific_artifacts_schema_version": 1,
+  "scientific_artifacts_sha256": "72439f9c18c8c7b62e2d4ee2c6c76ce2da4cafa706501e5977362bebc2e4e22d",
+  "started_at": "2026-07-21T08:01:59.287343+00:00",
+  "status": "completed",
+  "tau_max": 1.0
+}

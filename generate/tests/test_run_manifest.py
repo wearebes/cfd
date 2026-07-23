@@ -21,7 +21,7 @@ def plan_args(tmp_path: Path, source: Path) -> list[str]:
         "--benchmark",
         "capwave",
         "--method",
-        "nn",
+        "NN",
         "--purpose",
         "smoke",
         "--output",
@@ -29,11 +29,13 @@ def plan_args(tmp_path: Path, source: Path) -> list[str]:
         "--generator",
         str(runner),
         "--generator-logical",
-        "generate/capwave/nn.sh",
+        "generate/capwave/NN.sh",
         "--parameter",
         "resolution=64",
         "--parameter",
         "imax=3",
+        "--parameter",
+        "experiment_role=default",
         "--parameter",
         "model=baseline_64_hgradient",
         "--parameter",
@@ -70,6 +72,7 @@ def test_dry_run_and_started_manifest_share_one_plan(tmp_path: Path) -> None:
     assert running_payload["status"] == "running"
     assert running_payload["resolution"] == 64
     assert running_payload["model"] == "baseline_64_hgradient"
+    assert running_payload["experiment_role"] == "default"
     assert (
         planned_payload["plan"]["plan_sha256"]
         == running_payload["plan"]["plan_sha256"]

@@ -1,0 +1,18 @@
+{
+  "cpu_slots": 32,
+  "host_contract": {
+    "environment": "WSL",
+    "logical_cpus": 32,
+    "physical_cores": 32
+  },
+  "policy_status": "review_candidate",
+  "schema_version": 1,
+  "threads_per_row": {
+    "32": 2,
+    "64": 4,
+    "128": 8,
+    "256": 8,
+    "512": 16
+  },
+  "vof_hf_threads": 1
+}

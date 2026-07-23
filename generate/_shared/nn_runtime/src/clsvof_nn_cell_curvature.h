@@ -177,7 +177,9 @@ static inline int kappa_offset_probe_now (void)
 #endif
 }
 
-static inline double kappa_offset_provider (Point point, scalar d)
+static inline double kappa_offset_provider_value (Point point, scalar d,
+                                                   int record_stats,
+                                                   int record_probe)
 {
   float raw[CLSVOF_NN_INPUT_DIM];
   kappa_offset_build_raw27 (point, d, raw);
@@ -196,8 +198,9 @@ static inline double kappa_offset_provider (Point point, scalar d)
     q_cell = -KAPPA_OFFSET_CLAMP_FACTOR;
     clamped = 1;
   }
-  kappa_offset_stats_record_sample (guard, denominator, s, grad, clamped);
-  if (kappa_offset_probe_now ()) {
+  if (record_stats)
+    kappa_offset_stats_record_sample (guard, denominator, s, grad, clamped);
+  if (record_probe && kappa_offset_probe_now ()) {
 #ifdef _OPENMP
 # pragma omp critical(kappa_offset_probe_output)
 #endif
@@ -211,6 +214,18 @@ static inline double kappa_offset_provider (Point point, scalar d)
   if (KAPPA_OFFSET_PROBE_ONLY)
     return distance_curvature (point, d);
   return q_cell/Delta;
+}
+
+static inline double kappa_offset_provider (Point point, scalar d)
+{
+  return kappa_offset_provider_value (point, d, 1, 1);
+}
+
+/* Diagnostic-only evaluation of the exact active NN provider.  This must not
+ * change provider counts or emit probes when milestones are sampled. */
+static inline double kappa_offset_provider_diagnostic (Point point, scalar d)
+{
+  return kappa_offset_provider_value (point, d, 0, 0);
 }
 
 event kappa_offset_provider_reset (t = 0)

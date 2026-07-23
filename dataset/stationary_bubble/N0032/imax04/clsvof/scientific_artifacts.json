@@ -1,0 +1,121 @@
+{
+  "artifacts": [
+    {
+      "bytes": 787518,
+      "path": "clsvof/La-12000-5",
+      "publish": true,
+      "publish_name": "timeseries.dat",
+      "role": "official_raw",
+      "sha256": "1e35e7499c150422d2fee38ef522de5a4620d8adf359a0ec3ab3f31f616bef0d"
+    },
+    {
+      "bytes": 60,
+      "path": "clsvof/log",
+      "publish": true,
+      "publish_name": "runtime_and_terminal.log",
+      "role": "official_raw",
+      "sha256": "6f981741a8567038de58d6922cf959d141f7654c0c75e10fb0847d991ce46ac6"
+    },
+    {
+      "bytes": 105,
+      "path": "official_terminal.dat",
+      "publish": true,
+      "publish_name": "official_terminal.dat",
+      "role": "official_raw",
+      "sha256": "2b7a4cc071e0c4d23fee57442fed0a0e25173ca829bdf51ecced4e01eb18e45a"
+    },
+    {
+      "bytes": 61,
+      "path": "clsvof/termination.csv",
+      "publish": true,
+      "publish_name": "termination.csv",
+      "role": "extension_raw",
+      "sha256": "59cba8371b03a7962bc2222dad13ade059e1ed8bc5bc61c3bd02e2f402899265"
+    },
+    {
+      "bytes": 1208,
+      "path": "metrics.csv",
+      "publish": true,
+      "publish_name": "metrics.csv",
+      "role": "derived_metrics",
+      "sha256": "da2e4ee49106f9fada8aa6833e6c4a84601adddb61c9c84d238f9fe677ca81cc"
+    },
+    {
+      "bytes": 1342857,
+      "path": "plot_data.csv",
+      "publish": true,
+      "publish_name": "plot_data.csv",
+      "role": "derived_plot",
+      "sha256": "e8af5a1c4429e6944c4076bbc02bc426714b500a14783d53d6364d8cd855626e"
+    },
+    {
+      "bytes": 609,
+      "path": "checkpoint_index.csv",
+      "publish": true,
+      "publish_name": "checkpoint_index.csv",
+      "role": "checkpoint_index",
+      "sha256": "6374fd706c4fa6f714847ff213706bf3ec8326b0ec89ce5e8f3504b46e263605"
+    },
+    {
+      "bytes": 103888,
+      "path": "checkpoints/tau_0.dump",
+      "publish": true,
+      "publish_name": "checkpoints/tau_0.dump",
+      "role": "checkpoint",
+      "sha256": "fbe08c7a8341b3ed7ab2fad7838257eb67680e581610a21090f344d77f99e044"
+    },
+    {
+      "bytes": 103888,
+      "path": "checkpoints/tau_0p01.dump",
+      "publish": true,
+      "publish_name": "checkpoints/tau_0p01.dump",
+      "role": "checkpoint",
+      "sha256": "73fd57c079b896666de0641abb35f3b693358f9e2e20ac77a90c5e90d4283ff3"
+    },
+    {
+      "bytes": 103888,
+      "path": "checkpoints/tau_0p1.dump",
+      "publish": true,
+      "publish_name": "checkpoints/tau_0p1.dump",
+      "role": "checkpoint",
+      "sha256": "e58539c34b727d001fb603401f533e693b9c2e0e727090188efb59f31318677d"
+    },
+    {
+      "bytes": 103888,
+      "path": "checkpoints/tau_0p5.dump",
+      "publish": true,
+      "publish_name": "checkpoints/tau_0p5.dump",
+      "role": "checkpoint",
+      "sha256": "a38b8ba879678530e671e6fceb86c0e3c68dbe31693834b75df0cba8018a25e8"
+    },
+    {
+      "bytes": 103888,
+      "path": "checkpoints/terminal.dump",
+      "publish": true,
+      "publish_name": "checkpoints/terminal.dump",
+      "role": "checkpoint",
+      "sha256": "90385b0e238a08f1d6a242cdbc21c404a74be9abbc9a68ec7b676e6004e65427"
+    }
+  ],
+  "benchmark": "stationary_bubble",
+  "case": "stationary_bubble",
+  "checkpoint_sha256": null,
+  "expected_official_publish_names": [
+    "official_terminal.dat",
+    "runtime_and_terminal.log",
+    "timeseries.dat"
+  ],
+  "imax": 4,
+  "legacy_method_id": null,
+  "method": "clsvof",
+  "method_role": "method",
+  "method_variant": "standard",
+  "missing_official_publish_names": [],
+  "model_id": null,
+  "model_resolution": null,
+  "official_artifact_count": 3,
+  "official_coverage_complete": true,
+  "reference_id": null,
+  "resolution": 32,
+  "schema_version": 1
+}

@@ -16,10 +16,11 @@
   no adjacent runnable entry point does not belong in `figures/`.
 - Use Python/matplotlib for repository scientific figures unless the user
   explicitly requests another backend.
-- Use scientific method names in all figure-facing labels and formal figure
-  names: `CLSVOF` for the baseline and `CLSVOF NN cell-offset` for the NN
-  variant. `native` is only an internal dataset/path identifier and must not
-  appear in titles, legends, axes, annotations, or formal figure names.
+- Use the unified scientific method names in all figure-facing labels and
+  formal figure names: `CLSVOF` for the baseline and `NN` for the learned
+  variant. Internal dataset/path identifiers such as `native`, `nn`, and
+  `nn_cell_offset` must not replace these labels in titles, legends, axes,
+  annotations, or formal figure names.
 - PNG is the only image deliverable by default. Export one opaque-white,
   tightly cropped PNG at 600 dpi.
 - Do not generate PDF, SVG, TIFF, or other duplicate image formats unless the

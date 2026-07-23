@@ -1,0 +1,150 @@
+{
+  "artifacts": {
+    "cell_curvature_sha256": "e5621e454f382b384d8358d9095bdc4d657bde18c255850163b334ac8637aef9",
+    "inference_header_sha256": "ce280823f9464e9d8f047cd55f12f3b78e5f53e1b35997558865d6e0bfbb3d53",
+    "integral_sha256": "3f1250ac54075be8540327370bf6d69aaab74d147d7da82f336146c88e732949",
+    "stats_header_sha256": "43a266a6ca3e982eac67b7707960ee053d65498ac5638f5ddc0272fca88a5e19",
+    "two_phase_clsvof_sha256": "633310827cf3434e9bcd1b91022c735027eadc2c874546e3ff88e505d9027d82",
+    "weights_sha256": "5cb890935a4223750f2808f9212deda0ed5b2b5b51ce7c3a15bbd8827deb1896"
+  },
+  "benchmark": "stationary_bubble",
+  "case": "stationary_bubble",
+  "completed_at": "2026-07-21T08:02:17.593026+00:00",
+  "created_at": "2026-07-21T08:02:03.309735+00:00",
+  "elapsed_seconds": 14.0,
+  "generator": "generate/stationary_bubble/nn.sh",
+  "git": {
+    "changed_path_count": 61,
+    "commit": "106e2d7d1023ad16aae5003236897654d68fe14f",
+    "dirty": true
+  },
+  "imax": 0,
+  "level": 5,
+  "method": "nn",
+  "model": "baseline_32_hgradient",
+  "official_coverage_complete": true,
+  "openmp_threads": 1,
+  "plan": {
+    "benchmark": "stationary_bubble",
+    "case": "stationary_bubble",
+    "commands": {
+      "compile": {
+        "argv": [
+          "/Users/jcy/research/cfd/basilisk/src/qcc",
+          "-disable-dimensions",
+          "-O2",
+          "-DSTATIONARY_LEVEL=5",
+          "-DSTATIONARY_TAU_MAX=1.0",
+          "-DKAPPA_OFFSET_CLAMP_FACTOR=1.0",
+          "-DKAPPA_OFFSET_PROBE_INTERVAL=0",
+          "-I.",
+          "stationary-clsvof.c",
+          "-o",
+          "stationary-clsvof",
+          "-lm"
+        ],
+        "cwd": "$WORK",
+        "display": "/Users/jcy/research/cfd/basilisk/src/qcc -disable-dimensions -O2 -DSTATIONARY_LEVEL=5 -DSTATIONARY_TAU_MAX=1.0 -DKAPPA_OFFSET_CLAMP_FACTOR=1.0 -DKAPPA_OFFSET_PROBE_INTERVAL=0 -I. stationary-clsvof.c -o stationary-clsvof -lm > compile.stdout 2> compile.stderr",
+        "stderr": "compile.stderr",
+        "stdout": "compile.stdout"
+      },
+      "run": {
+        "argv": [
+          "./stationary-clsvof"
+        ],
+        "cwd": "$WORK",
+        "display": "./stationary-clsvof > stdout.txt 2> log",
+        "stderr": "log",
+        "stdout": "stdout.txt"
+      }
+    },
+    "environment": {},
+    "generator": {
+      "path": "generate/stationary_bubble/nn.sh",
+      "sha256": "7fb325898f7f1b03f459c27ba703b7b2cd78c5c98fbbf890eb37431d5aac568b"
+    },
+    "method": "nn",
+    "output": "/private/tmp/claude-501/-Users-jcy-research-cfd/f77afd01-0fb6-4db9-8eff-a8ee1a02cb11/scratchpad/n32_raw/stationary_imax00_nn",
+    "parameters": {
+      "compile_only": 0,
+      "imax": 0,
+      "level": 5,
+      "model": "baseline_32_hgradient",
+      "openmp_threads": 1,
+      "resolution": 32,
+      "tau_max": 1.0
+    },
+    "plan_sha256": "1f4c507a2097fec5962da4a3746dde1410be5992736d777d48adc58c15d4aac5",
+    "purpose": "formal",
+    "sources": {
+      "case_source": {
+        "bytes": 3527,
+        "path": "generate/stationary_bubble/src/stationary-clsvof.c",
+        "sha256": "f114439a46e0f3c9dd0d6e629daa9bd33133c213161a48c5c0688f177b45c572"
+      },
+      "checkpoint_overlay": {
+        "bytes": 733,
+        "path": "source_snapshot/checkpoint_overlay.json",
+        "sha256": "f970e54febe455652878df4c80c274477f702256fe23d26d042073bc2239231b"
+      },
+      "compiled_case": {
+        "bytes": 7729,
+        "path": "source_snapshot/stationary-clsvof.c",
+        "sha256": "aa0184f5e0a42f75fe1c2f5fc72e5e4259d42fa2415035573a2ebdfa581b23ac"
+      },
+      "compiled_integral": {
+        "bytes": 6881,
+        "path": "source_snapshot/integral.h",
+        "sha256": "3f1250ac54075be8540327370bf6d69aaab74d147d7da82f336146c88e732949"
+      },
+      "compiled_two_phase": {
+        "bytes": 2264,
+        "path": "source_snapshot/two-phase-clsvof.h",
+        "sha256": "633310827cf3434e9bcd1b91022c735027eadc2c874546e3ff88e505d9027d82"
+      },
+      "model_export": {
+        "bytes": 1392,
+        "path": "source_snapshot/export_manifest.json",
+        "sha256": "36e51b0b59edb54b12c3e61aac793c0b40902e0184f15c5b9ee003e9b38cd1fc"
+      },
+      "nn_inference": {
+        "bytes": 1658,
+        "path": "source_snapshot/clsvof_mlp_infer.h",
+        "sha256": "ce280823f9464e9d8f047cd55f12f3b78e5f53e1b35997558865d6e0bfbb3d53"
+      },
+      "nn_runtime": {
+        "bytes": 7183,
+        "path": "source_snapshot/clsvof_nn_cell_curvature.h",
+        "sha256": "e5621e454f382b384d8358d9095bdc4d657bde18c255850163b334ac8637aef9"
+      },
+      "nn_stats": {
+        "bytes": 4275,
+        "path": "source_snapshot/kappa_offset_stats.h",
+        "sha256": "43a266a6ca3e982eac67b7707960ee053d65498ac5638f5ddc0272fca88a5e19"
+      },
+      "nn_weights": {
+        "bytes": 1255834,
+        "path": "source_snapshot/nn_weights.h",
+        "sha256": "5cb890935a4223750f2808f9212deda0ed5b2b5b51ce7c3a15bbd8827deb1896"
+      },
+      "qcc": {
+        "bytes": 490304,
+        "path": "basilisk/src/qcc",
+        "sha256": "ed0fc9f53fb8070723b3aba0f272132118a21e702f720ae2c316ffa0d88239cc"
+      },
+      "redistance_overlay": {
+        "bytes": 365,
+        "path": "source_snapshot/redistance_overlay.json",
+        "sha256": "fbca9925f739c11384d682901b46ecc0af84c1d3ab678ff56176b1ca651a5507"
+      }
+    }
+  },
+  "purpose": "formal",
+  "resolution": 32,
+  "schema_version": 2,
+  "scientific_artifacts_schema_version": 1,
+  "scientific_artifacts_sha256": "8351f8f6b80d59d96346e65e502eee8a9c20f2ec5b09ff9cb8480663474aece2",
+  "started_at": "2026-07-21T08:02:03.310280+00:00",
+  "status": "completed",
+  "tau_max": 1.0
+}

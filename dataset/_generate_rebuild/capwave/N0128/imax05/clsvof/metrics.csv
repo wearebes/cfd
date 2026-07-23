@@ -1,0 +1,7 @@
+metric,value,unit,scope,time,definition,source_artifact,origin
+grid_resolution,128,cells,identity,,N,manifest.json,benchmark_identity
+points_per_wavelength,64.0,cells_per_wavelength,official_resolution,,N/L0,official_error.dat,official_benchmark_definition
+relative_rms_error,0.00205973,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,official_error.dat,official_benchmark_definition
+relative_rms_error_recomputed,0.0020597304501751724,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,wave.dat+prosperetti.h,derived
+relative_rms_recompute_delta,4.5017517231321635e-10,1,audit,,recomputed-official,metrics.csv,derived
+samples,738,count,global,,number of amplitude samples,wave.dat,derived_from_benchmark_output

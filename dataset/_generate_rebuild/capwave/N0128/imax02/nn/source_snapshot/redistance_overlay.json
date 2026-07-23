@@ -1,0 +1,9 @@
+{
+  "imax": 2,
+  "target": "redistance (d, imax = 3, phixxmin = HUGE);",
+  "target_count": 1,
+  "source_sha256": "c0f21472c2d6acac0bdda0a2c43602273ee35d6c111cce4a98005ff9f6dbd048",
+  "generated_sha256": "808d2c2aeff9ac1429b1e7c63eafc68611bd86d3ae1bcda4108e64d86d49b884",
+  "metrics_include": "#include \"redistance_matrix_metrics.h\"",
+  "metrics_enabled": false
+}

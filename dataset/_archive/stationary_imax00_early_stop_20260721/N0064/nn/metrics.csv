@@ -1,0 +1,23 @@
+metric,value,unit,scope,time,definition,source_artifact,origin
+actual_terminal_tau,0.15660826925094312,1,terminal,0.15660826925094312,mu*t/D^2,nn/termination.csv,repo_extension
+termination_reason,converged_df_lt_1e-10,category,terminal,0.15660826925094312,solver stop condition,nn/termination.csv,repo_extension
+level,6,level,official_resolution,,grid refinement level,official_terminal.dat,official
+diameter_cells,51.2,cells_per_diameter,official_resolution,,D*N,manifest.json,derived_from_benchmark_identity
+laplace_number,12000.0,1,identity,,sigma*rho*D/mu^2,official_terminal.dat,official
+u_star_final,2.11651e-08,1,terminal,0.15660826925094312,max(|u|)*sqrt(D/sigma),official_terminal.dat,official
+shape_error_avg,2.27283e-05,1,terminal,0.15660826925094312,normf(c-c_ref).avg,official_terminal.dat,official
+shape_error_rms,0.000226427,1,terminal,0.15660826925094312,normf(c-c_ref).rms,official_terminal.dat,official
+shape_error_max,0.003063,1,terminal,0.15660826925094312,normf(c-c_ref).max,official_terminal.dat,official
+ekmax,0.227037,L0^-1,terminal,0.15660826925094312,max(abs(kappa-1/R_equiv)),official_terminal.dat,official
+relative_curvature_error,0.0908148,1,terminal,0.15660826925094312,"ekmax/(1/R), R=0.4",official_terminal.dat,derived
+relative_curvature_error_percent,9.081479999999999,%,terminal,0.15660826925094312,100*ekmax/2.5,official_terminal.dat,derived
+provider_evaluations,579280,count,provider_runtime,,kappa_offset_provider_stats evaluations,nn/log,repo_extension
+provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,nn/log,repo_extension
+provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,nn/log,repo_extension
+provider_min_abs_denominator,0.9809894133375315,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,nn/log,repo_extension
+provider_max_abs_d_over_h,0.4882259646412132,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,nn/log,repo_extension
+provider_grad_samples,579280,count,provider_runtime,,kappa_offset_provider_stats grad_samples,nn/log,repo_extension
+provider_grad_min,0.9889319698687128,1,provider_runtime,,kappa_offset_provider_stats grad_min,nn/log,repo_extension
+provider_grad_mean,0.9998063925009505,1,provider_runtime,,kappa_offset_provider_stats grad_mean,nn/log,repo_extension
+provider_grad_std,0.004737282418351369,1,provider_runtime,,kappa_offset_provider_stats grad_std,nn/log,repo_extension
+provider_grad_max,1.0102426129368518,1,provider_runtime,,kappa_offset_provider_stats grad_max,nn/log,repo_extension

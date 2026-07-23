@@ -10,6 +10,7 @@ from pathlib import Path
 TARGET = "  redistance (d, imax = 3, phixxmin = HUGE);"
 REDISTANCE_INCLUDE = '#include "redistance.h"'
 METRICS_INCLUDE = '#include "redistance_matrix_metrics.h"'
+ALLOWED_IMAX = (0, 1, 2, 3, 4, 5, 10, 15, 20)
 
 
 def sha256_text(text: str) -> str:
@@ -17,8 +18,8 @@ def sha256_text(text: str) -> str:
 
 
 def build_overlay_text(source: str, imax: int, metrics: bool = True) -> str:
-    if imax not in range(6):
-        raise ValueError("imax must be an integer from 0 through 5")
+    if imax not in ALLOWED_IMAX:
+        raise ValueError(f"imax must be one of {ALLOWED_IMAX}")
     if source.count(TARGET) != 1:
         raise ValueError("expected exactly one stock CLSVOF redistance call")
     if source.count(REDISTANCE_INCLUDE) != 1:

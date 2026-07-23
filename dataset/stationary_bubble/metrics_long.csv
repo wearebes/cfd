@@ -1,0 +1,103 @@
+row,case,benchmark,method,resolution,imax,model_id,model_resolution,metric,value,unit,scope,time,definition,source_artifact,origin
+N0032/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,32,0,,,actual_terminal_tau,0.20954876609116072,1,terminal,0.20954876609116072,mu*t/D^2,clsvof/termination.csv,repo_extension
+N0032/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,32,0,,,termination_reason,converged_df_lt_1e-10,category,terminal,0.20954876609116072,solver stop condition,clsvof/termination.csv,repo_extension
+N0032/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,32,0,,,level,5,level,official_resolution,,grid refinement level,official_terminal.dat,official
+N0032/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,32,0,,,diameter_cells,25.6,cells_per_diameter,official_resolution,,D*N,manifest.json,derived_from_benchmark_identity
+N0032/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,32,0,,,laplace_number,12000.0,1,identity,,sigma*rho*D/mu^2,official_terminal.dat,official
+N0032/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,32,0,,,u_star_final,8.72591e-08,1,terminal,0.20954876609116072,max(|u|)*sqrt(D/sigma),official_terminal.dat,official
+N0032/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,32,0,,,shape_error_avg,9.13354e-05,1,terminal,0.20954876609116072,normf(c-c_ref).avg,official_terminal.dat,official
+N0032/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,32,0,,,shape_error_rms,0.000634622,1,terminal,0.20954876609116072,normf(c-c_ref).rms,official_terminal.dat,official
+N0032/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,32,0,,,shape_error_max,0.00582116,1,terminal,0.20954876609116072,normf(c-c_ref).max,official_terminal.dat,official
+N0032/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,32,0,,,ekmax,0.234249,L0^-1,terminal,0.20954876609116072,max(abs(kappa-1/R_equiv)),official_terminal.dat,official
+N0032/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,32,0,,,relative_curvature_error,0.09369960000000001,1,terminal,0.20954876609116072,"ekmax/(1/R), R=0.4",official_terminal.dat,derived
+N0032/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,32,0,,,relative_curvature_error_percent,9.36996,%,terminal,0.20954876609116072,100*ekmax/2.5,official_terminal.dat,derived
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,actual_terminal_tau,0.23189533279766592,1,terminal,0.23189533279766592,mu*t/D^2,nn/termination.csv,repo_extension
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,termination_reason,converged_df_lt_1e-10,category,terminal,0.23189533279766592,solver stop condition,nn/termination.csv,repo_extension
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,level,5,level,official_resolution,,grid refinement level,official_terminal.dat,official
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,diameter_cells,25.6,cells_per_diameter,official_resolution,,D*N,manifest.json,derived_from_benchmark_identity
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,laplace_number,12000.0,1,identity,,sigma*rho*D/mu^2,official_terminal.dat,official
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,u_star_final,1.90578e-08,1,terminal,0.23189533279766592,max(|u|)*sqrt(D/sigma),official_terminal.dat,official
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,shape_error_avg,9.08958e-05,1,terminal,0.23189533279766592,normf(c-c_ref).avg,official_terminal.dat,official
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,shape_error_rms,0.000636002,1,terminal,0.23189533279766592,normf(c-c_ref).rms,official_terminal.dat,official
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,shape_error_max,0.00601718,1,terminal,0.23189533279766592,normf(c-c_ref).max,official_terminal.dat,official
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,ekmax,0.223074,L0^-1,terminal,0.23189533279766592,max(abs(kappa-1/R_equiv)),official_terminal.dat,official
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,relative_curvature_error,0.08922959999999999,1,terminal,0.23189533279766592,"ekmax/(1/R), R=0.4",official_terminal.dat,derived
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,relative_curvature_error_percent,8.92296,%,terminal,0.23189533279766592,100*ekmax/2.5,official_terminal.dat,derived
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,provider_evaluations,151632,count,provider_runtime,,kappa_offset_provider_stats evaluations,nn/log,repo_extension
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,nn/log,repo_extension
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,nn/log,repo_extension
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,provider_min_abs_denominator,0.9653298324397825,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,nn/log,repo_extension
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.44728866910101894,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,nn/log,repo_extension
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,provider_grad_samples,151632,count,provider_runtime,,kappa_offset_provider_stats grad_samples,nn/log,repo_extension
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,provider_grad_min,0.9730148522429949,1,provider_runtime,,kappa_offset_provider_stats grad_min,nn/log,repo_extension
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,provider_grad_mean,0.9973129359847704,1,provider_runtime,,kappa_offset_provider_stats grad_mean,nn/log,repo_extension
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,provider_grad_std,0.010207196951295558,1,provider_runtime,,kappa_offset_provider_stats grad_std,nn/log,repo_extension
+N0032/imax00/nn,stationary_bubble,stationary_bubble,nn,32,0,baseline_32_hgradient,32,provider_grad_max,1.0153429118968236,1,provider_runtime,,kappa_offset_provider_stats grad_max,nn/log,repo_extension
+N0064/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,64,0,,,actual_terminal_tau,1.0,1,terminal,1.0,mu*t/D^2,termination.csv,repo_extension
+N0064/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,64,0,,,termination_reason,fixed_tau_limit,category,terminal,1.0,solver stop condition,termination.csv,repo_extension
+N0064/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,64,0,,,level,6,level,official_resolution,,grid refinement level,official_terminal.dat,official
+N0064/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,64,0,,,diameter_cells,51.2,cells_per_diameter,official_resolution,,D*N,manifest.json,derived_from_benchmark_identity
+N0064/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,64,0,,,laplace_number,12000.0,1,identity,,sigma*rho*D/mu^2,official_terminal.dat,official
+N0064/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,64,0,,,u_star_final,1.6742126030368036e-14,1,terminal,1.0,max(|u|)*sqrt(D/sigma),official_terminal.dat,official
+N0064/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,64,0,,,shape_error_avg,2.2739463673173607e-05,1,terminal,1.0,normf(c-c_ref).avg,official_terminal.dat,official
+N0064/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,64,0,,,shape_error_rms,0.00022459016009551957,1,terminal,1.0,normf(c-c_ref).rms,official_terminal.dat,official
+N0064/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,64,0,,,shape_error_max,0.0030735589076728853,1,terminal,1.0,normf(c-c_ref).max,official_terminal.dat,official
+N0064/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,64,0,,,ekmax,0.20847978401755451,L0^-1,terminal,1.0,max(abs(kappa-1/R_equiv)),official_terminal.dat,official
+N0064/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,64,0,,,relative_curvature_error,0.0833919136070218,1,terminal,1.0,"ekmax/(1/R), R=0.4",official_terminal.dat,derived
+N0064/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,64,0,,,relative_curvature_error_percent,8.33919136070218,%,terminal,1.0,100*ekmax/2.5,official_terminal.dat,derived
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,actual_terminal_tau,1.0,1,terminal,1.0,mu*t/D^2,termination.csv,repo_extension
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,termination_reason,fixed_tau_limit,category,terminal,1.0,solver stop condition,termination.csv,repo_extension
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,level,6,level,official_resolution,,grid refinement level,official_terminal.dat,official
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,diameter_cells,51.2,cells_per_diameter,official_resolution,,D*N,manifest.json,derived_from_benchmark_identity
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,laplace_number,12000.0,1,identity,,sigma*rho*D/mu^2,official_terminal.dat,official
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,u_star_final,6.647709969683704e-15,1,terminal,1.0,max(|u|)*sqrt(D/sigma),official_terminal.dat,official
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,shape_error_avg,2.2728344000345526e-05,1,terminal,1.0,normf(c-c_ref).avg,official_terminal.dat,official
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,shape_error_rms,0.00022642736232601727,1,terminal,1.0,normf(c-c_ref).rms,official_terminal.dat,official
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,shape_error_max,0.0030630374502493563,1,terminal,1.0,normf(c-c_ref).max,official_terminal.dat,official
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,ekmax,0.22703647725128873,L0^-1,terminal,1.0,max(abs(kappa-1/R_equiv)),official_terminal.dat,official
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,relative_curvature_error,0.0908145909005155,1,terminal,1.0,"ekmax/(1/R), R=0.4",official_terminal.dat,derived
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,relative_curvature_error_percent,9.081459090051549,%,terminal,1.0,100*ekmax/2.5,official_terminal.dat,derived
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,runtime_and_terminal.log,repo_extension
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,runtime_and_terminal.log,repo_extension
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,provider_evaluations,3698916,count,provider_runtime,,kappa_offset_provider_stats evaluations,runtime_and_terminal.log,repo_extension
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,provider_grad_max,1.010242613150458,1,provider_runtime,,kappa_offset_provider_stats grad_max,runtime_and_terminal.log,repo_extension
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,provider_grad_mean,0.9998040280168695,1,provider_runtime,,kappa_offset_provider_stats grad_mean,runtime_and_terminal.log,repo_extension
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,provider_grad_min,0.9889319705133107,1,provider_runtime,,kappa_offset_provider_stats grad_min,runtime_and_terminal.log,repo_extension
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,provider_grad_samples,3698916,count,provider_runtime,,kappa_offset_provider_stats grad_samples,runtime_and_terminal.log,repo_extension
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,provider_grad_std,0.004744092925718841,1,provider_runtime,,kappa_offset_provider_stats grad_std,runtime_and_terminal.log,repo_extension
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,provider_max_abs_d_over_h,0.4882259646412132,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,runtime_and_terminal.log,repo_extension
+N0064/imax00/nn,stationary_bubble,stationary_bubble,nn,64,0,baseline_64_hgradient,64,provider_min_abs_denominator,0.9809894133630418,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,runtime_and_terminal.log,repo_extension
+N0128/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,128,0,,,actual_terminal_tau,1.0,1,terminal,1.0,mu*t/D^2,termination.csv,repo_extension
+N0128/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,128,0,,,termination_reason,fixed_tau_limit,category,terminal,1.0,solver stop condition,termination.csv,repo_extension
+N0128/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,128,0,,,level,7,level,official_resolution,,grid refinement level,official_terminal.dat,official
+N0128/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,128,0,,,diameter_cells,102.4,cells_per_diameter,official_resolution,,D*N,manifest.json,derived_from_benchmark_identity
+N0128/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,128,0,,,laplace_number,12000.0,1,identity,,sigma*rho*D/mu^2,official_terminal.dat,official
+N0128/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,128,0,,,u_star_final,2.283650188207537e-14,1,terminal,1.0,max(|u|)*sqrt(D/sigma),official_terminal.dat,official
+N0128/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,128,0,,,shape_error_avg,6.219330107732897e-06,1,terminal,1.0,normf(c-c_ref).avg,official_terminal.dat,official
+N0128/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,128,0,,,shape_error_rms,8.489717846744388e-05,1,terminal,1.0,normf(c-c_ref).rms,official_terminal.dat,official
+N0128/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,128,0,,,shape_error_max,0.0018199777402234663,1,terminal,1.0,normf(c-c_ref).max,official_terminal.dat,official
+N0128/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,128,0,,,ekmax,0.16996479560488176,L0^-1,terminal,1.0,max(abs(kappa-1/R_equiv)),official_terminal.dat,official
+N0128/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,128,0,,,relative_curvature_error,0.0679859182419527,1,terminal,1.0,"ekmax/(1/R), R=0.4",official_terminal.dat,derived
+N0128/imax00/clsvof,stationary_bubble,stationary_bubble,clsvof,128,0,,,relative_curvature_error_percent,6.79859182419527,%,terminal,1.0,100*ekmax/2.5,official_terminal.dat,derived
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,actual_terminal_tau,1.0,1,terminal,1.0,mu*t/D^2,termination.csv,repo_extension
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,termination_reason,fixed_tau_limit,category,terminal,1.0,solver stop condition,termination.csv,repo_extension
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,level,7,level,official_resolution,,grid refinement level,official_terminal.dat,official
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,diameter_cells,102.4,cells_per_diameter,official_resolution,,D*N,manifest.json,derived_from_benchmark_identity
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,laplace_number,12000.0,1,identity,,sigma*rho*D/mu^2,official_terminal.dat,official
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,u_star_final,7.646576245549983e-10,1,terminal,1.0,max(|u|)*sqrt(D/sigma),official_terminal.dat,official
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,shape_error_avg,6.184148438692786e-06,1,terminal,1.0,normf(c-c_ref).avg,official_terminal.dat,official
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,shape_error_rms,8.507689689512778e-05,1,terminal,1.0,normf(c-c_ref).rms,official_terminal.dat,official
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,shape_error_max,0.0018377894812124929,1,terminal,1.0,normf(c-c_ref).max,official_terminal.dat,official
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,ekmax,0.18763185121974946,L0^-1,terminal,1.0,max(abs(kappa-1/R_equiv)),official_terminal.dat,official
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,relative_curvature_error,0.07505274048789978,1,terminal,1.0,"ekmax/(1/R), R=0.4",official_terminal.dat,derived
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,relative_curvature_error_percent,7.505274048789978,%,terminal,1.0,100*ekmax/2.5,official_terminal.dat,derived
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,runtime_and_terminal.log,repo_extension
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,runtime_and_terminal.log,repo_extension
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,provider_evaluations,20521890,count,provider_runtime,,kappa_offset_provider_stats evaluations,runtime_and_terminal.log,repo_extension
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,provider_grad_max,1.006916272934479,1,provider_runtime,,kappa_offset_provider_stats grad_max,runtime_and_terminal.log,repo_extension
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,provider_grad_mean,1.000390241689922,1,provider_runtime,,kappa_offset_provider_stats grad_mean,runtime_and_terminal.log,repo_extension
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,provider_grad_min,0.9922711339005998,1,provider_runtime,,kappa_offset_provider_stats grad_min,runtime_and_terminal.log,repo_extension
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,provider_grad_samples,20521890,count,provider_runtime,,kappa_offset_provider_stats grad_samples,runtime_and_terminal.log,repo_extension
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,provider_grad_std,0.0028300443701561,1,provider_runtime,,kappa_offset_provider_stats grad_std,runtime_and_terminal.log,repo_extension
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,provider_max_abs_d_over_h,0.4981201426066221,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,runtime_and_terminal.log,repo_extension
+N0128/imax00/nn,stationary_bubble,stationary_bubble,nn,128,0,baseline_128_hgradient,128,provider_min_abs_denominator,0.9899053533828391,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,runtime_and_terminal.log,repo_extension

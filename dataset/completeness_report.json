@@ -1,0 +1,42 @@
+{
+  "diagnostic_exclusions": {
+    "oscillating_imax0": {
+      "completed_rows": 2,
+      "formal_scope": false,
+      "numerical_failure_rows": 8,
+      "reason": "no-redistance ablation; numerically unstable at N64 and above",
+      "rows": 10
+    }
+  },
+  "formal_scope": {
+    "case_rows": {
+      "capwave": 60,
+      "oscillating_droplet": 50,
+      "rising_bubble": 120,
+      "stationary_bubble": 48
+    },
+    "completed_rows": 278,
+    "expected_rows": 278,
+    "incomplete_rows": 0,
+    "methods": [
+      "clsvof",
+      "nn"
+    ],
+    "n32_rows": 58,
+    "resolutions": [
+      32,
+      64,
+      128,
+      256,
+      512
+    ]
+  },
+  "schema_version": 1,
+  "status": "PASS",
+  "verification": {
+    "contract_products_hashed": 714,
+    "contract_rows_checked": 62,
+    "legacy_numeric_rows_checked": 216,
+    "numeric_files_checked": 278
+  }
+}

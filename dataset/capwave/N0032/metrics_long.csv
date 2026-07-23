@@ -1,0 +1,133 @@
+row,case,benchmark,method,resolution,imax,model_id,model_resolution,metric,value,unit,scope,time,definition,source_artifact,origin
+imax00/clsvof,capwave,capwave,clsvof,32,0,,,grid_resolution,32,cells,identity,,N,manifest.json,benchmark_identity
+imax00/clsvof,capwave,capwave,clsvof,32,0,,,points_per_wavelength,16.0,cells_per_wavelength,official_resolution,,N/L0,log,official
+imax00/clsvof,capwave,capwave,clsvof,32,0,,,relative_rms_error,0.102949,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,log,official
+imax00/clsvof,capwave,capwave,clsvof,32,0,,,relative_rms_error_recomputed,0.10294920076096771,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,wave-32+prosperetti.h,derived
+imax00/clsvof,capwave,capwave,clsvof,32,0,,,relative_rms_recompute_delta,2.007609677112665e-07,1,audit,,recomputed-official,metrics.csv,derived
+imax00/clsvof,capwave,capwave,clsvof,32,0,,,samples,738,count,global,,number of amplitude samples,wave-32,derived_from_official
+imax00/nn,capwave,capwave,nn,32,0,baseline_32_hgradient,32,grid_resolution,32,cells,identity,,N,manifest.json,benchmark_identity
+imax00/nn,capwave,capwave,nn,32,0,baseline_32_hgradient,32,points_per_wavelength,16.0,cells_per_wavelength,official_resolution,,N/L0,log,official
+imax00/nn,capwave,capwave,nn,32,0,baseline_32_hgradient,32,relative_rms_error,0.102169,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,log,official
+imax00/nn,capwave,capwave,nn,32,0,baseline_32_hgradient,32,relative_rms_error_recomputed,0.10216893912168595,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,wave-32+prosperetti.h,derived
+imax00/nn,capwave,capwave,nn,32,0,baseline_32_hgradient,32,relative_rms_recompute_delta,-6.087831404266719e-08,1,audit,,recomputed-official,metrics.csv,derived
+imax00/nn,capwave,capwave,nn,32,0,baseline_32_hgradient,32,samples,738,count,global,,number of amplitude samples,wave-32,derived_from_official
+imax00/nn,capwave,capwave,nn,32,0,baseline_32_hgradient,32,provider_evaluations,23712,count,provider_runtime,,kappa_offset_provider_stats evaluations,log,repo_extension
+imax00/nn,capwave,capwave,nn,32,0,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,log,repo_extension
+imax00/nn,capwave,capwave,nn,32,0,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,log,repo_extension
+imax00/nn,capwave,capwave,nn,32,0,baseline_32_hgradient,32,provider_min_abs_denominator,0.9991266030395872,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,log,repo_extension
+imax00/nn,capwave,capwave,nn,32,0,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.5026170015036694,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,log,repo_extension
+imax00/nn,capwave,capwave,nn,32,0,baseline_32_hgradient,32,provider_grad_samples,23712,count,provider_runtime,,kappa_offset_provider_stats grad_samples,log,repo_extension
+imax00/nn,capwave,capwave,nn,32,0,baseline_32_hgradient,32,provider_grad_min,0.9782551886055132,1,provider_runtime,,kappa_offset_provider_stats grad_min,log,repo_extension
+imax00/nn,capwave,capwave,nn,32,0,baseline_32_hgradient,32,provider_grad_mean,1.0039735872926243,1,provider_runtime,,kappa_offset_provider_stats grad_mean,log,repo_extension
+imax00/nn,capwave,capwave,nn,32,0,baseline_32_hgradient,32,provider_grad_std,0.01615201752414095,1,provider_runtime,,kappa_offset_provider_stats grad_std,log,repo_extension
+imax00/nn,capwave,capwave,nn,32,0,baseline_32_hgradient,32,provider_grad_max,1.031216732821431,1,provider_runtime,,kappa_offset_provider_stats grad_max,log,repo_extension
+imax01/clsvof,capwave,capwave,clsvof,32,1,,,grid_resolution,32,cells,identity,,N,manifest.json,benchmark_identity
+imax01/clsvof,capwave,capwave,clsvof,32,1,,,points_per_wavelength,16.0,cells_per_wavelength,official_resolution,,N/L0,log,official
+imax01/clsvof,capwave,capwave,clsvof,32,1,,,relative_rms_error,0.0400634,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,log,official
+imax01/clsvof,capwave,capwave,clsvof,32,1,,,relative_rms_error_recomputed,0.04006339347550691,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,wave-32+prosperetti.h,derived
+imax01/clsvof,capwave,capwave,clsvof,32,1,,,relative_rms_recompute_delta,-6.524493091630834e-09,1,audit,,recomputed-official,metrics.csv,derived
+imax01/clsvof,capwave,capwave,clsvof,32,1,,,samples,738,count,global,,number of amplitude samples,wave-32,derived_from_official
+imax01/nn,capwave,capwave,nn,32,1,baseline_32_hgradient,32,grid_resolution,32,cells,identity,,N,manifest.json,benchmark_identity
+imax01/nn,capwave,capwave,nn,32,1,baseline_32_hgradient,32,points_per_wavelength,16.0,cells_per_wavelength,official_resolution,,N/L0,log,official
+imax01/nn,capwave,capwave,nn,32,1,baseline_32_hgradient,32,relative_rms_error,0.0400753,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,log,official
+imax01/nn,capwave,capwave,nn,32,1,baseline_32_hgradient,32,relative_rms_error_recomputed,0.040075330227809854,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,wave-32+prosperetti.h,derived
+imax01/nn,capwave,capwave,nn,32,1,baseline_32_hgradient,32,relative_rms_recompute_delta,3.0227809852401144e-08,1,audit,,recomputed-official,metrics.csv,derived
+imax01/nn,capwave,capwave,nn,32,1,baseline_32_hgradient,32,samples,738,count,global,,number of amplitude samples,wave-32,derived_from_official
+imax01/nn,capwave,capwave,nn,32,1,baseline_32_hgradient,32,provider_evaluations,23712,count,provider_runtime,,kappa_offset_provider_stats evaluations,log,repo_extension
+imax01/nn,capwave,capwave,nn,32,1,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,log,repo_extension
+imax01/nn,capwave,capwave,nn,32,1,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,log,repo_extension
+imax01/nn,capwave,capwave,nn,32,1,baseline_32_hgradient,32,provider_min_abs_denominator,1.0000399851732003,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,log,repo_extension
+imax01/nn,capwave,capwave,nn,32,1,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.5000035974466185,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,log,repo_extension
+imax01/nn,capwave,capwave,nn,32,1,baseline_32_hgradient,32,provider_grad_samples,23712,count,provider_runtime,,kappa_offset_provider_stats grad_samples,log,repo_extension
+imax01/nn,capwave,capwave,nn,32,1,baseline_32_hgradient,32,provider_grad_min,0.9994955982360674,1,provider_runtime,,kappa_offset_provider_stats grad_min,log,repo_extension
+imax01/nn,capwave,capwave,nn,32,1,baseline_32_hgradient,32,provider_grad_mean,0.9999558788382994,1,provider_runtime,,kappa_offset_provider_stats grad_mean,log,repo_extension
+imax01/nn,capwave,capwave,nn,32,1,baseline_32_hgradient,32,provider_grad_std,6.452572750564421e-05,1,provider_runtime,,kappa_offset_provider_stats grad_std,log,repo_extension
+imax01/nn,capwave,capwave,nn,32,1,baseline_32_hgradient,32,provider_grad_max,1.0007639851363128,1,provider_runtime,,kappa_offset_provider_stats grad_max,log,repo_extension
+imax02/clsvof,capwave,capwave,clsvof,32,2,,,grid_resolution,32,cells,identity,,N,manifest.json,benchmark_identity
+imax02/clsvof,capwave,capwave,clsvof,32,2,,,points_per_wavelength,16.0,cells_per_wavelength,official_resolution,,N/L0,log,official
+imax02/clsvof,capwave,capwave,clsvof,32,2,,,relative_rms_error,0.0370556,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,log,official
+imax02/clsvof,capwave,capwave,clsvof,32,2,,,relative_rms_error_recomputed,0.03705564727818837,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,wave-32+prosperetti.h,derived
+imax02/clsvof,capwave,capwave,clsvof,32,2,,,relative_rms_recompute_delta,4.7278188371191465e-08,1,audit,,recomputed-official,metrics.csv,derived
+imax02/clsvof,capwave,capwave,clsvof,32,2,,,samples,738,count,global,,number of amplitude samples,wave-32,derived_from_official
+imax02/nn,capwave,capwave,nn,32,2,baseline_32_hgradient,32,grid_resolution,32,cells,identity,,N,manifest.json,benchmark_identity
+imax02/nn,capwave,capwave,nn,32,2,baseline_32_hgradient,32,points_per_wavelength,16.0,cells_per_wavelength,official_resolution,,N/L0,log,official
+imax02/nn,capwave,capwave,nn,32,2,baseline_32_hgradient,32,relative_rms_error,0.0370004,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,log,official
+imax02/nn,capwave,capwave,nn,32,2,baseline_32_hgradient,32,relative_rms_error_recomputed,0.03700041643883147,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,wave-32+prosperetti.h,derived
+imax02/nn,capwave,capwave,nn,32,2,baseline_32_hgradient,32,relative_rms_recompute_delta,1.6438831469678394e-08,1,audit,,recomputed-official,metrics.csv,derived
+imax02/nn,capwave,capwave,nn,32,2,baseline_32_hgradient,32,samples,738,count,global,,number of amplitude samples,wave-32,derived_from_official
+imax02/nn,capwave,capwave,nn,32,2,baseline_32_hgradient,32,provider_evaluations,23712,count,provider_runtime,,kappa_offset_provider_stats evaluations,log,repo_extension
+imax02/nn,capwave,capwave,nn,32,2,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,log,repo_extension
+imax02/nn,capwave,capwave,nn,32,2,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,log,repo_extension
+imax02/nn,capwave,capwave,nn,32,2,baseline_32_hgradient,32,provider_min_abs_denominator,1.0000103780338068,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,log,repo_extension
+imax02/nn,capwave,capwave,nn,32,2,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.5000002362915174,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,log,repo_extension
+imax02/nn,capwave,capwave,nn,32,2,baseline_32_hgradient,32,provider_grad_samples,23712,count,provider_runtime,,kappa_offset_provider_stats grad_samples,log,repo_extension
+imax02/nn,capwave,capwave,nn,32,2,baseline_32_hgradient,32,provider_grad_min,0.9997913711964997,1,provider_runtime,,kappa_offset_provider_stats grad_min,log,repo_extension
+imax02/nn,capwave,capwave,nn,32,2,baseline_32_hgradient,32,provider_grad_mean,0.9999837507109549,1,provider_runtime,,kappa_offset_provider_stats grad_mean,log,repo_extension
+imax02/nn,capwave,capwave,nn,32,2,baseline_32_hgradient,32,provider_grad_std,2.889817647480993e-05,1,provider_runtime,,kappa_offset_provider_stats grad_std,log,repo_extension
+imax02/nn,capwave,capwave,nn,32,2,baseline_32_hgradient,32,provider_grad_max,1.0002855730264766,1,provider_runtime,,kappa_offset_provider_stats grad_max,log,repo_extension
+imax03/clsvof,capwave,capwave,clsvof,32,3,,,grid_resolution,32,cells,identity,,N,manifest.json,benchmark_identity
+imax03/clsvof,capwave,capwave,clsvof,32,3,,,points_per_wavelength,16.0,cells_per_wavelength,official_resolution,,N/L0,log,official
+imax03/clsvof,capwave,capwave,clsvof,32,3,,,relative_rms_error,0.0364221,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,log,official
+imax03/clsvof,capwave,capwave,clsvof,32,3,,,relative_rms_error_recomputed,0.036422145738853155,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,wave-32+prosperetti.h,derived
+imax03/clsvof,capwave,capwave,clsvof,32,3,,,relative_rms_recompute_delta,4.573885315634074e-08,1,audit,,recomputed-official,metrics.csv,derived
+imax03/clsvof,capwave,capwave,clsvof,32,3,,,samples,738,count,global,,number of amplitude samples,wave-32,derived_from_official
+imax03/nn,capwave,capwave,nn,32,3,baseline_32_hgradient,32,grid_resolution,32,cells,identity,,N,manifest.json,benchmark_identity
+imax03/nn,capwave,capwave,nn,32,3,baseline_32_hgradient,32,points_per_wavelength,16.0,cells_per_wavelength,official_resolution,,N/L0,log,official
+imax03/nn,capwave,capwave,nn,32,3,baseline_32_hgradient,32,relative_rms_error,0.0363779,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,log,official
+imax03/nn,capwave,capwave,nn,32,3,baseline_32_hgradient,32,relative_rms_error_recomputed,0.036377884734521776,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,wave-32+prosperetti.h,derived
+imax03/nn,capwave,capwave,nn,32,3,baseline_32_hgradient,32,relative_rms_recompute_delta,-1.5265478221782036e-08,1,audit,,recomputed-official,metrics.csv,derived
+imax03/nn,capwave,capwave,nn,32,3,baseline_32_hgradient,32,samples,738,count,global,,number of amplitude samples,wave-32,derived_from_official
+imax03/nn,capwave,capwave,nn,32,3,baseline_32_hgradient,32,provider_evaluations,23712,count,provider_runtime,,kappa_offset_provider_stats evaluations,log,repo_extension
+imax03/nn,capwave,capwave,nn,32,3,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,log,repo_extension
+imax03/nn,capwave,capwave,nn,32,3,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,log,repo_extension
+imax03/nn,capwave,capwave,nn,32,3,baseline_32_hgradient,32,provider_min_abs_denominator,1.0000345731500464,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,log,repo_extension
+imax03/nn,capwave,capwave,nn,32,3,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.5000014464967316,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,log,repo_extension
+imax03/nn,capwave,capwave,nn,32,3,baseline_32_hgradient,32,provider_grad_samples,23712,count,provider_runtime,,kappa_offset_provider_stats grad_samples,log,repo_extension
+imax03/nn,capwave,capwave,nn,32,3,baseline_32_hgradient,32,provider_grad_min,0.9998720017281174,1,provider_runtime,,kappa_offset_provider_stats grad_min,log,repo_extension
+imax03/nn,capwave,capwave,nn,32,3,baseline_32_hgradient,32,provider_grad_mean,0.9999902416387594,1,provider_runtime,,kappa_offset_provider_stats grad_mean,log,repo_extension
+imax03/nn,capwave,capwave,nn,32,3,baseline_32_hgradient,32,provider_grad_std,2.0896263189528888e-05,1,provider_runtime,,kappa_offset_provider_stats grad_std,log,repo_extension
+imax03/nn,capwave,capwave,nn,32,3,baseline_32_hgradient,32,provider_grad_max,1.000107105592225,1,provider_runtime,,kappa_offset_provider_stats grad_max,log,repo_extension
+imax04/clsvof,capwave,capwave,clsvof,32,4,,,grid_resolution,32,cells,identity,,N,manifest.json,benchmark_identity
+imax04/clsvof,capwave,capwave,clsvof,32,4,,,points_per_wavelength,16.0,cells_per_wavelength,official_resolution,,N/L0,log,official
+imax04/clsvof,capwave,capwave,clsvof,32,4,,,relative_rms_error,0.0365978,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,log,official
+imax04/clsvof,capwave,capwave,clsvof,32,4,,,relative_rms_error_recomputed,0.036597787772763325,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,wave-32+prosperetti.h,derived
+imax04/clsvof,capwave,capwave,clsvof,32,4,,,relative_rms_recompute_delta,-1.2227236674544617e-08,1,audit,,recomputed-official,metrics.csv,derived
+imax04/clsvof,capwave,capwave,clsvof,32,4,,,samples,738,count,global,,number of amplitude samples,wave-32,derived_from_official
+imax04/nn,capwave,capwave,nn,32,4,baseline_32_hgradient,32,grid_resolution,32,cells,identity,,N,manifest.json,benchmark_identity
+imax04/nn,capwave,capwave,nn,32,4,baseline_32_hgradient,32,points_per_wavelength,16.0,cells_per_wavelength,official_resolution,,N/L0,log,official
+imax04/nn,capwave,capwave,nn,32,4,baseline_32_hgradient,32,relative_rms_error,0.036406,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,log,official
+imax04/nn,capwave,capwave,nn,32,4,baseline_32_hgradient,32,relative_rms_error_recomputed,0.03640597532445582,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,wave-32+prosperetti.h,derived
+imax04/nn,capwave,capwave,nn,32,4,baseline_32_hgradient,32,relative_rms_recompute_delta,-2.4675544177399367e-08,1,audit,,recomputed-official,metrics.csv,derived
+imax04/nn,capwave,capwave,nn,32,4,baseline_32_hgradient,32,samples,738,count,global,,number of amplitude samples,wave-32,derived_from_official
+imax04/nn,capwave,capwave,nn,32,4,baseline_32_hgradient,32,provider_evaluations,23712,count,provider_runtime,,kappa_offset_provider_stats evaluations,log,repo_extension
+imax04/nn,capwave,capwave,nn,32,4,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,log,repo_extension
+imax04/nn,capwave,capwave,nn,32,4,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,log,repo_extension
+imax04/nn,capwave,capwave,nn,32,4,baseline_32_hgradient,32,provider_min_abs_denominator,1.0000390054566455,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,log,repo_extension
+imax04/nn,capwave,capwave,nn,32,4,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.4999997223364379,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,log,repo_extension
+imax04/nn,capwave,capwave,nn,32,4,baseline_32_hgradient,32,provider_grad_samples,23712,count,provider_runtime,,kappa_offset_provider_stats grad_samples,log,repo_extension
+imax04/nn,capwave,capwave,nn,32,4,baseline_32_hgradient,32,provider_grad_min,0.9999160717634269,1,provider_runtime,,kappa_offset_provider_stats grad_min,log,repo_extension
+imax04/nn,capwave,capwave,nn,32,4,baseline_32_hgradient,32,provider_grad_mean,0.9999932725922375,1,provider_runtime,,kappa_offset_provider_stats grad_mean,log,repo_extension
+imax04/nn,capwave,capwave,nn,32,4,baseline_32_hgradient,32,provider_grad_std,1.6683076276302914e-05,1,provider_runtime,,kappa_offset_provider_stats grad_std,log,repo_extension
+imax04/nn,capwave,capwave,nn,32,4,baseline_32_hgradient,32,provider_grad_max,1.0000842122360467,1,provider_runtime,,kappa_offset_provider_stats grad_max,log,repo_extension
+imax05/clsvof,capwave,capwave,clsvof,32,5,,,grid_resolution,32,cells,identity,,N,manifest.json,benchmark_identity
+imax05/clsvof,capwave,capwave,clsvof,32,5,,,points_per_wavelength,16.0,cells_per_wavelength,official_resolution,,N/L0,log,official
+imax05/clsvof,capwave,capwave,clsvof,32,5,,,relative_rms_error,0.0369533,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,log,official
+imax05/clsvof,capwave,capwave,clsvof,32,5,,,relative_rms_error_recomputed,0.036953325035346665,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,wave-32+prosperetti.h,derived
+imax05/clsvof,capwave,capwave,clsvof,32,5,,,relative_rms_recompute_delta,2.503534666381535e-08,1,audit,,recomputed-official,metrics.csv,derived
+imax05/clsvof,capwave,capwave,clsvof,32,5,,,samples,738,count,global,,number of amplitude samples,wave-32,derived_from_official
+imax05/nn,capwave,capwave,nn,32,5,baseline_32_hgradient,32,grid_resolution,32,cells,identity,,N,manifest.json,benchmark_identity
+imax05/nn,capwave,capwave,nn,32,5,baseline_32_hgradient,32,points_per_wavelength,16.0,cells_per_wavelength,official_resolution,,N/L0,log,official
+imax05/nn,capwave,capwave,nn,32,5,baseline_32_hgradient,32,relative_rms_error,0.0366618,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,log,official
+imax05/nn,capwave,capwave,nn,32,5,baseline_32_hgradient,32,relative_rms_error_recomputed,0.03666175626784462,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,wave-32+prosperetti.h,derived
+imax05/nn,capwave,capwave,nn,32,5,baseline_32_hgradient,32,relative_rms_recompute_delta,-4.373215538311381e-08,1,audit,,recomputed-official,metrics.csv,derived
+imax05/nn,capwave,capwave,nn,32,5,baseline_32_hgradient,32,samples,738,count,global,,number of amplitude samples,wave-32,derived_from_official
+imax05/nn,capwave,capwave,nn,32,5,baseline_32_hgradient,32,provider_evaluations,23712,count,provider_runtime,,kappa_offset_provider_stats evaluations,log,repo_extension
+imax05/nn,capwave,capwave,nn,32,5,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,log,repo_extension
+imax05/nn,capwave,capwave,nn,32,5,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,log,repo_extension
+imax05/nn,capwave,capwave,nn,32,5,baseline_32_hgradient,32,provider_min_abs_denominator,1.0000434980794186,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,log,repo_extension
+imax05/nn,capwave,capwave,nn,32,5,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.4999935758593714,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,log,repo_extension
+imax05/nn,capwave,capwave,nn,32,5,baseline_32_hgradient,32,provider_grad_samples,23712,count,provider_runtime,,kappa_offset_provider_stats grad_samples,log,repo_extension
+imax05/nn,capwave,capwave,nn,32,5,baseline_32_hgradient,32,provider_grad_min,0.999945453413491,1,provider_runtime,,kappa_offset_provider_stats grad_min,log,repo_extension
+imax05/nn,capwave,capwave,nn,32,5,baseline_32_hgradient,32,provider_grad_mean,0.9999947564569134,1,provider_runtime,,kappa_offset_provider_stats grad_mean,log,repo_extension
+imax05/nn,capwave,capwave,nn,32,5,baseline_32_hgradient,32,provider_grad_std,1.3563844333156706e-05,1,provider_runtime,,kappa_offset_provider_stats grad_std,log,repo_extension
+imax05/nn,capwave,capwave,nn,32,5,baseline_32_hgradient,32,provider_grad_max,1.0000662226816073,1,provider_runtime,,kappa_offset_provider_stats grad_max,log,repo_extension

@@ -1,0 +1,77 @@
+{
+  "artifacts": [
+    {
+      "bytes": 14125,
+      "columns": [
+        "tau",
+        "amplitude"
+      ],
+      "path": "wave.dat",
+      "publish": true,
+      "publish_name": "wave.dat",
+      "role": "benchmark_raw",
+      "sha256": "80a763f6ba84c5f4c0319ab477ec0a1278cf1039c67f41ee419284dc34cbd432",
+      "units": [
+        "1",
+        "L0"
+      ]
+    },
+    {
+      "bytes": 14,
+      "columns": [
+        "points_per_wavelength",
+        "relative_rms_error"
+      ],
+      "path": "official_error.dat",
+      "publish": true,
+      "publish_name": "official_error.dat",
+      "role": "benchmark_raw",
+      "sha256": "98e4d0eb7e62029b9729e608d5eb0418409e1d1cbb771511688fb62a3ae2c5ba",
+      "units": [
+        "cells_per_wavelength",
+        "1"
+      ]
+    },
+    {
+      "bytes": 19228,
+      "path": "prosperetti.h",
+      "publish": true,
+      "publish_name": "prosperetti.h",
+      "role": "official_reference",
+      "sha256": "5bd86a34b8bbd199dd417e69781db2e53831cbc82d6c0bc68bc5d64f4d68dbf9"
+    },
+    {
+      "bytes": 696,
+      "path": "metrics.csv",
+      "publish": true,
+      "publish_name": "metrics.csv",
+      "role": "derived_metrics",
+      "sha256": "b2ac0085741adcbc5407f4ef049ae51d35402d59a10cd12436ac737e9005837c"
+    },
+    {
+      "bytes": 38513,
+      "path": "plot_data.csv",
+      "publish": true,
+      "publish_name": "plot_data.csv",
+      "role": "derived_plot",
+      "sha256": "fad6cd9f2d2935eb7484799a04bd8d561a92ee51d1bc199700ed7af7e35feca4"
+    }
+  ],
+  "benchmark": "capwave",
+  "benchmark_output_count": 3,
+  "benchmark_output_coverage_complete": true,
+  "case": "capwave",
+  "checkpoint_sha256": null,
+  "expected_benchmark_output_names": [
+    "official_error.dat",
+    "prosperetti.h",
+    "wave.dat"
+  ],
+  "imax": 4,
+  "method": "clsvof",
+  "missing_benchmark_output_names": [],
+  "model_id": null,
+  "model_resolution": null,
+  "resolution": 64,
+  "schema_version": 1
+}

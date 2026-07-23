@@ -1,0 +1,10 @@
+metric,value,unit,scope,time,definition,source_artifact,origin
+actual_terminal_time,3.0,T0,terminal,3.0,last official history time,stdout.txt,derived_from_official
+relative_volume_change_final,0.00039414,1,terminal,3.0,(V-V0)/V0,stdout.txt,derived_from_official
+relative_volume_change_max_abs,0.00039414,1,global,,max(abs((V-V0)/V0)),stdout.txt,derived_from_official
+center_of_mass_x_final,1.06269,L0,terminal,3.0,integral(x dV)/V,stdout.txt,derived_from_official
+rise_velocity_x_final,0.18097,L0/T0,terminal,3.0,integral(u_x dV)/V,stdout.txt,derived_from_official
+rise_velocity_x_max,0.24511,L0/T0,global,,max center-of-mass rise velocity,stdout.txt,derived_from_official
+interface_facets,56,segments,terminal,3.0,number of t=3 output_facets segments,log,derived_from_official
+circularity_min,0.5699159547455109,1,global,,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+circularity_final,0.5749788683474792,1,terminal,3.0,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension

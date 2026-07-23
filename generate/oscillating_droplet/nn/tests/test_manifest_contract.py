@@ -16,7 +16,7 @@ REQUIRED = {
     "feature_order", "raw27_order", "model_phi_sign", "solver_d_sign",
     "solver_to_model_sign", "model_output", "solver_output", "nn_provider",
     "denominator_guard", "clamp_factor", "redistance_imax", "compile_command",
-    "started_at", "ended_at", "wall_seconds", "provider_stats",
+    "started_at", "ended_at", "wall_seconds",
 }
 
 
@@ -25,13 +25,18 @@ def test_formal_manifests_when_result_root_is_given() -> None:
     if not result_root:
         pytest.skip("set OSCILLATION_NN_RESULT_ROOT after formal rows are generated")
     for level in (6, 7):
-        for method in ("clsvof", "nn"):
+        for method in ("CLSVOF", "NN"):
             path = ROOT / result_root / f"level_{level}/{method}/manifest.json"
             manifest = json.loads(path.read_text(encoding="utf-8"))
             assert REQUIRED <= manifest.keys()
             assert manifest["status"] == "completed"
-            if method.endswith("nn"):
-                stats = manifest["provider_stats"]
-                assert stats["evaluations"] > 0
-                assert stats["clamp_hits"] == 0
-                assert stats["denominator_guard_hits"] == 0
+            stats_path = path.parent / "provider_stats.csv"
+            if method == "NN":
+                assert stats_path.is_file()
+                header, row = stats_path.read_text(encoding="utf-8").splitlines()
+                values = dict(zip(header.split(","), row.split(",")))
+                assert int(values["evaluations"]) > 0
+                assert int(values["clamp_hits"]) == 0
+                assert int(values["denominator_guard_hits"]) == 0
+            else:
+                assert not stats_path.exists()

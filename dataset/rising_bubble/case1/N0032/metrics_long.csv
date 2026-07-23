@@ -1,0 +1,169 @@
+row,case,benchmark,method,resolution,imax,model_id,model_resolution,metric,value,unit,scope,time,definition,source_artifact,origin
+imax00/clsvof,rising_bubble,rising_case1,clsvof,32,0,,,actual_terminal_time,3.0,T0,terminal,3.0,last official history time,stdout.txt,derived_from_official
+imax00/clsvof,rising_bubble,rising_case1,clsvof,32,0,,,relative_volume_change_final,0.00114093,1,terminal,3.0,(V-V0)/V0,stdout.txt,derived_from_official
+imax00/clsvof,rising_bubble,rising_case1,clsvof,32,0,,,relative_volume_change_max_abs,0.00115746,1,global,,max(abs((V-V0)/V0)),stdout.txt,derived_from_official
+imax00/clsvof,rising_bubble,rising_case1,clsvof,32,0,,,center_of_mass_x_final,0.977218,L0,terminal,3.0,integral(x dV)/V,stdout.txt,derived_from_official
+imax00/clsvof,rising_bubble,rising_case1,clsvof,32,0,,,rise_velocity_x_final,0.177083,L0/T0,terminal,3.0,integral(u_x dV)/V,stdout.txt,derived_from_official
+imax00/clsvof,rising_bubble,rising_case1,clsvof,32,0,,,rise_velocity_x_max,0.196472,L0/T0,global,,max center-of-mass rise velocity,stdout.txt,derived_from_official
+imax00/clsvof,rising_bubble,rising_case1,clsvof,32,0,,,interface_facets,36,segments,terminal,3.0,number of t=3 output_facets segments,log,derived_from_official
+imax00/clsvof,rising_bubble,rising_case1,clsvof,32,0,,,circularity_min,0.9309052537730643,1,global,,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax00/clsvof,rising_bubble,rising_case1,clsvof,32,0,,,circularity_final,0.9518860614781371,1,terminal,3.0,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,actual_terminal_time,3.0,T0,terminal,3.0,last official history time,stdout.txt,derived_from_official
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,relative_volume_change_final,0.00113557,1,terminal,3.0,(V-V0)/V0,stdout.txt,derived_from_official
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,relative_volume_change_max_abs,0.00114743,1,global,,max(abs((V-V0)/V0)),stdout.txt,derived_from_official
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,center_of_mass_x_final,0.977538,L0,terminal,3.0,integral(x dV)/V,stdout.txt,derived_from_official
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,rise_velocity_x_final,0.177113,L0/T0,terminal,3.0,integral(u_x dV)/V,stdout.txt,derived_from_official
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,rise_velocity_x_max,0.196426,L0/T0,global,,max center-of-mass rise velocity,stdout.txt,derived_from_official
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,interface_facets,36,segments,terminal,3.0,number of t=3 output_facets segments,log,derived_from_official
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,circularity_min,0.9327030049762534,1,global,,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,circularity_final,0.9464242521681363,1,terminal,3.0,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,provider_evaluations,1310,count,provider_runtime,,kappa_offset_provider_stats evaluations,log,repo_extension
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,log,repo_extension
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,log,repo_extension
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,provider_min_abs_denominator,0.7817902351642096,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,log,repo_extension
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.9365955110777995,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,log,repo_extension
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,provider_grad_samples,1310,count,provider_runtime,,kappa_offset_provider_stats grad_samples,log,repo_extension
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,provider_grad_min,0.5181821827713526,1,provider_runtime,,kappa_offset_provider_stats grad_min,log,repo_extension
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,provider_grad_mean,1.2674711161543954,1,provider_runtime,,kappa_offset_provider_stats grad_mean,log,repo_extension
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,provider_grad_std,0.5418153023149233,1,provider_runtime,,kappa_offset_provider_stats grad_std,log,repo_extension
+imax00/nn,rising_bubble,rising_case1,nn,32,0,baseline_32_hgradient,32,provider_grad_max,3.111665653830632,1,provider_runtime,,kappa_offset_provider_stats grad_max,log,repo_extension
+imax01/clsvof,rising_bubble,rising_case1,clsvof,32,1,,,actual_terminal_time,3.0,T0,terminal,3.0,last official history time,stdout.txt,derived_from_official
+imax01/clsvof,rising_bubble,rising_case1,clsvof,32,1,,,relative_volume_change_final,0.00146061,1,terminal,3.0,(V-V0)/V0,stdout.txt,derived_from_official
+imax01/clsvof,rising_bubble,rising_case1,clsvof,32,1,,,relative_volume_change_max_abs,0.00146061,1,global,,max(abs((V-V0)/V0)),stdout.txt,derived_from_official
+imax01/clsvof,rising_bubble,rising_case1,clsvof,32,1,,,center_of_mass_x_final,1.06815,L0,terminal,3.0,integral(x dV)/V,stdout.txt,derived_from_official
+imax01/clsvof,rising_bubble,rising_case1,clsvof,32,1,,,rise_velocity_x_final,0.195984,L0/T0,terminal,3.0,integral(u_x dV)/V,stdout.txt,derived_from_official
+imax01/clsvof,rising_bubble,rising_case1,clsvof,32,1,,,rise_velocity_x_max,0.231265,L0/T0,global,,max center-of-mass rise velocity,stdout.txt,derived_from_official
+imax01/clsvof,rising_bubble,rising_case1,clsvof,32,1,,,interface_facets,36,segments,terminal,3.0,number of t=3 output_facets segments,log,derived_from_official
+imax01/clsvof,rising_bubble,rising_case1,clsvof,32,1,,,circularity_min,0.8788249191990851,1,global,,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax01/clsvof,rising_bubble,rising_case1,clsvof,32,1,,,circularity_final,0.9076854197435223,1,terminal,3.0,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,actual_terminal_time,3.0,T0,terminal,3.0,last official history time,stdout.txt,derived_from_official
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,relative_volume_change_final,0.00162158,1,terminal,3.0,(V-V0)/V0,stdout.txt,derived_from_official
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,relative_volume_change_max_abs,0.00162158,1,global,,max(abs((V-V0)/V0)),stdout.txt,derived_from_official
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,center_of_mass_x_final,1.06812,L0,terminal,3.0,integral(x dV)/V,stdout.txt,derived_from_official
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,rise_velocity_x_final,0.195907,L0/T0,terminal,3.0,integral(u_x dV)/V,stdout.txt,derived_from_official
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,rise_velocity_x_max,0.231246,L0/T0,global,,max center-of-mass rise velocity,stdout.txt,derived_from_official
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,interface_facets,36,segments,terminal,3.0,number of t=3 output_facets segments,log,derived_from_official
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,circularity_min,0.8792003074495292,1,global,,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,circularity_final,0.9076239982480048,1,terminal,3.0,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,provider_evaluations,1322,count,provider_runtime,,kappa_offset_provider_stats evaluations,log,repo_extension
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,log,repo_extension
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,log,repo_extension
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,provider_min_abs_denominator,0.7513500876207232,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,log,repo_extension
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.5195739424355896,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,log,repo_extension
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,provider_grad_samples,1322,count,provider_runtime,,kappa_offset_provider_stats grad_samples,log,repo_extension
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,provider_grad_min,0.7311251830232792,1,provider_runtime,,kappa_offset_provider_stats grad_min,log,repo_extension
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,provider_grad_mean,0.9886450955792211,1,provider_runtime,,kappa_offset_provider_stats grad_mean,log,repo_extension
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,provider_grad_std,0.062091974274133564,1,provider_runtime,,kappa_offset_provider_stats grad_std,log,repo_extension
+imax01/nn,rising_bubble,rising_case1,nn,32,1,baseline_32_hgradient,32,provider_grad_max,1.099943126949991,1,provider_runtime,,kappa_offset_provider_stats grad_max,log,repo_extension
+imax02/clsvof,rising_bubble,rising_case1,clsvof,32,2,,,actual_terminal_time,3.0,T0,terminal,3.0,last official history time,stdout.txt,derived_from_official
+imax02/clsvof,rising_bubble,rising_case1,clsvof,32,2,,,relative_volume_change_final,0.0012691,1,terminal,3.0,(V-V0)/V0,stdout.txt,derived_from_official
+imax02/clsvof,rising_bubble,rising_case1,clsvof,32,2,,,relative_volume_change_max_abs,0.0012691,1,global,,max(abs((V-V0)/V0)),stdout.txt,derived_from_official
+imax02/clsvof,rising_bubble,rising_case1,clsvof,32,2,,,center_of_mass_x_final,1.07334,L0,terminal,3.0,integral(x dV)/V,stdout.txt,derived_from_official
+imax02/clsvof,rising_bubble,rising_case1,clsvof,32,2,,,rise_velocity_x_final,0.200197,L0/T0,terminal,3.0,integral(u_x dV)/V,stdout.txt,derived_from_official
+imax02/clsvof,rising_bubble,rising_case1,clsvof,32,2,,,rise_velocity_x_max,0.233277,L0/T0,global,,max center-of-mass rise velocity,stdout.txt,derived_from_official
+imax02/clsvof,rising_bubble,rising_case1,clsvof,32,2,,,interface_facets,36,segments,terminal,3.0,number of t=3 output_facets segments,log,derived_from_official
+imax02/clsvof,rising_bubble,rising_case1,clsvof,32,2,,,circularity_min,0.8519717743541069,1,global,,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax02/clsvof,rising_bubble,rising_case1,clsvof,32,2,,,circularity_final,0.9031464030406082,1,terminal,3.0,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,actual_terminal_time,3.0,T0,terminal,3.0,last official history time,stdout.txt,derived_from_official
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,relative_volume_change_final,0.00143564,1,terminal,3.0,(V-V0)/V0,stdout.txt,derived_from_official
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,relative_volume_change_max_abs,0.00143564,1,global,,max(abs((V-V0)/V0)),stdout.txt,derived_from_official
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,center_of_mass_x_final,1.07341,L0,terminal,3.0,integral(x dV)/V,stdout.txt,derived_from_official
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,rise_velocity_x_final,0.200082,L0/T0,terminal,3.0,integral(u_x dV)/V,stdout.txt,derived_from_official
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,rise_velocity_x_max,0.233242,L0/T0,global,,max center-of-mass rise velocity,stdout.txt,derived_from_official
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,interface_facets,36,segments,terminal,3.0,number of t=3 output_facets segments,log,derived_from_official
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,circularity_min,0.8556736942979101,1,global,,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,circularity_final,0.9031829636467816,1,terminal,3.0,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,provider_evaluations,1322,count,provider_runtime,,kappa_offset_provider_stats evaluations,log,repo_extension
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,log,repo_extension
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,log,repo_extension
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,provider_min_abs_denominator,0.7192129985222315,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,log,repo_extension
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.5000461339510316,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,log,repo_extension
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,provider_grad_samples,1322,count,provider_runtime,,kappa_offset_provider_stats grad_samples,log,repo_extension
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,provider_grad_min,0.7722924956944406,1,provider_runtime,,kappa_offset_provider_stats grad_min,log,repo_extension
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,provider_grad_mean,0.982047299766827,1,provider_runtime,,kappa_offset_provider_stats grad_mean,log,repo_extension
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,provider_grad_std,0.04113184343758874,1,provider_runtime,,kappa_offset_provider_stats grad_std,log,repo_extension
+imax02/nn,rising_bubble,rising_case1,nn,32,2,baseline_32_hgradient,32,provider_grad_max,1.0334996859271004,1,provider_runtime,,kappa_offset_provider_stats grad_max,log,repo_extension
+imax03/clsvof,rising_bubble,rising_case1,clsvof,32,3,,,actual_terminal_time,3.0,T0,terminal,3.0,last official history time,stdout.txt,derived_from_official
+imax03/clsvof,rising_bubble,rising_case1,clsvof,32,3,,,relative_volume_change_final,0.00128106,1,terminal,3.0,(V-V0)/V0,stdout.txt,derived_from_official
+imax03/clsvof,rising_bubble,rising_case1,clsvof,32,3,,,relative_volume_change_max_abs,0.00128563,1,global,,max(abs((V-V0)/V0)),stdout.txt,derived_from_official
+imax03/clsvof,rising_bubble,rising_case1,clsvof,32,3,,,center_of_mass_x_final,1.07524,L0,terminal,3.0,integral(x dV)/V,stdout.txt,derived_from_official
+imax03/clsvof,rising_bubble,rising_case1,clsvof,32,3,,,rise_velocity_x_final,0.20244,L0/T0,terminal,3.0,integral(u_x dV)/V,stdout.txt,derived_from_official
+imax03/clsvof,rising_bubble,rising_case1,clsvof,32,3,,,rise_velocity_x_max,0.233706,L0/T0,global,,max center-of-mass rise velocity,stdout.txt,derived_from_official
+imax03/clsvof,rising_bubble,rising_case1,clsvof,32,3,,,interface_facets,36,segments,terminal,3.0,number of t=3 output_facets segments,log,derived_from_official
+imax03/clsvof,rising_bubble,rising_case1,clsvof,32,3,,,circularity_min,0.8503700053724912,1,global,,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax03/clsvof,rising_bubble,rising_case1,clsvof,32,3,,,circularity_final,0.9107486750751576,1,terminal,3.0,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,actual_terminal_time,3.0,T0,terminal,3.0,last official history time,stdout.txt,derived_from_official
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,relative_volume_change_final,0.00144477,1,terminal,3.0,(V-V0)/V0,stdout.txt,derived_from_official
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,relative_volume_change_max_abs,0.00144477,1,global,,max(abs((V-V0)/V0)),stdout.txt,derived_from_official
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,center_of_mass_x_final,1.07544,L0,terminal,3.0,integral(x dV)/V,stdout.txt,derived_from_official
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,rise_velocity_x_final,0.202614,L0/T0,terminal,3.0,integral(u_x dV)/V,stdout.txt,derived_from_official
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,rise_velocity_x_max,0.233669,L0/T0,global,,max center-of-mass rise velocity,stdout.txt,derived_from_official
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,interface_facets,36,segments,terminal,3.0,number of t=3 output_facets segments,log,derived_from_official
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,circularity_min,0.8469368805105253,1,global,,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,circularity_final,0.9110536185771866,1,terminal,3.0,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,provider_evaluations,1320,count,provider_runtime,,kappa_offset_provider_stats evaluations,log,repo_extension
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,log,repo_extension
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,log,repo_extension
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,provider_min_abs_denominator,0.7062443324307285,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,log,repo_extension
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.5003381423643183,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,log,repo_extension
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,provider_grad_samples,1320,count,provider_runtime,,kappa_offset_provider_stats grad_samples,log,repo_extension
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,provider_grad_min,0.7919067581293721,1,provider_runtime,,kappa_offset_provider_stats grad_min,log,repo_extension
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,provider_grad_mean,0.9808368776695197,1,provider_runtime,,kappa_offset_provider_stats grad_mean,log,repo_extension
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,provider_grad_std,0.03410055516678123,1,provider_runtime,,kappa_offset_provider_stats grad_std,log,repo_extension
+imax03/nn,rising_bubble,rising_case1,nn,32,3,baseline_32_hgradient,32,provider_grad_max,1.01570665651533,1,provider_runtime,,kappa_offset_provider_stats grad_max,log,repo_extension
+imax04/clsvof,rising_bubble,rising_case1,clsvof,32,4,,,actual_terminal_time,3.0,T0,terminal,3.0,last official history time,stdout.txt,derived_from_official
+imax04/clsvof,rising_bubble,rising_case1,clsvof,32,4,,,relative_volume_change_final,0.00132337,1,terminal,3.0,(V-V0)/V0,stdout.txt,derived_from_official
+imax04/clsvof,rising_bubble,rising_case1,clsvof,32,4,,,relative_volume_change_max_abs,0.00132337,1,global,,max(abs((V-V0)/V0)),stdout.txt,derived_from_official
+imax04/clsvof,rising_bubble,rising_case1,clsvof,32,4,,,center_of_mass_x_final,1.07616,L0,terminal,3.0,integral(x dV)/V,stdout.txt,derived_from_official
+imax04/clsvof,rising_bubble,rising_case1,clsvof,32,4,,,rise_velocity_x_final,0.20417,L0/T0,terminal,3.0,integral(u_x dV)/V,stdout.txt,derived_from_official
+imax04/clsvof,rising_bubble,rising_case1,clsvof,32,4,,,rise_velocity_x_max,0.233824,L0/T0,global,,max center-of-mass rise velocity,stdout.txt,derived_from_official
+imax04/clsvof,rising_bubble,rising_case1,clsvof,32,4,,,interface_facets,42,segments,terminal,3.0,number of t=3 output_facets segments,log,derived_from_official
+imax04/clsvof,rising_bubble,rising_case1,clsvof,32,4,,,circularity_min,0.8486021771569279,1,global,,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax04/clsvof,rising_bubble,rising_case1,clsvof,32,4,,,circularity_final,0.8944643813611605,1,terminal,3.0,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,actual_terminal_time,3.0,T0,terminal,3.0,last official history time,stdout.txt,derived_from_official
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,relative_volume_change_final,0.00145968,1,terminal,3.0,(V-V0)/V0,stdout.txt,derived_from_official
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,relative_volume_change_max_abs,0.00145968,1,global,,max(abs((V-V0)/V0)),stdout.txt,derived_from_official
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,center_of_mass_x_final,1.07639,L0,terminal,3.0,integral(x dV)/V,stdout.txt,derived_from_official
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,rise_velocity_x_final,0.204241,L0/T0,terminal,3.0,integral(u_x dV)/V,stdout.txt,derived_from_official
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,rise_velocity_x_max,0.233789,L0/T0,global,,max center-of-mass rise velocity,stdout.txt,derived_from_official
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,interface_facets,42,segments,terminal,3.0,number of t=3 output_facets segments,log,derived_from_official
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,circularity_min,0.8491226060077078,1,global,,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,circularity_final,0.8941499992181706,1,terminal,3.0,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,provider_evaluations,1316,count,provider_runtime,,kappa_offset_provider_stats evaluations,log,repo_extension
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,log,repo_extension
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,log,repo_extension
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,provider_min_abs_denominator,0.7149541125274613,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,log,repo_extension
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.49984636377988884,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,log,repo_extension
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,provider_grad_samples,1316,count,provider_runtime,,kappa_offset_provider_stats grad_samples,log,repo_extension
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,provider_grad_min,0.7998445519869548,1,provider_runtime,,kappa_offset_provider_stats grad_min,log,repo_extension
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,provider_grad_mean,0.9809221608175559,1,provider_runtime,,kappa_offset_provider_stats grad_mean,log,repo_extension
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,provider_grad_std,0.030855387663563022,1,provider_runtime,,kappa_offset_provider_stats grad_std,log,repo_extension
+imax04/nn,rising_bubble,rising_case1,nn,32,4,baseline_32_hgradient,32,provider_grad_max,1.0092537478140928,1,provider_runtime,,kappa_offset_provider_stats grad_max,log,repo_extension
+imax05/clsvof,rising_bubble,rising_case1,clsvof,32,5,,,actual_terminal_time,3.0,T0,terminal,3.0,last official history time,stdout.txt,derived_from_official
+imax05/clsvof,rising_bubble,rising_case1,clsvof,32,5,,,relative_volume_change_final,0.00137371,1,terminal,3.0,(V-V0)/V0,stdout.txt,derived_from_official
+imax05/clsvof,rising_bubble,rising_case1,clsvof,32,5,,,relative_volume_change_max_abs,0.00137371,1,global,,max(abs((V-V0)/V0)),stdout.txt,derived_from_official
+imax05/clsvof,rising_bubble,rising_case1,clsvof,32,5,,,center_of_mass_x_final,1.07681,L0,terminal,3.0,integral(x dV)/V,stdout.txt,derived_from_official
+imax05/clsvof,rising_bubble,rising_case1,clsvof,32,5,,,rise_velocity_x_final,0.204958,L0/T0,terminal,3.0,integral(u_x dV)/V,stdout.txt,derived_from_official
+imax05/clsvof,rising_bubble,rising_case1,clsvof,32,5,,,rise_velocity_x_max,0.233863,L0/T0,global,,max center-of-mass rise velocity,stdout.txt,derived_from_official
+imax05/clsvof,rising_bubble,rising_case1,clsvof,32,5,,,interface_facets,42,segments,terminal,3.0,number of t=3 output_facets segments,log,derived_from_official
+imax05/clsvof,rising_bubble,rising_case1,clsvof,32,5,,,circularity_min,0.8121739082845536,1,global,,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax05/clsvof,rising_bubble,rising_case1,clsvof,32,5,,,circularity_final,0.9008503182433668,1,terminal,3.0,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,actual_terminal_time,3.0,T0,terminal,3.0,last official history time,stdout.txt,derived_from_official
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,relative_volume_change_final,0.00146622,1,terminal,3.0,(V-V0)/V0,stdout.txt,derived_from_official
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,relative_volume_change_max_abs,0.00146622,1,global,,max(abs((V-V0)/V0)),stdout.txt,derived_from_official
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,center_of_mass_x_final,1.07708,L0,terminal,3.0,integral(x dV)/V,stdout.txt,derived_from_official
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,rise_velocity_x_final,0.205149,L0/T0,terminal,3.0,integral(u_x dV)/V,stdout.txt,derived_from_official
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,rise_velocity_x_max,0.23383,L0/T0,global,,max center-of-mass rise velocity,stdout.txt,derived_from_official
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,interface_facets,40,segments,terminal,3.0,number of t=3 output_facets segments,log,derived_from_official
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,circularity_min,0.8117778793780694,1,global,,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,circularity_final,0.9010186773302877,1,terminal,3.0,sqrt(4*pi*A_full)/P_full,circularity.csv,repo_extension
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,provider_evaluations,1316,count,provider_runtime,,kappa_offset_provider_stats evaluations,log,repo_extension
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,log,repo_extension
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,log,repo_extension
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,provider_min_abs_denominator,0.6993197014060863,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,log,repo_extension
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.4991487697682295,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,log,repo_extension
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,provider_grad_samples,1316,count,provider_runtime,,kappa_offset_provider_stats grad_samples,log,repo_extension
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,provider_grad_min,0.8055692316181909,1,provider_runtime,,kappa_offset_provider_stats grad_min,log,repo_extension
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,provider_grad_mean,0.9810480633099281,1,provider_runtime,,kappa_offset_provider_stats grad_mean,log,repo_extension
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,provider_grad_std,0.029583011841243494,1,provider_runtime,,kappa_offset_provider_stats grad_std,log,repo_extension
+imax05/nn,rising_bubble,rising_case1,nn,32,5,baseline_32_hgradient,32,provider_grad_max,1.0059258978991228,1,provider_runtime,,kappa_offset_provider_stats grad_max,log,repo_extension

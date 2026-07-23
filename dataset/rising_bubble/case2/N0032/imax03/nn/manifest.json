@@ -1,0 +1,159 @@
+{
+  "actual_grid": "32x8",
+  "artifacts": {
+    "cell_curvature_sha256": "e5621e454f382b384d8358d9095bdc4d657bde18c255850163b334ac8637aef9",
+    "inference_header_sha256": "ce280823f9464e9d8f047cd55f12f3b78e5f53e1b35997558865d6e0bfbb3d53",
+    "integral_sha256": "3f1250ac54075be8540327370bf6d69aaab74d147d7da82f336146c88e732949",
+    "stats_header_sha256": "43a266a6ca3e982eac67b7707960ee053d65498ac5638f5ddc0272fca88a5e19",
+    "two_phase_clsvof_sha256": "c0f21472c2d6acac0bdda0a2c43602273ee35d6c111cce4a98005ff9f6dbd048",
+    "weights_sha256": "5cb890935a4223750f2808f9212deda0ed5b2b5b51ce7c3a15bbd8827deb1896"
+  },
+  "benchmark": "rising_case2",
+  "benchmark_case": "hysing_case_2",
+  "case": "rising_bubble",
+  "completed_at": "2026-07-21T08:01:36.634347+00:00",
+  "created_at": "2026-07-21T08:01:26.938790+00:00",
+  "elapsed_seconds": 10.0,
+  "generator": "generate/rising_bubble/nn.sh",
+  "git": {
+    "changed_path_count": 61,
+    "commit": "106e2d7d1023ad16aae5003236897654d68fe14f",
+    "dirty": true
+  },
+  "imax": 3,
+  "level": 5,
+  "method": "nn",
+  "model": "baseline_32_hgradient",
+  "official_coverage_complete": true,
+  "openmp_threads": 1,
+  "plan": {
+    "benchmark": "rising_case2",
+    "case": "rising_bubble",
+    "commands": {
+      "compile": {
+        "argv": [
+          "/Users/jcy/research/cfd/basilisk/src/qcc",
+          "-O2",
+          "-DLEVELSET=1",
+          "-DCLSVOF=1",
+          "-DLEVEL=5",
+          "-DCASE2=1",
+          "-DKAPPA_OFFSET_CLAMP_FACTOR=1.0",
+          "-DKAPPA_OFFSET_PROBE_INTERVAL=0",
+          "-disable-dimensions",
+          "-I.",
+          "rising-clsvof.c",
+          "-o",
+          "rising-clsvof",
+          "-lm"
+        ],
+        "cwd": "$WORK",
+        "display": "/Users/jcy/research/cfd/basilisk/src/qcc -O2 -DLEVELSET=1 -DCLSVOF=1 -DLEVEL=5 -DCASE2=1 -DKAPPA_OFFSET_CLAMP_FACTOR=1.0 -DKAPPA_OFFSET_PROBE_INTERVAL=0 -disable-dimensions -I. rising-clsvof.c -o rising-clsvof -lm > compile.stdout 2> compile.stderr",
+        "stderr": "compile.stderr",
+        "stdout": "compile.stdout"
+      },
+      "run": {
+        "argv": [
+          "./rising-clsvof"
+        ],
+        "cwd": "$WORK",
+        "display": "./rising-clsvof > stdout.txt 2> log",
+        "stderr": "log",
+        "stdout": "stdout.txt"
+      }
+    },
+    "environment": {},
+    "generator": {
+      "path": "generate/rising_bubble/nn.sh",
+      "sha256": "1225f17fc12ae3383ea1979ca2c721efba0d52840b93a413a4621e0d3292ab68"
+    },
+    "method": "nn",
+    "output": "/private/tmp/claude-501/-Users-jcy-research-cfd/f77afd01-0fb6-4db9-8eff-a8ee1a02cb11/scratchpad/n32_raw/rising2_imax03_nn",
+    "parameters": {
+      "actual_grid": "32x8",
+      "benchmark_case": "hysing_case_2",
+      "compile_only": 0,
+      "imax": 3,
+      "level": 5,
+      "model": "baseline_32_hgradient",
+      "openmp_threads": 1,
+      "resolution": 32
+    },
+    "plan_sha256": "d3a7b34e530b5e75a211d4f1d2c0c0b596bfa83df0012f36459dac41da7e6e89",
+    "purpose": "formal",
+    "sources": {
+      "checkpoint_overlay": {
+        "bytes": 627,
+        "path": "source_snapshot/checkpoint_overlay.json",
+        "sha256": "2d2b57141cf1503fb5ec9958060b57f81f156156e5761852c59b591de8fa25f2"
+      },
+      "compiled_case": {
+        "bytes": 12784,
+        "path": "source_snapshot/rising-clsvof.c",
+        "sha256": "f60d8803326ccec703d53ec6aab9b9ce46251b96998aa46d7931bc30677d9bfc"
+      },
+      "compiled_integral": {
+        "bytes": 6881,
+        "path": "source_snapshot/integral.h",
+        "sha256": "3f1250ac54075be8540327370bf6d69aaab74d147d7da82f336146c88e732949"
+      },
+      "compiled_two_phase": {
+        "bytes": 2264,
+        "path": "source_snapshot/two-phase-clsvof.h",
+        "sha256": "c0f21472c2d6acac0bdda0a2c43602273ee35d6c111cce4a98005ff9f6dbd048"
+      },
+      "metrics_overlay": {
+        "bytes": 583,
+        "path": "source_snapshot/rising_metrics_overlay.json",
+        "sha256": "e7b25f947807f1ac23669025c0999a1b2ac91205aa8671f1520f8d6b20a31350"
+      },
+      "model_export": {
+        "bytes": 1392,
+        "path": "source_snapshot/export_manifest.json",
+        "sha256": "36e51b0b59edb54b12c3e61aac793c0b40902e0184f15c5b9ee003e9b38cd1fc"
+      },
+      "nn_inference": {
+        "bytes": 1658,
+        "path": "source_snapshot/clsvof_mlp_infer.h",
+        "sha256": "ce280823f9464e9d8f047cd55f12f3b78e5f53e1b35997558865d6e0bfbb3d53"
+      },
+      "nn_runtime": {
+        "bytes": 7183,
+        "path": "source_snapshot/clsvof_nn_cell_curvature.h",
+        "sha256": "e5621e454f382b384d8358d9095bdc4d657bde18c255850163b334ac8637aef9"
+      },
+      "nn_stats": {
+        "bytes": 4275,
+        "path": "source_snapshot/kappa_offset_stats.h",
+        "sha256": "43a266a6ca3e982eac67b7707960ee053d65498ac5638f5ddc0272fca88a5e19"
+      },
+      "nn_weights": {
+        "bytes": 1255834,
+        "path": "source_snapshot/nn_weights.h",
+        "sha256": "5cb890935a4223750f2808f9212deda0ed5b2b5b51ce7c3a15bbd8827deb1896"
+      },
+      "qcc": {
+        "bytes": 490304,
+        "path": "basilisk/src/qcc",
+        "sha256": "ed0fc9f53fb8070723b3aba0f272132118a21e702f720ae2c316ffa0d88239cc"
+      },
+      "redistance_overlay": {
+        "bytes": 365,
+        "path": "source_snapshot/redistance_overlay.json",
+        "sha256": "ce78d2b648cb1665105f36c1d3a38cd53252e734d1244f7c390c3034cc38aad4"
+      },
+      "stock_case": {
+        "bytes": 7488,
+        "path": "basilisk/src/test/rising.c",
+        "sha256": "d47183004112d07cce518ee308c069b02a0600ba75303d251a1604575b6b5863"
+      }
+    }
+  },
+  "purpose": "formal",
+  "resolution": 32,
+  "schema_version": 2,
+  "scientific_artifacts_schema_version": 1,
+  "scientific_artifacts_sha256": "fd4b67534e8adc82b3a3758c3b4c39ac3136e69b4303aff0ae5bd4fab6f83b0b",
+  "started_at": "2026-07-21T08:01:26.939482+00:00",
+  "status": "completed"
+}

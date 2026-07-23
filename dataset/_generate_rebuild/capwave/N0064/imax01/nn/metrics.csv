@@ -1,0 +1,17 @@
+metric,value,unit,scope,time,definition,source_artifact,origin
+grid_resolution,64,cells,identity,,N,manifest.json,benchmark_identity
+points_per_wavelength,32.0,cells_per_wavelength,official_resolution,,N/L0,official_error.dat,official_benchmark_definition
+relative_rms_error,0.00750492,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,official_error.dat,official_benchmark_definition
+relative_rms_error_recomputed,0.007504892332703449,1,global,,sqrt(mean((a_num-a_ref)^2))/0.01,wave.dat+prosperetti.h,derived
+relative_rms_recompute_delta,-2.7667296551014964e-08,1,audit,,recomputed-official,metrics.csv,derived
+samples,738,count,global,,number of amplitude samples,wave.dat,derived_from_benchmark_output
+provider_evaluations,48640,count,provider_runtime,,kappa_offset_provider_stats evaluations,official_error.dat,repo_extension
+provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,official_error.dat,repo_extension
+provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,official_error.dat,repo_extension
+provider_min_abs_denominator,0.9999382730873095,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,official_error.dat,repo_extension
+provider_max_abs_d_over_h,0.5000018265485177,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,official_error.dat,repo_extension
+provider_grad_samples,48640,count,provider_runtime,,kappa_offset_provider_stats grad_samples,official_error.dat,repo_extension
+provider_grad_min,0.9996981534013374,1,provider_runtime,,kappa_offset_provider_stats grad_min,official_error.dat,repo_extension
+provider_grad_mean,0.9999793548048811,1,provider_runtime,,kappa_offset_provider_stats grad_mean,official_error.dat,repo_extension
+provider_grad_std,5.366799593596416e-05,1,provider_runtime,,kappa_offset_provider_stats grad_std,official_error.dat,repo_extension
+provider_grad_max,1.0008124363347557,1,provider_runtime,,kappa_offset_provider_stats grad_max,official_error.dat,repo_extension

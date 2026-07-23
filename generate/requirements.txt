@@ -1,0 +1,2 @@
+# Python runtime uses only the standard library. Pytest is needed by `job.sh check`.
+pytest>=8,<9

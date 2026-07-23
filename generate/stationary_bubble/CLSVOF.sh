@@ -1,0 +1,194 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd "$script_dir/../.." && pwd)"
+qcc="${BASILISK_QCC:-$repo_root/basilisk/src/qcc}"
+shared_root="$repo_root/generate/_shared"
+redistance_root="$shared_root/nondefault_redistance"
+manifest_tool="$shared_root/run_manifest.py"
+field_overlay="$shared_root/append_field_snapshots.py"
+field_header="$shared_root/field_snapshots.h"
+finalizer="$shared_root/finalize_row.py"
+
+imax=0
+resolution=64
+purpose=smoke
+tau_max=2.0
+output=""
+dry_run=0
+compile_only=0
+threads=1
+precompiled=""
+
+usage() {
+  printf '%s\n' \
+    "usage: $0 [--imax 0] [--resolution 32|64|128|256] [--smoke|--formal]" \
+    "          [--tau-max VALUE] --output PATH [--threads N]" \
+    "          [--dry-run] [--compile-only] [--precompiled PATH]"
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --imax) imax="${2:?missing value for --imax}"; shift 2 ;;
+    --resolution) resolution="${2:?missing value for --resolution}"; shift 2 ;;
+    --smoke) purpose=smoke; shift ;;
+    --formal) purpose=formal; tau_max=2.0; shift ;;
+    --tau-max) tau_max="${2:?missing value for --tau-max}"; shift 2 ;;
+    --output) output="${2:?missing value for --output}"; shift 2 ;;
+    --threads) threads="${2:?missing value for --threads}"; shift 2 ;;
+    --dry-run) dry_run=1; shift ;;
+    --compile-only) compile_only=1; shift ;;
+    --precompiled) precompiled="${2:?missing value for --precompiled}"; shift 2 ;;
+    -h|--help) usage; exit 0 ;;
+    *) printf 'error: unknown argument %s\n' "$1" >&2; usage >&2; exit 2 ;;
+  esac
+done
+
+if [ "$imax" != 0 ]; then
+  printf 'error: stationary bubble is frozen to --imax 0\n' >&2; exit 2
+fi
+experiment_role=default
+case "$resolution" in
+  32) level=5 ;;
+  64) level=6 ;;
+  128) level=7 ;;
+  256) level=8 ;;
+  *) printf 'error: --resolution must be one of 32,64,128,256; stationary N512 is outside the formal matrix\n' >&2; exit 2 ;;
+esac
+case "$threads" in ''|*[!0-9]*|0)
+  printf 'error: --threads must be a positive integer\n' >&2; exit 2;; esac
+if [ "$purpose" = formal ] && [ "$tau_max" != 2.0 ] && [ "$tau_max" != 2 ]; then
+  printf 'error: formal stationary data must use --tau-max 2.0\n' >&2; exit 2
+fi
+if [ -z "$output" ]; then
+  printf 'error: --output is required\n' >&2; usage >&2; exit 2
+fi
+if [ "$purpose" = formal ] && [ "$compile_only" -eq 1 ] && [ "${CFD_CAMPAIGN_BUILD:-0}" != 1 ]; then
+  printf 'error: --formal cannot be combined with --compile-only\n' >&2; exit 2
+fi
+if [ "$compile_only" -eq 1 ] && [ -n "$precompiled" ]; then printf 'error: incompatible build flags\n' >&2; exit 2; fi
+if [ -n "$precompiled" ] && [ ! -f "$precompiled" ]; then printf 'error: missing precompiled executable\n' >&2; exit 2; fi
+if [ -n "$precompiled" ] && [ "${CFD_CAMPAIGN_PRECOMPILED:-0}" != 1 ]; then printf 'error: --precompiled is reserved for the verified campaign scheduler\n' >&2; exit 2; fi
+
+output_parent="$(dirname "$output")"
+if [ "$dry_run" -eq 0 ]; then mkdir -p "$output_parent"; fi
+if [ -d "$output_parent" ]; then output="$(cd "$output_parent" && pwd)/$(basename "$output")"; fi
+if [ "$dry_run" -eq 0 ] && [ -e "$output" ]; then
+  printf 'error: output already exists: %s\n' "$output" >&2; exit 1
+fi
+
+output_name="$(basename "$output")"
+if [ "$dry_run" -eq 1 ]; then
+  work="$(mktemp -d "${TMPDIR:-/tmp}/cfd-stationary-clsvof-plan.XXXXXX")"
+else
+  work="$repo_root/tem/stationary_bubble/_work/${output_name}.$$"
+  mkdir -p "$output/source_snapshot" "$work"
+fi
+
+cleanup() {
+  status=$?
+  trap - EXIT
+  if [ "$dry_run" -eq 1 ]; then
+    case "$work" in "${TMPDIR:-/tmp}"/cfd-stationary-clsvof-plan.*) rm -rf "$work" ;; esac
+  elif [ "$status" -ne 0 ] && [ -f "$output/manifest.json" ]; then
+    python3 "$manifest_tool" fail --manifest "$output/manifest.json" \
+      --error "runner exited with status $status" || true
+    printf 'failed output retained at %s; work retained at %s\n' "$output" "$work" >&2
+  fi
+  exit "$status"
+}
+trap cleanup EXIT
+
+cp "$script_dir/src/stationary-clsvof.c" "$work/stationary-clsvof.c"
+python3 "$field_overlay" "$work/stationary-clsvof.c" \
+  --case stationary_bubble --clsvof
+cp "$field_header" "$work/field_snapshots.h"
+cp "$repo_root/basilisk/src/integral.h" "$work/integral.h"
+python3 "$redistance_root/src/make_redistance_overlay.py" \
+  "$repo_root/basilisk/src/two-phase-clsvof.h" "$work/two-phase-clsvof.h" \
+  --imax "$imax" --no-metrics --provenance "$work/redistance_overlay.json"
+
+compile_cmd=("$qcc" -disable-dimensions -O2)
+if [ "$threads" -gt 1 ]; then compile_cmd+=("-fopenmp"); fi
+compile_cmd+=(
+  "-DSTATIONARY_LEVEL=$level" "-DSTATIONARY_TAU_MAX=$tau_max" -DMETHOD_NN=0
+  stationary-clsvof.c -o stationary-clsvof -lm
+)
+run_cmd=(./stationary-clsvof)
+if [ "$compile_only" -eq 1 ]; then run_cmd=(); fi
+
+plan_args=(
+  --repo-root "$repo_root"
+  --case stationary_bubble --benchmark stationary_bubble --method CLSVOF --purpose "$purpose"
+  --output "$output"
+  --generator "$script_dir/CLSVOF.sh"
+  --generator-logical generate/stationary_bubble/CLSVOF.sh
+  --parameter "resolution=$resolution" --parameter "level=$level"
+  --parameter "imax=$imax" --parameter "tau_max=$tau_max"
+  --parameter "experiment_role=$experiment_role"
+  --parameter grid_strategy=uniform
+  --parameter model=null --parameter "openmp_threads=$threads"
+  --parameter "compile_only=$compile_only"
+  --parameter "compile_reused=$([ -n "$precompiled" ] && printf true || printf false)"
+  --run-env "OMP_NUM_THREADS=$threads" --run-env OMP_DYNAMIC=false
+  --source "case_source=generate/stationary_bubble/src/stationary-clsvof.c::$script_dir/src/stationary-clsvof.c"
+  --source "compiled_case=source_snapshot/stationary-clsvof.c::$work/stationary-clsvof.c"
+  --source "compiled_integral=source_snapshot/integral.h::$work/integral.h"
+  --source "compiled_two_phase=source_snapshot/two-phase-clsvof.h::$work/two-phase-clsvof.h"
+  --source "redistance_overlay=source_snapshot/redistance_overlay.json::$work/redistance_overlay.json"
+  --source "field_snapshots=source_snapshot/field_snapshots.h::$work/field_snapshots.h"
+  --source "qcc=toolchain/qcc::$qcc"
+  --compile-cwd '$WORK' --run-cwd '$WORK'
+  --run-stdout stdout.txt --run-stderr log
+)
+for arg in "${compile_cmd[@]}"; do plan_args+=("--compile-arg=$arg"); done
+if [ -n "$precompiled" ]; then plan_args+=(--source "precompiled_executable=build/precompiled_executable::$precompiled"); fi
+if [ "$compile_only" -eq 0 ]; then
+  for arg in "${run_cmd[@]}"; do plan_args+=("--run-arg=$arg"); done
+fi
+
+if [ "$dry_run" -eq 1 ]; then
+  python3 "$manifest_tool" dry-run "${plan_args[@]}"
+  exit 0
+fi
+
+cp "$work/stationary-clsvof.c" "$work/integral.h" "$work/two-phase-clsvof.h" \
+  "$work/redistance_overlay.json" "$work/field_snapshots.h" \
+  "$output/source_snapshot/"
+python3 "$manifest_tool" start "${plan_args[@]}" --manifest "$output/manifest.json"
+
+SECONDS=0
+if [ -n "$precompiled" ]; then
+  cp "$precompiled" "$work/stationary-clsvof"
+  printf 'campaign-built executable reused\n' > "$work/compile.stdout"; : > "$work/compile.stderr"
+else
+  (cd "$work"; "${compile_cmd[@]}" > compile.stdout 2> compile.stderr)
+fi
+cp "$work/compile.stdout" "$work/compile.stderr" "$output/"
+if [ "$compile_only" -eq 1 ]; then cp "$work/stationary-clsvof" "$output/executable"; fi
+if [ "$compile_only" -eq 0 ]; then
+  (
+    cd "$work"
+    OMP_NUM_THREADS="$threads" OMP_DYNAMIC=false "${run_cmd[@]}" > stdout.txt 2> log
+  )
+  test -s "$work/La-12000-$level"
+  test -s "$work/termination.csv"
+  test -s "$work/milestones.csv"
+  cp "$work/La-12000-$level" "$output/timeseries.dat"
+  cp "$work/log" "$output/runtime_and_terminal.log"
+  cp "$work/stdout.txt" "$output/solver.stdout.txt"
+  cp "$work/termination.csv" "$output/termination.csv"
+  cp "$work/milestones.csv" "$output/milestones.csv"
+  test -s "$work/fields.csv"
+  cp "$work/fields.csv" "$output/fields.csv"
+  python3 "$shared_root/build_scientific_artifacts.py" "$output"
+  python3 "$finalizer" "$output"
+fi
+elapsed="$SECONDS"
+python3 "$manifest_tool" complete "${plan_args[@]}" \
+  --manifest "$output/manifest.json" --elapsed-seconds "$elapsed"
+
+trap - EXIT
+printf '%s\n' "$output"
+case "$work" in "$repo_root"/tem/stationary_bubble/_work/*) rm -rf "$work" ;; esac

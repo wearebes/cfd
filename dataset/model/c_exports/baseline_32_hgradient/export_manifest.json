@@ -1,0 +1,40 @@
+{
+  "created_at_utc": "2026-07-21T07:53:23.794529+00:00",
+  "feature_transform": {
+    "dataset_path": "/Users/jcy/research/PINN/dataset/32/32_hgradient.h5",
+    "feature_order": "phi9+nx9+ny9",
+    "feature_version": 2,
+    "output_dim": 27,
+    "raw_feature_dim": 27,
+    "source_split": "train",
+    "transform_kind": "standardize"
+  },
+  "files": {
+    "weights_header": "nn_weights.h"
+  },
+  "inference_dtype": "float32",
+  "model_config": {
+    "batch_size": 256,
+    "compile_mode": "reduce-overhead",
+    "dataset_path": "dataset/32/32_hgradient.h5",
+    "hidden_units": 128,
+    "input_dim": 27,
+    "l2_reg": 0,
+    "loss_fn": "mse",
+    "lr": 0.0001,
+    "max_epochs": 1000,
+    "optimizer_type": "adamw",
+    "output_model_path": "out/32/baseline_32_hgradient.pt",
+    "patience": 30,
+    "profile_cuda_timing": false,
+    "raw_feature_dim": 27,
+    "seed": 42,
+    "use_pca": false
+  },
+  "name": "baseline_32_hgradient",
+  "numeric_storage": "C float arrays with C99 hexadecimal float literals",
+  "output_contract": "h*kappa",
+  "solver_scale_note": "The model predicts q_gamma=Delta*kappa_gamma on the zero level set. At the cell-local Basilisk integral.h insertion site use q_cell=q_gamma/(1+(d/Delta)*q_gamma), then kappa_cell=q_cell/Delta.",
+  "source_checkpoint": "dataset/model/baseline_32_hgradient.pt",
+  "source_stats_csv": "dataset/model/baseline_32_hgradient.csv"
+}

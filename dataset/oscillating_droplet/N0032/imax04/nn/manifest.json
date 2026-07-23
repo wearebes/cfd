@@ -1,0 +1,250 @@
+{
+  "N": 32,
+  "artifacts": {
+    "cell_curvature_sha256": "e5621e454f382b384d8358d9095bdc4d657bde18c255850163b334ac8637aef9",
+    "inference_header_sha256": "ce280823f9464e9d8f047cd55f12f3b78e5f53e1b35997558865d6e0bfbb3d53",
+    "integral_sha256": "3f1250ac54075be8540327370bf6d69aaab74d147d7da82f336146c88e732949",
+    "stats_header_sha256": "43a266a6ca3e982eac67b7707960ee053d65498ac5638f5ddc0272fca88a5e19",
+    "two_phase_clsvof_sha256": "dfd3d0cefe8141a193d47a7b42b0234e2fba3cda8b64bca7ed28c610c138bef2",
+    "weights_sha256": "5cb890935a4223750f2808f9212deda0ed5b2b5b51ce7c3a15bbd8827deb1896"
+  },
+  "benchmark": "oscillating_droplet",
+  "case": "oscillating_droplet",
+  "case_id": "oscillating_droplet",
+  "cells_per_diameter": 12.8,
+  "checkpoint_overlay_sha256": "62ca19ca01d7a63af7ba476336a8fa90473b7cb293219f7d92e63bdcf5dc025e",
+  "checkpoint_sha256": "bd8580ac4dfa580ad0c9b8da2e87bb6592910c2109b5db81bb6c09d263aa12a3",
+  "clamp_factor": 1.0,
+  "compile_command": "cp /Users/jcy/research/cfd/tem/dataset_completion_20260721/oscillating/precompiled/N0032/nn_retry/oscillation oscillation",
+  "compile_returncode": 0,
+  "compile_reused": true,
+  "completed_at": "2026-07-21T08:56:09.486000+00:00",
+  "created_at": "2026-07-21T08:51:15.894060+00:00",
+  "denominator_guard": 0.25,
+  "dependency_hashes": {
+    "basilisk/src/integral.h": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395",
+    "basilisk/src/qcc": "ed0fc9f53fb8070723b3aba0f272132118a21e702f720ae2c316ffa0d88239cc",
+    "basilisk/src/redistance.h": "3f60a716118bd651d594ea3b0beae521c5ca7c7ac15929ad49ac8fc50449dc6e",
+    "basilisk/src/two-phase-clsvof.h": "c0f21472c2d6acac0bdda0a2c43602273ee35d6c111cce4a98005ff9f6dbd048",
+    "dataset/model/baseline_32_hgradient.pt": "bd8580ac4dfa580ad0c9b8da2e87bb6592910c2109b5db81bb6c09d263aa12a3",
+    "dataset/model/c_exports/baseline_32_hgradient/export_manifest.json": "36e51b0b59edb54b12c3e61aac793c0b40902e0184f15c5b9ee003e9b38cd1fc",
+    "dataset/model/c_exports/baseline_32_hgradient/nn_weights.h": "5cb890935a4223750f2808f9212deda0ed5b2b5b51ce7c3a15bbd8827deb1896",
+    "generate/_shared/build_scientific_artifacts.py": "99c075e22f577b9972417156a72feb00e5325de085a77133164afb2ddffda82a",
+    "generate/_shared/make_checkpoint_overlay.py": "2bf86b059dff3ff162bea898293a908e45aa23b42f66faf435a37a7dbd569d5d",
+    "generate/_shared/nn_runtime/src/clsvof_mlp_infer.h": "ce280823f9464e9d8f047cd55f12f3b78e5f53e1b35997558865d6e0bfbb3d53",
+    "generate/_shared/nn_runtime/src/clsvof_nn_cell_curvature.h": "e5621e454f382b384d8358d9095bdc4d657bde18c255850163b334ac8637aef9",
+    "generate/_shared/nn_runtime/src/kappa_offset_stats.h": "43a266a6ca3e982eac67b7707960ee053d65498ac5638f5ddc0272fca88a5e19",
+    "generate/_shared/nn_runtime/src/make_overlay_integral.py": "2268cb5e82a4b3620c4f8a8e719ac6b8c42f9df59e6ed25b5a8c46722238bd38",
+    "generate/_shared/run_manifest.py": "412fb33f36c1c00b972988eec918b001d381a34816ac9888881ee3deda398542",
+    "generate/oscillating_droplet/clsvof_extension/oscillation-clsvof.c": "fe9a0c6c87a6296e18d7cdcc2e47a69c662b26109ba7c9be9cfe127e0cfbdfa0",
+    "generate/oscillating_droplet/nn/generate/make_runtime_redistance_overlay.py": "83c08540a1d5e5e8ecfedca769c521a7e73dc585d924334e2de04c2193698adf",
+    "generate/oscillating_droplet/nn/src/oscillation-nn-single-level.c": "97563ad11900aae7bf48bdf04f1b009f328f8d058795bbcd2befaeac2c2d766c",
+    "generate/oscillating_droplet/nn/src/oscillation_raw27_adapter.h": "07a59d9f0c7caf925fd54d562d4bb0f10fb3fa8d148e01a5fc1d45d6b33d6eea",
+    "tem/dataset_completion_20260721/oscillating/precompiled/N0032/nn_retry/oscillation": "77aa0115c36d18ee545f491362392ecabfcc7b22592f5bce9a03c023f4480431"
+  },
+  "elapsed_seconds": 293.4915169170017,
+  "ended_at": "2026-07-21T08:56:09.391797+00:00",
+  "evidence_level": "formal",
+  "export_manifest_sha256": "36e51b0b59edb54b12c3e61aac793c0b40902e0184f15c5b9ee003e9b38cd1fc",
+  "feature_order": "phi9+nx9+ny9",
+  "fit_enabled": true,
+  "generated_integral_sha256": "3f1250ac54075be8540327370bf6d69aaab74d147d7da82f336146c88e732949",
+  "generated_single_level_source_sha256": "bd7b4e784f5490d7d85713b884f884c6bef704426d60a584a0f8ce196b926159",
+  "generated_two_phase_clsvof_sha256": "dfd3d0cefe8141a193d47a7b42b0234e2fba3cda8b64bca7ed28c610c138bef2",
+  "generator": "generate/oscillating_droplet/nn/generate/run_row.py",
+  "git": {
+    "changed_path_count": 100,
+    "commit": "106e2d7d1023ad16aae5003236897654d68fe14f",
+    "dirty": true
+  },
+  "host_source_sha256": "fe9a0c6c87a6296e18d7cdcc2e47a69c662b26109ba7c9be9cfe127e0cfbdfa0",
+  "imax": 4,
+  "legacy_method_id": "CLSVOF_NN_CELL_OFFSET",
+  "level": 5,
+  "method": "nn",
+  "method_id": "nn",
+  "method_role": "method",
+  "method_variant": "standard",
+  "model": "baseline_32_hgradient",
+  "model_name": "baseline_32_hgradient",
+  "model_output": "Delta*kappa_gamma_model",
+  "model_phi_sign": "outside_positive",
+  "nn_provider": "cell_offset",
+  "numerical_failure": null,
+  "official_coverage_complete": true,
+  "openmp_threads": 1,
+  "oscillation_adapter_sha256": "07a59d9f0c7caf925fd54d562d4bb0f10fb3fa8d148e01a5fc1d45d6b33d6eea",
+  "plan": {
+    "benchmark": "oscillating_droplet",
+    "case": "oscillating_droplet",
+    "commands": {
+      "compile": {
+        "argv": [
+          "cp",
+          "/Users/jcy/research/cfd/tem/dataset_completion_20260721/oscillating/precompiled/N0032/nn_retry/oscillation",
+          "oscillation"
+        ],
+        "cwd": "$WORK",
+        "display": "cp /Users/jcy/research/cfd/tem/dataset_completion_20260721/oscillating/precompiled/N0032/nn_retry/oscillation oscillation > compile.stdout 2> compile.stderr",
+        "stderr": "compile.stderr",
+        "stdout": "compile.stdout"
+      },
+      "run": {
+        "argv": [
+          "./oscillation"
+        ],
+        "cwd": "$WORK",
+        "display": "./oscillation > out 2> runtime.stderr.txt",
+        "stderr": "runtime.stderr.txt",
+        "stdout": "out"
+      }
+    },
+    "environment": {
+      "OMP_NUM_THREADS": 1,
+      "OSCILLATION_REDISTANCE_IMAX": 4
+    },
+    "generator": {
+      "path": "generate/oscillating_droplet/nn/generate/run_row.py",
+      "sha256": "93b28bebc080888f9e2564c02ffeabd74b33d533c6fc5435999d085003ad3e10"
+    },
+    "method": "nn",
+    "output": "/Users/jcy/research/cfd/tem/dataset_completion_20260721/oscillating/N0032/imax_4/nn",
+    "parameters": {
+      "compile_only": false,
+      "fit_enabled": true,
+      "imax": 4,
+      "level": 5,
+      "method_variant": "standard",
+      "model": "baseline_32_hgradient",
+      "openmp_threads": 1,
+      "resolution": 32,
+      "snapshots_enabled": false,
+      "t_end": 1.0
+    },
+    "plan_sha256": "465510319d23995ce6d4bad0b8abea45f6d771b9054df18b822355a1befe0b52",
+    "purpose": "formal",
+    "sources": {
+      "checkpoint_overlay": {
+        "bytes": 909,
+        "path": "source_snapshot/checkpoint_overlay.json",
+        "sha256": "62ca19ca01d7a63af7ba476336a8fa90473b7cb293219f7d92e63bdcf5dc025e"
+      },
+      "compiled_case": {
+        "bytes": 9383,
+        "path": "source_snapshot/source.c",
+        "sha256": "bd7b4e784f5490d7d85713b884f884c6bef704426d60a584a0f8ce196b926159"
+      },
+      "compiled_integral": {
+        "bytes": 6881,
+        "path": "source_snapshot/integral.h",
+        "sha256": "3f1250ac54075be8540327370bf6d69aaab74d147d7da82f336146c88e732949"
+      },
+      "compiled_two_phase": {
+        "bytes": 2290,
+        "path": "source_snapshot/two-phase-clsvof.h",
+        "sha256": "dfd3d0cefe8141a193d47a7b42b0234e2fba3cda8b64bca7ed28c610c138bef2"
+      },
+      "host_case": {
+        "bytes": 2744,
+        "path": "generate/oscillating_droplet/clsvof_extension/oscillation-clsvof.c",
+        "sha256": "fe9a0c6c87a6296e18d7cdcc2e47a69c662b26109ba7c9be9cfe127e0cfbdfa0"
+      },
+      "model_export": {
+        "bytes": 1392,
+        "path": "source_snapshot/export_manifest.json",
+        "sha256": "36e51b0b59edb54b12c3e61aac793c0b40902e0184f15c5b9ee003e9b38cd1fc"
+      },
+      "nn_inference": {
+        "bytes": 1658,
+        "path": "source_snapshot/clsvof_mlp_infer.h",
+        "sha256": "ce280823f9464e9d8f047cd55f12f3b78e5f53e1b35997558865d6e0bfbb3d53"
+      },
+      "nn_runtime": {
+        "bytes": 7183,
+        "path": "source_snapshot/clsvof_nn_cell_curvature.h",
+        "sha256": "e5621e454f382b384d8358d9095bdc4d657bde18c255850163b334ac8637aef9"
+      },
+      "nn_stats": {
+        "bytes": 4275,
+        "path": "source_snapshot/kappa_offset_stats.h",
+        "sha256": "43a266a6ca3e982eac67b7707960ee053d65498ac5638f5ddc0272fca88a5e19"
+      },
+      "nn_weights": {
+        "bytes": 1255834,
+        "path": "source_snapshot/nn_weights.h",
+        "sha256": "5cb890935a4223750f2808f9212deda0ed5b2b5b51ce7c3a15bbd8827deb1896"
+      },
+      "oscillation_adapter": {
+        "bytes": 357,
+        "path": "source_snapshot/oscillation_raw27_adapter.h",
+        "sha256": "07a59d9f0c7caf925fd54d562d4bb0f10fb3fa8d148e01a5fc1d45d6b33d6eea"
+      },
+      "precompiled_executable": {
+        "bytes": 596632,
+        "path": "/Users/jcy/research/cfd/tem/dataset_completion_20260721/oscillating/precompiled/N0032/nn_retry/oscillation",
+        "sha256": "77aa0115c36d18ee545f491362392ecabfcc7b22592f5bce9a03c023f4480431"
+      },
+      "qcc": {
+        "bytes": 490304,
+        "path": "basilisk/src/qcc",
+        "sha256": "ed0fc9f53fb8070723b3aba0f272132118a21e702f720ae2c316ffa0d88239cc"
+      },
+      "redistance_overlay": {
+        "bytes": 474,
+        "path": "source_snapshot/redistance_overlay.json",
+        "sha256": "b26e64fed6f98e9a57d3707a4e5d5860f9384226744bc4324a64143154751504"
+      },
+      "single_level_case": {
+        "bytes": 5067,
+        "path": "generate/oscillating_droplet/nn/src/oscillation-nn-single-level.c",
+        "sha256": "97563ad11900aae7bf48bdf04f1b009f328f8d058795bbcd2befaeac2c2d766c"
+      },
+      "stock_integral": {
+        "bytes": 6839,
+        "path": "source_snapshot/integral.stock.h",
+        "sha256": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395"
+      },
+      "training_checkpoint": {
+        "bytes": 218469,
+        "path": "dataset/model/baseline_32_hgradient.pt",
+        "sha256": "bd8580ac4dfa580ad0c9b8da2e87bb6592910c2109b5db81bb6c09d263aa12a3"
+      }
+    }
+  },
+  "precompiled_executable_sha256": "77aa0115c36d18ee545f491362392ecabfcc7b22592f5bce9a03c023f4480431",
+  "provider_stats": {
+    "clamp_hits": 0,
+    "denominator_guard_hits": 0,
+    "evaluations": 16026,
+    "grad_max": 1.0411391400702266,
+    "grad_mean": 0.9956387111823595,
+    "grad_min": 0.9356743273465202,
+    "grad_samples": 16026,
+    "grad_std": 0.003003605981148814,
+    "max_abs_d_over_h": 0.4978246127008577,
+    "min_abs_denominator": 0.91952507359178
+  },
+  "purpose": "formal",
+  "raw27_order": "j:+1..-1, i:-1..+1",
+  "redistance_imax": 4,
+  "redistance_overlay_sha256": "b26e64fed6f98e9a57d3707a4e5d5860f9384226744bc4324a64143154751504",
+  "reference_id": null,
+  "resolution": 32,
+  "run_returncode": 0,
+  "schema_version": 2,
+  "scientific_artifacts_schema_version": 1,
+  "scientific_artifacts_sha256": "5ff6c6396aeee1b0e77f5a70cde12c023a2a8f0bd0323af01d04ee7303128ff7",
+  "shared_provider_sha256": "e5621e454f382b384d8358d9095bdc4d657bde18c255850163b334ac8637aef9",
+  "single_level_source_sha256": "97563ad11900aae7bf48bdf04f1b009f328f8d058795bbcd2befaeac2c2d766c",
+  "snapshots_enabled": false,
+  "solver_d_sign": "inside_positive",
+  "solver_output": "kappa_cell_solver",
+  "solver_to_model_sign": -1,
+  "started_at": "2026-07-21T08:51:15.899330+00:00",
+  "status": "completed",
+  "stock_integral_sha256": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395",
+  "t_end": 1.0,
+  "two_phase_clsvof_sha256": "c0f21472c2d6acac0bdda0a2c43602273ee35d6c111cce4a98005ff9f6dbd048",
+  "wall_seconds": 293.4915169170017,
+  "weights_sha256": "5cb890935a4223750f2808f9212deda0ed5b2b5b51ce7c3a15bbd8827deb1896"
+}

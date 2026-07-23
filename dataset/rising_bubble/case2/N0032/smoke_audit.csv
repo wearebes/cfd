@@ -1,0 +1,13 @@
+row,case,benchmark,method,resolution,imax,official_artifacts,metrics,plot_rows,checkpoints_written,checkpoints_not_reached,restore_checks,status
+imax00/clsvof,rising_bubble,rising_case2,clsvof,32,0,2,9,54,4,0,4,PASS
+imax00/nn,rising_bubble,rising_case2,nn,32,0,2,19,54,4,0,4,PASS
+imax01/clsvof,rising_bubble,rising_case2,clsvof,32,1,2,9,55,4,0,4,PASS
+imax01/nn,rising_bubble,rising_case2,nn,32,1,2,19,55,4,0,4,PASS
+imax02/clsvof,rising_bubble,rising_case2,clsvof,32,2,2,9,55,4,0,4,PASS
+imax02/nn,rising_bubble,rising_case2,nn,32,2,2,19,55,4,0,4,PASS
+imax03/clsvof,rising_bubble,rising_case2,clsvof,32,3,2,9,55,4,0,4,PASS
+imax03/nn,rising_bubble,rising_case2,nn,32,3,2,19,55,4,0,4,PASS
+imax04/clsvof,rising_bubble,rising_case2,clsvof,32,4,2,9,55,4,0,4,PASS
+imax04/nn,rising_bubble,rising_case2,nn,32,4,2,19,55,4,0,4,PASS
+imax05/clsvof,rising_bubble,rising_case2,clsvof,32,5,2,9,55,4,0,4,PASS
+imax05/nn,rising_bubble,rising_case2,nn,32,5,2,19,55,4,0,4,PASS

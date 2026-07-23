@@ -1,0 +1,13 @@
+metric,value,unit,scope,time,definition,source_artifact,origin
+actual_terminal_tau,0.0648785603763914,1,terminal,0.0648785603763914,mu*t/D^2,clsvof/termination.csv,repo_extension
+termination_reason,converged_df_lt_1e-10,category,terminal,0.0648785603763914,solver stop condition,clsvof/termination.csv,repo_extension
+level,6,level,official_resolution,,grid refinement level,official_terminal.dat,official
+diameter_cells,51.2,cells_per_diameter,official_resolution,,D*N,manifest.json,derived_from_benchmark_identity
+laplace_number,12000.0,1,identity,,sigma*rho*D/mu^2,official_terminal.dat,official
+u_star_final,3.05802e-07,1,terminal,0.0648785603763914,max(|u|)*sqrt(D/sigma),official_terminal.dat,official
+shape_error_avg,2.27395e-05,1,terminal,0.0648785603763914,normf(c-c_ref).avg,official_terminal.dat,official
+shape_error_rms,0.000224592,1,terminal,0.0648785603763914,normf(c-c_ref).rms,official_terminal.dat,official
+shape_error_max,0.00307347,1,terminal,0.0648785603763914,normf(c-c_ref).max,official_terminal.dat,official
+ekmax,0.208478,L0^-1,terminal,0.0648785603763914,max(abs(kappa-1/R_equiv)),official_terminal.dat,official
+relative_curvature_error,0.0833912,1,terminal,0.0648785603763914,"ekmax/(1/R), R=0.4",official_terminal.dat,derived
+relative_curvature_error_percent,8.33912,%,terminal,0.0648785603763914,100*ekmax/2.5,official_terminal.dat,derived

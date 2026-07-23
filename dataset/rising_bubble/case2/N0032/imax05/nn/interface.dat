@@ -1,0 +1,185 @@
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.17608 sum: 0.710387 nrelax: 100 tolerance: 0.140527
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.291475 sum: 1.21333 nrelax: 100 tolerance: 0.115263
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.365428 sum: 1.61563 nrelax: 100 tolerance: 0.105662
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.443639 sum: 2.07888 nrelax: 100 tolerance: 0.100914
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.586938 sum: 2.67687 nrelax: 100 tolerance: 0.100914
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 1.52864 sum: 6.65171 nrelax: 100 tolerance: 0.100914
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 3.46759 sum: 13.9043 nrelax: 100 tolerance: 0.116619
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 5.23358 sum: 21.2532 nrelax: 100 tolerance: 0.165276
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 1.85776 sum: 8.10175 nrelax: 100 tolerance: 0.165276
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.191754 sum: 0.806707 nrelax: 100 tolerance: 0.158461
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.37126 sum: 1.65854 nrelax: 100 tolerance: 0.158461
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 3.04634 sum: 13.9266 nrelax: 100 tolerance: 0.158461
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 3.20333 sum: 14.1962 nrelax: 100 tolerance: 0.15134
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 3.70272 sum: 13.6013 nrelax: 100 tolerance: 0.15134
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 4.24101 sum: 17.2722 nrelax: 100 tolerance: 0.15134
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 3.36434 sum: 12.8703 nrelax: 100 tolerance: 0.143868
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 4.61383 sum: 16.0823 nrelax: 100 tolerance: 0.143868
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 4.89541 sum: 16.9884 nrelax: 100 tolerance: 0.136196
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 9.71814 sum: 20.8909 nrelax: 100 tolerance: 0.136196
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 7.75503 sum: 19.7394 nrelax: 100 tolerance: 0.136196
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 4.54251 sum: 10.6032 nrelax: 100 tolerance: 0.128067
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 6.69288 sum: 11.9917 nrelax: 100 tolerance: 0.145125
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 3.25396 sum: 5.86453 nrelax: 100 tolerance: 0.136196
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 2.56841 sum: 5.53257 nrelax: 100 tolerance: 0.127268
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 7.68888 sum: 12.0178 nrelax: 100 tolerance: 0.127268
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.334389 sum: 0.514602 nrelax: 100 tolerance: 0.127268
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.205709 sum: -0.45076 nrelax: 100 tolerance: 0.117666
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 4.17192 sum: 7.40084 nrelax: 100 tolerance: 0.117666
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 4.20589 sum: 6.63723 nrelax: 100 tolerance: 0.107657
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.813585 sum: 1.46778 nrelax: 100 tolerance: 0.107657
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 1.22196 sum: 2.84214 nrelax: 100 tolerance: 0.107657
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 4.55027 sum: 7.74489 nrelax: 100 tolerance: 0.0966229
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 2.14187 sum: 3.42306 nrelax: 100 tolerance: 0.0966229
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 1.10166 sum: 2.29899 nrelax: 100 tolerance: 0.0966229
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.98177 sum: 4.01467 nrelax: 100 tolerance: 0.0966229
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 3.80657 sum: 6.36469 nrelax: 100 tolerance: 0.0966229
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 1.83073 sum: 2.94077 nrelax: 100 tolerance: 0.0966229
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 1.22419 sum: 1.86747 nrelax: 100 tolerance: 0.0966229
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.701135 sum: 3.25893 nrelax: 100 tolerance: 0.0966229
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 1.58436 sum: 4.0889 nrelax: 100 tolerance: 0.0966229
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 2.81822 sum: 4.58576 nrelax: 100 tolerance: 0.0966229
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.877345 sum: 1.37508 nrelax: 100 tolerance: 0.0966229
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 1.167 sum: 1.72473 nrelax: 100 tolerance: 0.0966229
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.874966 sum: 3.15817 nrelax: 100 tolerance: 0.0966229
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 1.54438 sum: 2.91019 nrelax: 100 tolerance: 0.0966229
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 2.46185 sum: 3.96019 nrelax: 100 tolerance: 0.0966229
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.48487 sum: 0.751138 nrelax: 100 tolerance: 0.0966229
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 1.09137 sum: 1.59851 nrelax: 100 tolerance: 0.0966229
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 1.4636 sum: 2.82669 nrelax: 100 tolerance: 0.0966229
+0.6875 0.277175
+0.681647 0.3125
+
+0.677703 0.3125
+0.6875 0.327973
+
+0.709057 0.25
+0.688265 0.3125
+
+0.688596 0.3125
+0.75 0.348093
+
+0.8125 0.238976
+0.77093 0.25
+
+0.75 0.255737
+0.753735 0.25
+
+0.75 0.324706
+0.8125 0.326283
+
+0.8125 0.237313
+0.875 0.218713
+
+0.8125 0.32421
+0.875 0.319744
+
+0.875 0.219128
+0.9375 0.199485
+
+0.875 0.319297
+0.9375 0.313669
+
+1 0.17009
+0.970288 0.1875
+
+0.9375 0.200384
+0.97083 0.1875
+
+1 0.306898
+0.956901 0.3125
+
+0.9375 0.314524
+0.946869 0.3125
+
+1.06079 0
+1.05914 0.0625
+
+1.0625 0.078706
+1.04522 0.125
+
+1 0.172925
+1.04554 0.125
+
+1 0.29867
+1.0625 0.280298
+
+1.0625 0.0832706
+1.06956 0.0625
+
+1.0625 0.282128
+1.125 0.263294
+
+1.1875 0.237699
+1.16293 0.25
+
+1.125 0.266279
+1.15752 0.25
+
+1.1875 0.23586
+1.24602 0.1875
+
+1.3125 0.0916074
+1.29816 0.125
+
+1.25 0.185392
+1.29868 0.125
+
+1.33128 0
+1.32312 0.0625
+
+1.3125 0.0879344
+1.32342 0.0625
+
+src/poisson.h:219: warning: convergence for pf not reached after 100 iterations
+  res: 0.55992 sum: 0.95164 nrelax: 100 tolerance: 0.0821467
+kappa_offset_provider_stats evaluations=1051 clamp_hits=5 denominator_guard_hits=0 min_abs_denominator=0.67871796187038769 max_abs_d_over_h=0.49608671667772919 grad_samples=1051 grad_min=0.37646298790451882 grad_mean=0.95869730651591301 grad_std=0.088003312919950602 grad_max=1.0260000476485247

@@ -1,0 +1,2 @@
+kappa_offset_provider_stats evaluations=23712 clamp_hits=0 denominator_guard_hits=0 min_abs_denominator=1.0000103780338068 max_abs_d_over_h=0.50000023629151735 grad_samples=23712 grad_min=0.99979137119649975 grad_mean=0.99998375071095491 grad_std=2.8898176474809931e-05 grad_max=1.0002855730264766
+16 0.0370004

@@ -1,0 +1,229 @@
+row,case,benchmark,method,resolution,imax,model_id,model_resolution,metric,value,unit,scope,time,definition,source_artifact,origin
+imax00/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,0,,,actual_terminal_time,1.0002278213294162,T0,terminal,1.0002278213294162,terminal solver-state time,checkpoint_index.csv,repo_extension
+imax00/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,0,,,last_kinetic_energy_sample_time,0.999448,T0,terminal_sampling,0.999448,last official kinetic-energy sample time,k-5,derived_from_official
+imax00/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,0,,,diameter_cells,12.8,cells_per_diameter,official_resolution,,D/L0*N,manifest.json,benchmark_identity
+imax00/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,0,,,max_kinetic_energy,0.00147906,energy,global,,max(K(t)),k-5,derived_from_official
+imax00/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,0,,,fit_a,0.000250207,energy,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax00/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,0,,,fit_a_stderr,2.062e-06,energy,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax00/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,0,,,fit_b,-1.14011,T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax00/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,0,,,fit_b_stderr,0.01146,T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax00/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,0,,,fit_c,151.246,rad*T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax00/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,0,,,fit_c_stderr,0.007064,rad*T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax00/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,0,,,frequency_error_signed,-0.0232210640262691,1,global,,c/(2*omega0)-1,error,official
+imax00/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,0,,,frequency_error_abs_percent,2.3221064026269103,%,global,,100*abs(c/(2*omega0)-1),error,derived
+imax00/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,0,,,equivalent_laplace,86547.7670930537,1,global,,30^2/(b^2*D^3),laplace,official
+imax00/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,0,,,fit_damping_regime,nonphysical_growth,category,fit_quality,,sign(b): b>0 is exponential damping,fit.log,derived
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,actual_terminal_time,1.0002278213294162,T0,terminal,1.0002278213294162,terminal solver-state time,checkpoint_index.csv,repo_extension
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,last_kinetic_energy_sample_time,0.999448,T0,terminal_sampling,0.999448,last official kinetic-energy sample time,k-5,derived_from_official
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,diameter_cells,12.8,cells_per_diameter,official_resolution,,D/L0*N,manifest.json,benchmark_identity
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,max_kinetic_energy,0.000743863,energy,global,,max(K(t)),k-5,derived_from_official
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,fit_a,0.000209631,energy,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,fit_a_stderr,1.085e-05,energy,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,fit_b,-0.121391,T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,fit_b_stderr,0.08711,T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,fit_c,157.02,rad*T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,fit_c_stderr,0.07343,rad*T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,frequency_error_signed,0.0140642103143775,1,global,,c/(2*omega0)-1,error,official
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,frequency_error_abs_percent,1.40642103143775,%,global,,100*abs(c/(2*omega0)-1),error,derived
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,equivalent_laplace,7634511.63370542,1,global,,30^2/(b^2*D^3),laplace,official
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,fit_damping_regime,nonphysical_growth,category,fit_quality,,sign(b): b>0 is exponential damping,fit.log,derived
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,runtime.stderr.txt,repo_extension
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,runtime.stderr.txt,repo_extension
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,provider_evaluations,16332,count,provider_runtime,,kappa_offset_provider_stats evaluations,runtime.stderr.txt,repo_extension
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,provider_grad_max,1.217994374799846,1,provider_runtime,,kappa_offset_provider_stats grad_max,runtime.stderr.txt,repo_extension
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,provider_grad_mean,1.0106948610075468,1,provider_runtime,,kappa_offset_provider_stats grad_mean,runtime.stderr.txt,repo_extension
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,provider_grad_min,0.8494774399169388,1,provider_runtime,,kappa_offset_provider_stats grad_min,runtime.stderr.txt,repo_extension
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,provider_grad_samples,16332,count,provider_runtime,,kappa_offset_provider_stats grad_samples,runtime.stderr.txt,repo_extension
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,provider_grad_std,0.027179689690304536,1,provider_runtime,,kappa_offset_provider_stats grad_std,runtime.stderr.txt,repo_extension
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.4985363123553274,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,runtime.stderr.txt,repo_extension
+imax00/nn,oscillating_droplet,oscillating_droplet,nn,32,0,baseline_32_hgradient,32,provider_min_abs_denominator,0.9170206051059149,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,runtime.stderr.txt,repo_extension
+imax01/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,1,,,actual_terminal_time,1.0002278213294162,T0,terminal,1.0002278213294162,terminal solver-state time,checkpoint_index.csv,repo_extension
+imax01/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,1,,,last_kinetic_energy_sample_time,0.999448,T0,terminal_sampling,0.999448,last official kinetic-energy sample time,k-5,derived_from_official
+imax01/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,1,,,diameter_cells,12.8,cells_per_diameter,official_resolution,,D/L0*N,manifest.json,benchmark_identity
+imax01/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,1,,,max_kinetic_energy,0.000563663,energy,global,,max(K(t)),k-5,derived_from_official
+imax01/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,1,,,fit_a,0.00029051,energy,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax01/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,1,,,fit_a_stderr,6.365e-07,energy,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax01/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,1,,,fit_b,0.869354,T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax01/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,1,,,fit_b_stderr,0.004847,T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax01/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,1,,,fit_c,154.794,rad*T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax01/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,1,,,fit_c_stderr,0.005069,rad*T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax01/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,1,,,frequency_error_signed,-0.000309499503126087,1,global,,c/(2*omega0)-1,error,official
+imax01/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,1,,,frequency_error_abs_percent,0.0309499503126087,%,global,,100*abs(c/(2*omega0)-1),error,derived
+imax01/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,1,,,equivalent_laplace,148853.425896587,1,global,,30^2/(b^2*D^3),laplace,official
+imax01/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,1,,,fit_damping_regime,damped,category,fit_quality,,sign(b): b>0 is exponential damping,fit.log,derived
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,actual_terminal_time,1.0002278213294162,T0,terminal,1.0002278213294162,terminal solver-state time,checkpoint_index.csv,repo_extension
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,last_kinetic_energy_sample_time,0.999448,T0,terminal_sampling,0.999448,last official kinetic-energy sample time,k-5,derived_from_official
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,diameter_cells,12.8,cells_per_diameter,official_resolution,,D/L0*N,manifest.json,benchmark_identity
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,max_kinetic_energy,0.000621945,energy,global,,max(K(t)),k-5,derived_from_official
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,fit_a,0.000316315,energy,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,fit_a_stderr,2.151e-06,energy,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,fit_b,0.346564,T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,fit_b_stderr,0.01288,T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,fit_c,156.337,rad*T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,fit_c_stderr,0.01215,rad*T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,frequency_error_signed,0.00965509218246674,1,global,,c/(2*omega0)-1,error,official
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,frequency_error_abs_percent,0.965509218246674,%,global,,100*abs(c/(2*omega0)-1),error,derived
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,equivalent_laplace,936669.397316945,1,global,,30^2/(b^2*D^3),laplace,official
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,fit_damping_regime,damped,category,fit_quality,,sign(b): b>0 is exponential damping,fit.log,derived
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,runtime.stderr.txt,repo_extension
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,runtime.stderr.txt,repo_extension
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,provider_evaluations,16242,count,provider_runtime,,kappa_offset_provider_stats evaluations,runtime.stderr.txt,repo_extension
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,provider_grad_max,1.037398378837632,1,provider_runtime,,kappa_offset_provider_stats grad_max,runtime.stderr.txt,repo_extension
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,provider_grad_mean,0.9964332130719434,1,provider_runtime,,kappa_offset_provider_stats grad_mean,runtime.stderr.txt,repo_extension
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,provider_grad_min,0.9361120102525404,1,provider_runtime,,kappa_offset_provider_stats grad_min,runtime.stderr.txt,repo_extension
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,provider_grad_samples,16242,count,provider_runtime,,kappa_offset_provider_stats grad_samples,runtime.stderr.txt,repo_extension
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,provider_grad_std,0.003530566290234155,1,provider_runtime,,kappa_offset_provider_stats grad_std,runtime.stderr.txt,repo_extension
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.49743809897924746,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,runtime.stderr.txt,repo_extension
+imax01/nn,oscillating_droplet,oscillating_droplet,nn,32,1,baseline_32_hgradient,32,provider_min_abs_denominator,0.920506203771303,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,runtime.stderr.txt,repo_extension
+imax02/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,2,,,actual_terminal_time,1.0002278213294162,T0,terminal,1.0002278213294162,terminal solver-state time,checkpoint_index.csv,repo_extension
+imax02/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,2,,,last_kinetic_energy_sample_time,0.999448,T0,terminal_sampling,0.999448,last official kinetic-energy sample time,k-5,derived_from_official
+imax02/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,2,,,diameter_cells,12.8,cells_per_diameter,official_resolution,,D/L0*N,manifest.json,benchmark_identity
+imax02/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,2,,,max_kinetic_energy,0.000571007,energy,global,,max(K(t)),k-5,derived_from_official
+imax02/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,2,,,fit_a,0.000295711,energy,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax02/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,2,,,fit_a_stderr,3.132e-06,energy,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax02/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,2,,,fit_b,0.371219,T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax02/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,2,,,fit_b_stderr,0.02015,T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax02/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,2,,,fit_c,154.781,rad*T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax02/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,2,,,fit_c_stderr,0.01931,rad*T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax02/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,2,,,frequency_error_signed,-0.000391032606454011,1,global,,c/(2*omega0)-1,error,official
+imax02/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,2,,,frequency_error_abs_percent,0.0391032606454011,%,global,,100*abs(c/(2*omega0)-1),error,derived
+imax02/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,2,,,equivalent_laplace,816379.318228121,1,global,,30^2/(b^2*D^3),laplace,official
+imax02/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,2,,,fit_damping_regime,damped,category,fit_quality,,sign(b): b>0 is exponential damping,fit.log,derived
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,actual_terminal_time,1.0002278213294162,T0,terminal,1.0002278213294162,terminal solver-state time,checkpoint_index.csv,repo_extension
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,last_kinetic_energy_sample_time,0.999448,T0,terminal_sampling,0.999448,last official kinetic-energy sample time,k-5,derived_from_official
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,diameter_cells,12.8,cells_per_diameter,official_resolution,,D/L0*N,manifest.json,benchmark_identity
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,max_kinetic_energy,0.00123614,energy,global,,max(K(t)),k-5,derived_from_official
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,fit_a,0.000301745,energy,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,fit_a_stderr,9.294e-06,energy,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,fit_b,-0.841693,T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,fit_b_stderr,0.04428,T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,fit_c,155.391,rad*T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,fit_c_stderr,0.03065,rad*T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,frequency_error_signed,0.00354874388433668,1,global,,c/(2*omega0)-1,error,official
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,frequency_error_abs_percent,0.354874388433668,%,global,,100*abs(c/(2*omega0)-1),error,derived
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,equivalent_laplace,158798.035382675,1,global,,30^2/(b^2*D^3),laplace,official
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,fit_damping_regime,nonphysical_growth,category,fit_quality,,sign(b): b>0 is exponential damping,fit.log,derived
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,runtime.stderr.txt,repo_extension
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,runtime.stderr.txt,repo_extension
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,provider_evaluations,16171,count,provider_runtime,,kappa_offset_provider_stats evaluations,runtime.stderr.txt,repo_extension
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,provider_grad_max,1.0405447533630394,1,provider_runtime,,kappa_offset_provider_stats grad_max,runtime.stderr.txt,repo_extension
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,provider_grad_mean,0.9959839373770893,1,provider_runtime,,kappa_offset_provider_stats grad_mean,runtime.stderr.txt,repo_extension
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,provider_grad_min,0.9354427196084113,1,provider_runtime,,kappa_offset_provider_stats grad_min,runtime.stderr.txt,repo_extension
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,provider_grad_samples,16171,count,provider_runtime,,kappa_offset_provider_stats grad_samples,runtime.stderr.txt,repo_extension
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,provider_grad_std,0.0031245731059166755,1,provider_runtime,,kappa_offset_provider_stats grad_std,runtime.stderr.txt,repo_extension
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.49684206748328813,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,runtime.stderr.txt,repo_extension
+imax02/nn,oscillating_droplet,oscillating_droplet,nn,32,2,baseline_32_hgradient,32,provider_min_abs_denominator,0.919010168288198,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,runtime.stderr.txt,repo_extension
+imax03/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,3,,,actual_terminal_time,1.0002278213294162,T0,terminal,1.0002278213294162,terminal solver-state time,checkpoint_index.csv,repo_extension
+imax03/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,3,,,last_kinetic_energy_sample_time,0.999448,T0,terminal_sampling,0.999448,last official kinetic-energy sample time,k-5,derived_from_official
+imax03/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,3,,,diameter_cells,12.8,cells_per_diameter,official_resolution,,D/L0*N,manifest.json,benchmark_identity
+imax03/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,3,,,max_kinetic_energy,0.000671308,energy,global,,max(K(t)),k-5,derived_from_official
+imax03/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,3,,,fit_a,0.000318135,energy,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax03/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,3,,,fit_a_stderr,5.376e-06,energy,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax03/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,3,,,fit_b,0.0203646,T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax03/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,3,,,fit_b_stderr,0.02922,T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax03/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,3,,,fit_c,154.917,rad*T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax03/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,3,,,fit_c_stderr,0.02593,rad*T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax03/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,3,,,frequency_error_signed,0.000483879211769844,1,global,,c/(2*omega0)-1,error,official
+imax03/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,3,,,frequency_error_abs_percent,0.0483879211769844,%,global,,100*abs(c/(2*omega0)-1),error,derived
+imax03/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,3,,,equivalent_laplace,271270008.034331,1,global,,30^2/(b^2*D^3),laplace,official
+imax03/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,3,,,fit_damping_regime,damped,category,fit_quality,,sign(b): b>0 is exponential damping,fit.log,derived
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,actual_terminal_time,1.0002278213294162,T0,terminal,1.0002278213294162,terminal solver-state time,checkpoint_index.csv,repo_extension
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,last_kinetic_energy_sample_time,0.999448,T0,terminal_sampling,0.999448,last official kinetic-energy sample time,k-5,derived_from_official
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,diameter_cells,12.8,cells_per_diameter,official_resolution,,D/L0*N,manifest.json,benchmark_identity
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,max_kinetic_energy,0.00223241,energy,global,,max(K(t)),k-5,derived_from_official
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,fit_a,0.000376834,energy,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,fit_a_stderr,1.831e-05,energy,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,fit_b,-1.33376,T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,fit_b_stderr,0.0649,T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,fit_c,154.902,rad*T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,fit_c_stderr,0.03829,rad*T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,frequency_error_signed,0.000386480597496019,1,global,,c/(2*omega0)-1,error,official
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,frequency_error_abs_percent,0.0386480597496019,%,global,,100*abs(c/(2*omega0)-1),error,derived
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,equivalent_laplace,63240.3456183896,1,global,,30^2/(b^2*D^3),laplace,official
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,fit_damping_regime,nonphysical_growth,category,fit_quality,,sign(b): b>0 is exponential damping,fit.log,derived
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,runtime.stderr.txt,repo_extension
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,runtime.stderr.txt,repo_extension
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,provider_evaluations,16110,count,provider_runtime,,kappa_offset_provider_stats evaluations,runtime.stderr.txt,repo_extension
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,provider_grad_max,1.0413184173879437,1,provider_runtime,,kappa_offset_provider_stats grad_max,runtime.stderr.txt,repo_extension
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,provider_grad_mean,0.9957306914621038,1,provider_runtime,,kappa_offset_provider_stats grad_mean,runtime.stderr.txt,repo_extension
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,provider_grad_min,0.9355615591601678,1,provider_runtime,,kappa_offset_provider_stats grad_min,runtime.stderr.txt,repo_extension
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,provider_grad_samples,16110,count,provider_runtime,,kappa_offset_provider_stats grad_samples,runtime.stderr.txt,repo_extension
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,provider_grad_std,0.0030191213024207716,1,provider_runtime,,kappa_offset_provider_stats grad_std,runtime.stderr.txt,repo_extension
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.49738156278807716,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,runtime.stderr.txt,repo_extension
+imax03/nn,oscillating_droplet,oscillating_droplet,nn,32,3,baseline_32_hgradient,32,provider_min_abs_denominator,0.919325067209775,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,runtime.stderr.txt,repo_extension
+imax04/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,4,,,actual_terminal_time,1.0002278213294162,T0,terminal,1.0002278213294162,terminal solver-state time,checkpoint_index.csv,repo_extension
+imax04/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,4,,,last_kinetic_energy_sample_time,0.999448,T0,terminal_sampling,0.999448,last official kinetic-energy sample time,k-5,derived_from_official
+imax04/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,4,,,diameter_cells,12.8,cells_per_diameter,official_resolution,,D/L0*N,manifest.json,benchmark_identity
+imax04/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,4,,,max_kinetic_energy,0.000827298,energy,global,,max(K(t)),k-5,derived_from_official
+imax04/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,4,,,fit_a,0.000354839,energy,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax04/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,4,,,fit_a_stderr,7.498e-06,energy,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax04/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,4,,,fit_b,-0.191396,T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax04/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,4,,,fit_b_stderr,0.03468,T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax04/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,4,,,fit_c,155.045,rad*T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax04/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,4,,,fit_c_stderr,0.02916,rad*T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax04/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,4,,,frequency_error_signed,0.00131030277183131,1,global,,c/(2*omega0)-1,error,official
+imax04/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,4,,,frequency_error_abs_percent,0.13103027718313098,%,global,,100*abs(c/(2*omega0)-1),error,derived
+imax04/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,4,,,equivalent_laplace,3071057.75951524,1,global,,30^2/(b^2*D^3),laplace,official
+imax04/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,4,,,fit_damping_regime,nonphysical_growth,category,fit_quality,,sign(b): b>0 is exponential damping,fit.log,derived
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,actual_terminal_time,1.0002278213294162,T0,terminal,1.0002278213294162,terminal solver-state time,checkpoint_index.csv,repo_extension
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,last_kinetic_energy_sample_time,0.999448,T0,terminal_sampling,0.999448,last official kinetic-energy sample time,k-5,derived_from_official
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,diameter_cells,12.8,cells_per_diameter,official_resolution,,D/L0*N,manifest.json,benchmark_identity
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,max_kinetic_energy,0.00321607,energy,global,,max(K(t)),k-5,derived_from_official
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,fit_a,0.000490208,energy,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,fit_a_stderr,2.721e-05,energy,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,fit_b,-1.44153,T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,fit_b_stderr,0.07325,T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,fit_c,154.651,rad*T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,fit_c_stderr,0.04157,rad*T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,frequency_error_signed,-0.00123501293826767,1,global,,c/(2*omega0)-1,error,official
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,frequency_error_abs_percent,0.12350129382676699,%,global,,100*abs(c/(2*omega0)-1),error,derived
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,equivalent_laplace,54138.6805416972,1,global,,30^2/(b^2*D^3),laplace,official
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,fit_damping_regime,nonphysical_growth,category,fit_quality,,sign(b): b>0 is exponential damping,fit.log,derived
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,runtime.stderr.txt,repo_extension
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,runtime.stderr.txt,repo_extension
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,provider_evaluations,16026,count,provider_runtime,,kappa_offset_provider_stats evaluations,runtime.stderr.txt,repo_extension
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,provider_grad_max,1.0411391400702266,1,provider_runtime,,kappa_offset_provider_stats grad_max,runtime.stderr.txt,repo_extension
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,provider_grad_mean,0.9956387111823595,1,provider_runtime,,kappa_offset_provider_stats grad_mean,runtime.stderr.txt,repo_extension
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,provider_grad_min,0.9356743273465202,1,provider_runtime,,kappa_offset_provider_stats grad_min,runtime.stderr.txt,repo_extension
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,provider_grad_samples,16026,count,provider_runtime,,kappa_offset_provider_stats grad_samples,runtime.stderr.txt,repo_extension
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,provider_grad_std,0.003003605981148814,1,provider_runtime,,kappa_offset_provider_stats grad_std,runtime.stderr.txt,repo_extension
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.4978246127008577,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,runtime.stderr.txt,repo_extension
+imax04/nn,oscillating_droplet,oscillating_droplet,nn,32,4,baseline_32_hgradient,32,provider_min_abs_denominator,0.91952507359178,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,runtime.stderr.txt,repo_extension
+imax05/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,5,,,actual_terminal_time,1.0002278213294162,T0,terminal,1.0002278213294162,terminal solver-state time,checkpoint_index.csv,repo_extension
+imax05/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,5,,,last_kinetic_energy_sample_time,0.999448,T0,terminal_sampling,0.999448,last official kinetic-energy sample time,k-5,derived_from_official
+imax05/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,5,,,diameter_cells,12.8,cells_per_diameter,official_resolution,,D/L0*N,manifest.json,benchmark_identity
+imax05/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,5,,,max_kinetic_energy,0.000844793,energy,global,,max(K(t)),k-5,derived_from_official
+imax05/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,5,,,fit_a,0.000385642,energy,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax05/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,5,,,fit_a_stderr,9.972e-06,energy,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax05/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,5,,,fit_b,-0.23573,T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax05/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,5,,,fit_b_stderr,0.04199,T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax05/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,5,,,fit_c,155.205,rad*T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax05/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,5,,,fit_c_stderr,0.03487,rad*T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax05/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,5,,,frequency_error_signed,0.00234791396199219,1,global,,c/(2*omega0)-1,error,official
+imax05/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,5,,,frequency_error_abs_percent,0.234791396199219,%,global,,100*abs(c/(2*omega0)-1),error,derived
+imax05/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,5,,,equivalent_laplace,2024519.98432978,1,global,,30^2/(b^2*D^3),laplace,official
+imax05/clsvof,oscillating_droplet,oscillating_droplet,clsvof,32,5,,,fit_damping_regime,nonphysical_growth,category,fit_quality,,sign(b): b>0 is exponential damping,fit.log,derived
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,actual_terminal_time,1.0002278213294162,T0,terminal,1.0002278213294162,terminal solver-state time,checkpoint_index.csv,repo_extension
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,last_kinetic_energy_sample_time,0.999448,T0,terminal_sampling,0.999448,last official kinetic-energy sample time,k-5,derived_from_official
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,diameter_cells,12.8,cells_per_diameter,official_resolution,,D/L0*N,manifest.json,benchmark_identity
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,max_kinetic_energy,0.00390393,energy,global,,max(K(t)),k-5,derived_from_official
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,fit_a,0.000691316,energy,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,fit_a_stderr,4.326e-05,energy,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,fit_b,-1.46464,T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,fit_b_stderr,0.08228,T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,fit_c,155.733,rad*T0^-1,global,,a*exp(-b*t)*(1-cos(c*t)),fit.log,official
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,fit_c_stderr,0.04583,rad*T0^-1,fit_uncertainty,,gnuplot asymptotic standard error,fit.log,official
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,frequency_error_signed,0.00575694229567514,1,global,,c/(2*omega0)-1,error,official
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,frequency_error_abs_percent,0.575694229567514,%,global,,100*abs(c/(2*omega0)-1),error,derived
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,equivalent_laplace,52443.1839797,1,global,,30^2/(b^2*D^3),laplace,official
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,fit_damping_regime,nonphysical_growth,category,fit_quality,,sign(b): b>0 is exponential damping,fit.log,derived
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,provider_clamp_hits,0,count,provider_runtime,,kappa_offset_provider_stats clamp_hits,runtime.stderr.txt,repo_extension
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,provider_denominator_guard_hits,0,count,provider_runtime,,kappa_offset_provider_stats denominator_guard_hits,runtime.stderr.txt,repo_extension
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,provider_evaluations,15838,count,provider_runtime,,kappa_offset_provider_stats evaluations,runtime.stderr.txt,repo_extension
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,provider_grad_max,1.0409704922373704,1,provider_runtime,,kappa_offset_provider_stats grad_max,runtime.stderr.txt,repo_extension
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,provider_grad_mean,0.995710276241269,1,provider_runtime,,kappa_offset_provider_stats grad_mean,runtime.stderr.txt,repo_extension
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,provider_grad_min,0.9357422585407726,1,provider_runtime,,kappa_offset_provider_stats grad_min,runtime.stderr.txt,repo_extension
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,provider_grad_samples,15838,count,provider_runtime,,kappa_offset_provider_stats grad_samples,runtime.stderr.txt,repo_extension
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,provider_grad_std,0.002892016178324435,1,provider_runtime,,kappa_offset_provider_stats grad_std,runtime.stderr.txt,repo_extension
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,provider_max_abs_d_over_h,0.49727476668927023,1,provider_runtime,,kappa_offset_provider_stats max_abs_d_over_h,runtime.stderr.txt,repo_extension
+imax05/nn,oscillating_droplet,oscillating_droplet,nn,32,5,baseline_32_hgradient,32,provider_min_abs_denominator,0.9195450061080005,1,provider_runtime,,kappa_offset_provider_stats min_abs_denominator,runtime.stderr.txt,repo_extension

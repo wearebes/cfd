@@ -1,0 +1,7 @@
+label,coordinate_name,target_coordinate,target_time,actual_coordinate,actual_time,iteration,status,reason,dump_path,interface_cells
+ke_cycle_0,time,0,0,0,0,0,written,,checkpoints/ke_cycle_0.dump,12
+ke_cycle_5,time,0.20289030292962962,0.20289030292962962,0.20350356520422597,0.20350356520422597,272,written,,checkpoints/ke_cycle_5.dump,13
+ke_cycle_10,time,0.40578060585925924,0.40578060585925924,0.40619271059808404,0.40619271059808404,532,written,,checkpoints/ke_cycle_10.dump,14
+ke_cycle_15,time,0.60867090878888885,0.60867090878888885,0.6088818559919813,0.6088818559919813,792,written,,checkpoints/ke_cycle_15.dump,14
+ke_cycle_20,time,0.81156121171851847,0.81156121171851847,0.8115710013858719,0.8115710013858719,1052,written,,checkpoints/ke_cycle_20.dump,14
+terminal,time,,,1.0002278213294162,1.0002278213294162,1294,written,actual_terminal_state,checkpoints/terminal.dump,14

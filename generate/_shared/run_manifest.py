@@ -188,8 +188,8 @@ def payload_for(plan: dict[str, Any], status: str, root: Path) -> dict[str, Any]
             if label in sources
         },
     }
-    # Keep the row identity at the top level so the existing HPC publisher can
-    # validate a generator result without understanding the richer plan schema.
+    # Keep the row identity at the top level so campaign verification does not
+    # need to reinterpret the richer resolved-plan schema.
     for key in (
         "resolution",
         "level",
@@ -199,6 +199,11 @@ def payload_for(plan: dict[str, Any], status: str, root: Path) -> dict[str, Any]
         "benchmark_case",
         "actual_grid",
         "tau_max",
+        "experiment_role",
+        "solver_variant",
+        "grid_strategy",
+        "grid_role",
+        "cells_per_diameter",
     ):
         if key in parameters:
             payload[key] = parameters[key]
@@ -218,7 +223,7 @@ def add_plan_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--repo-root", type=Path, required=True)
     parser.add_argument("--case", required=True)
     parser.add_argument("--benchmark", required=True)
-    parser.add_argument("--method", required=True)
+    parser.add_argument("--method", choices=("VOF-HF", "CLSVOF", "NN"), required=True)
     parser.add_argument("--purpose", choices=("smoke", "formal"), required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--generator", required=True)

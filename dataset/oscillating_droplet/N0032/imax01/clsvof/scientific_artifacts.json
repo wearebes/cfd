@@ -1,0 +1,148 @@
+{
+  "artifacts": [
+    {
+      "bytes": 29622,
+      "path": "k-5",
+      "publish": true,
+      "publish_name": "timeseries.dat",
+      "role": "official_raw",
+      "sha256": "d88378a9b1f50f432f353392f5e430d62831a130f9e42963bbdc620b76c96844"
+    },
+    {
+      "bytes": 2641,
+      "path": "fit-5",
+      "publish": true,
+      "publish_name": "fit_curve.dat",
+      "role": "official_raw",
+      "sha256": "2108b19dcf4cdb6adad2d878a9c8f4e96d0a48f011b501c4d94c163cd5f99f54"
+    },
+    {
+      "bytes": 1433,
+      "path": "fit.log",
+      "publish": true,
+      "publish_name": "fit.log",
+      "role": "official_raw",
+      "sha256": "a48a39f12c6e19d626b11e57d1ebf337fdb43a6a35f372d4fae44cc1f421341c"
+    },
+    {
+      "bytes": 31,
+      "path": "error",
+      "publish": true,
+      "publish_name": "error.dat",
+      "role": "official_raw",
+      "sha256": "83db7c4b5bb72e1f5b1e018619a33230378543e1637fb9967193b41d58357527"
+    },
+    {
+      "bytes": 26,
+      "path": "laplace",
+      "publish": true,
+      "publish_name": "laplace.dat",
+      "role": "official_raw",
+      "sha256": "1419ed86f0b64556e6f1741df6adfddeddb0c095f2448e04b793be2bc4a54535"
+    },
+    {
+      "bytes": 27,
+      "path": "log",
+      "publish": true,
+      "publish_name": "fit_summary.dat",
+      "role": "official_raw",
+      "sha256": "5fa281c488ba15be20ffa6e505fbc3a5d68f82ba2360936f273530740c70a82c"
+    },
+    {
+      "bytes": 1388,
+      "path": "metrics.csv",
+      "publish": true,
+      "publish_name": "metrics.csv",
+      "role": "derived_metrics",
+      "sha256": "4a0de81ec5ea0140a85e5197fc8838171fed6a3e47373aa2e4ef9d8e7834fbb5"
+    },
+    {
+      "bytes": 29666,
+      "path": "plot_data.csv",
+      "publish": true,
+      "publish_name": "plot_data.csv",
+      "role": "derived_plot",
+      "sha256": "de5130c4a17394c39bf1217b7510b38e76ff2ac7c9fd3a17f594d5f373265f53"
+    },
+    {
+      "bytes": 879,
+      "path": "checkpoint_index.csv",
+      "publish": true,
+      "publish_name": "checkpoint_index.csv",
+      "role": "checkpoint_index",
+      "sha256": "183f411dfc93deb253e22f9ecffc23fef7d60ce1091446b865f11b4889db09fb"
+    },
+    {
+      "bytes": 28800,
+      "path": "checkpoints/ke_cycle_0.dump",
+      "publish": true,
+      "publish_name": "checkpoints/ke_cycle_0.dump",
+      "role": "checkpoint",
+      "sha256": "9baf2e0f0592254bc6426bd2f241c4385f14141c612174eb14b793dd0dbb19c5"
+    },
+    {
+      "bytes": 28192,
+      "path": "checkpoints/ke_cycle_10.dump",
+      "publish": true,
+      "publish_name": "checkpoints/ke_cycle_10.dump",
+      "role": "checkpoint",
+      "sha256": "9faf3949460c30db3f06cab58453c8fc4cc37cee7b0f6e9a7bcce0bfcd0d0211"
+    },
+    {
+      "bytes": 27888,
+      "path": "checkpoints/ke_cycle_15.dump",
+      "publish": true,
+      "publish_name": "checkpoints/ke_cycle_15.dump",
+      "role": "checkpoint",
+      "sha256": "263a95ae1dffcc4b7114e25af2dbdd786b5b289b589f886d5d0a1fa486915344"
+    },
+    {
+      "bytes": 28496,
+      "path": "checkpoints/ke_cycle_20.dump",
+      "publish": true,
+      "publish_name": "checkpoints/ke_cycle_20.dump",
+      "role": "checkpoint",
+      "sha256": "be77b63ca2ec49740ab728ad4ef95b5ddcfcfb21c55eb242d532c983d10aa371"
+    },
+    {
+      "bytes": 27280,
+      "path": "checkpoints/ke_cycle_5.dump",
+      "publish": true,
+      "publish_name": "checkpoints/ke_cycle_5.dump",
+      "role": "checkpoint",
+      "sha256": "024de3b7b7740f56ada97d40b52b341069b486cc2b7a5239ebafcba0d8b16083"
+    },
+    {
+      "bytes": 30928,
+      "path": "checkpoints/terminal.dump",
+      "publish": true,
+      "publish_name": "checkpoints/terminal.dump",
+      "role": "checkpoint",
+      "sha256": "6f9f518427c6a2b5fa54a0270fffd7ce32904c2af6f5e48d297e37186ce8f462"
+    }
+  ],
+  "benchmark": "oscillating_droplet",
+  "case": "oscillating_droplet",
+  "checkpoint_sha256": null,
+  "expected_official_publish_names": [
+    "error.dat",
+    "fit.log",
+    "fit_curve.dat",
+    "fit_summary.dat",
+    "laplace.dat",
+    "timeseries.dat"
+  ],
+  "imax": 1,
+  "legacy_method_id": "CLSVOF",
+  "method": "clsvof",
+  "method_role": "method",
+  "method_variant": "standard",
+  "missing_official_publish_names": [],
+  "model_id": null,
+  "model_resolution": null,
+  "official_artifact_count": 6,
+  "official_coverage_complete": true,
+  "reference_id": null,
+  "resolution": 32,
+  "schema_version": 1
+}

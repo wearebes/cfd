@@ -1,0 +1,13 @@
+metric,value,unit,scope,time,definition,source_artifact,origin
+actual_terminal_tau,1.0,1,terminal,1.0,mu*t/D^2,termination.csv,repo_extension
+termination_reason,fixed_tau_limit,category,terminal,1.0,solver stop condition,termination.csv,repo_extension
+level,7,level,official_resolution,,grid refinement level,official_terminal.dat,official
+diameter_cells,102.4,cells_per_diameter,official_resolution,,D*N,manifest.json,derived_from_benchmark_identity
+laplace_number,12000.0,1,identity,,sigma*rho*D/mu^2,official_terminal.dat,official
+u_star_final,2.283650188207537e-14,1,terminal,1.0,max(|u|)*sqrt(D/sigma),official_terminal.dat,official
+shape_error_avg,6.219330107732897e-06,1,terminal,1.0,normf(c-c_ref).avg,official_terminal.dat,official
+shape_error_rms,8.489717846744388e-05,1,terminal,1.0,normf(c-c_ref).rms,official_terminal.dat,official
+shape_error_max,0.0018199777402234663,1,terminal,1.0,normf(c-c_ref).max,official_terminal.dat,official
+ekmax,0.16996479560488176,L0^-1,terminal,1.0,max(abs(kappa-1/R_equiv)),official_terminal.dat,official
+relative_curvature_error,0.0679859182419527,1,terminal,1.0,"ekmax/(1/R), R=0.4",official_terminal.dat,derived
+relative_curvature_error_percent,6.79859182419527,%,terminal,1.0,100*ekmax/2.5,official_terminal.dat,derived

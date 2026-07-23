@@ -1,0 +1,115 @@
+{
+  "artifacts": {
+    "integral_sha256": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395",
+    "two_phase_clsvof_sha256": "808d2c2aeff9ac1429b1e7c63eafc68611bd86d3ae1bcda4108e64d86d49b884"
+  },
+  "benchmark": "capwave",
+  "benchmark_output_coverage_complete": true,
+  "case": "capwave",
+  "completed_at": "2026-07-22T08:16:00.454100+00:00",
+  "created_at": "2026-07-22T08:15:38.003854+00:00",
+  "elapsed_seconds": 22.0,
+  "generator": "generate/capwave/clsvof.sh",
+  "git": {
+    "changed_path_count": 178,
+    "commit": "106e2d7d1023ad16aae5003236897654d68fe14f",
+    "dirty": true
+  },
+  "imax": 2,
+  "method": "clsvof",
+  "model": null,
+  "openmp_threads": 1,
+  "plan": {
+    "benchmark": "capwave",
+    "case": "capwave",
+    "commands": {
+      "compile": {
+        "argv": [
+          "/Users/jcy/research/cfd/basilisk/src/qcc",
+          "-O2",
+          "-DCLSVOF=1",
+          "capwave-clsvof.c",
+          "-o",
+          "capwave-clsvof",
+          "-lm"
+        ],
+        "cwd": "$WORK",
+        "display": "/Users/jcy/research/cfd/basilisk/src/qcc -O2 -DCLSVOF=1 capwave-clsvof.c -o capwave-clsvof -lm > compile.stdout 2> compile.stderr",
+        "stderr": "compile.stderr",
+        "stdout": "compile.stdout"
+      },
+      "run": {
+        "argv": [
+          "./capwave-clsvof"
+        ],
+        "cwd": "$WORK",
+        "display": "./capwave-clsvof > stdout.txt 2> log",
+        "stderr": "log",
+        "stdout": "stdout.txt"
+      }
+    },
+    "environment": {
+      "OMP_DYNAMIC": false,
+      "OMP_NUM_THREADS": 1
+    },
+    "generator": {
+      "path": "generate/capwave/clsvof.sh",
+      "sha256": "e8cde4eb04df25f17204c05f60a327d3921a1eef34e6472beb2f43dcb0ab4950"
+    },
+    "method": "clsvof",
+    "output": "/Users/jcy/research/cfd/dataset/_generate_rebuild/capwave/N0128/imax02/clsvof",
+    "parameters": {
+      "compile_only": 0,
+      "imax": 2,
+      "model": null,
+      "openmp_threads": 1,
+      "resolution": 128
+    },
+    "plan_sha256": "9f1c164e9d466c0668996075feffb9a6202deb3e3642c887ce5a8d60fe68b1f5",
+    "purpose": "formal",
+    "sources": {
+      "compiled_case": {
+        "bytes": 3829,
+        "path": "source_snapshot/capwave-clsvof.c",
+        "sha256": "0139ec3824263b06bd8d58d7d5cc3996d647c32024c30f4bab2361331c343ba3"
+      },
+      "compiled_integral": {
+        "bytes": 6839,
+        "path": "source_snapshot/integral.h",
+        "sha256": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395"
+      },
+      "compiled_two_phase": {
+        "bytes": 2264,
+        "path": "source_snapshot/two-phase-clsvof.h",
+        "sha256": "808d2c2aeff9ac1429b1e7c63eafc68611bd86d3ae1bcda4108e64d86d49b884"
+      },
+      "prosperetti": {
+        "bytes": 19228,
+        "path": "source_snapshot/prosperetti.h",
+        "sha256": "5bd86a34b8bbd199dd417e69781db2e53831cbc82d6c0bc68bc5d64f4d68dbf9"
+      },
+      "qcc": {
+        "bytes": 490304,
+        "path": "basilisk/src/qcc",
+        "sha256": "ed0fc9f53fb8070723b3aba0f272132118a21e702f720ae2c316ffa0d88239cc"
+      },
+      "redistance_overlay": {
+        "bytes": 365,
+        "path": "source_snapshot/redistance_overlay.json",
+        "sha256": "7f10f758493392815372c135128f4a962ccbd9a321e20b348c4f90c56f5cbfa1"
+      },
+      "stock_case": {
+        "bytes": 3828,
+        "path": "basilisk/src/test/capwave-clsvof.c",
+        "sha256": "89628e5b0ec13e8b93cde8a7d3bf917329fd20e0f2ae71720ffe4ce028d7cbed"
+      }
+    }
+  },
+  "purpose": "formal",
+  "resolution": 128,
+  "schema_version": 2,
+  "scientific_artifacts_schema_version": 1,
+  "scientific_artifacts_sha256": "4592011b3944126bb81663d876945d1b07410b2c84fdc2ba7223c8135c9987bb",
+  "started_at": "2026-07-22T08:15:38.004086+00:00",
+  "status": "completed"
+}

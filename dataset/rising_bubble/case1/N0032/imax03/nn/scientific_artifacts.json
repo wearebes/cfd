@@ -1,0 +1,100 @@
+{
+  "artifacts": [
+    {
+      "bytes": 13301,
+      "path": "stdout.txt",
+      "publish": true,
+      "publish_name": "history.dat",
+      "role": "official_raw",
+      "sha256": "fd6d87cb51741383e61a292c930f5dc8fca6b0682db476bbc45739e6fc4fbcfc"
+    },
+    {
+      "bytes": 835,
+      "path": "log",
+      "publish": true,
+      "publish_name": "interface.dat",
+      "role": "official_raw",
+      "sha256": "105473f977b09eac939a62a2c6d0f6cead29617d26452bbbf76536bf1bde232e"
+    },
+    {
+      "bytes": 6074,
+      "path": "circularity.csv",
+      "publish": true,
+      "publish_name": "circularity.csv",
+      "role": "extension_raw",
+      "sha256": "9abb93cd573a0114ba08bbb14b0debb849305732374755cea3282ed5d981cfc2"
+    },
+    {
+      "bytes": 2158,
+      "path": "metrics.csv",
+      "publish": true,
+      "publish_name": "metrics.csv",
+      "role": "derived_metrics",
+      "sha256": "29ac82772c17947cae786c4154de587fbec02d16eb1a711fd6ce7faa2203c61d"
+    },
+    {
+      "bytes": 4066,
+      "path": "plot_data.csv",
+      "publish": true,
+      "publish_name": "plot_data.csv",
+      "role": "derived_plot",
+      "sha256": "fac7553ebcc392f1cf3599d47e075cf2af079d58c4f47771a4c5c95ae48b4649"
+    },
+    {
+      "bytes": 440,
+      "path": "checkpoint_index.csv",
+      "publish": true,
+      "publish_name": "checkpoint_index.csv",
+      "role": "checkpoint_index",
+      "sha256": "9982c1b1ecc7dcd58d43e231b9a3ffa81e0e2eebb5408e7a9965ae21215faf50"
+    },
+    {
+      "bytes": 23262,
+      "path": "checkpoints/t_0.dump",
+      "publish": true,
+      "publish_name": "checkpoints/t_0.dump",
+      "role": "checkpoint",
+      "sha256": "f932eb0439a02794d8408381ab4e2bb069ee4b3b171ec551229d92e94c9f0c3b"
+    },
+    {
+      "bytes": 23262,
+      "path": "checkpoints/t_1.dump",
+      "publish": true,
+      "publish_name": "checkpoints/t_1.dump",
+      "role": "checkpoint",
+      "sha256": "4badce0111afcfefc9a55ec9566e762e69ab082f192983a620a21fb92087ba1a"
+    },
+    {
+      "bytes": 23262,
+      "path": "checkpoints/t_2.dump",
+      "publish": true,
+      "publish_name": "checkpoints/t_2.dump",
+      "role": "checkpoint",
+      "sha256": "72aaef77edd1337d0d56fc678d0fc45683e47bdc9b92d796d7e6a861eb012cf4"
+    },
+    {
+      "bytes": 23262,
+      "path": "checkpoints/terminal.dump",
+      "publish": true,
+      "publish_name": "checkpoints/terminal.dump",
+      "role": "checkpoint",
+      "sha256": "b9c412c526d193f883493a7da37bc448bd09790facd779242fc0506836a55dad"
+    }
+  ],
+  "benchmark": "rising_case1",
+  "case": "rising_bubble",
+  "checkpoint_sha256": null,
+  "expected_official_publish_names": [
+    "history.dat",
+    "interface.dat"
+  ],
+  "imax": 3,
+  "method": "nn",
+  "missing_official_publish_names": [],
+  "model_id": "baseline_32_hgradient",
+  "model_resolution": 32,
+  "official_artifact_count": 2,
+  "official_coverage_complete": true,
+  "resolution": 32,
+  "schema_version": 1
+}

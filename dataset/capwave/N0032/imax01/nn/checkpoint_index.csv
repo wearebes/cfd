@@ -1,0 +1,6 @@
+label,coordinate_name,target_coordinate,target_time,actual_coordinate,actual_time,iteration,status,reason,dump_path,interface_cells
+tau_0,tau,0,0,0,0,0,written,,checkpoints/tau_0.dump,32
+tau_2pi,tau,6.2831853071795862,0.56418958354590287,6.3031286295752107,0.56598036548321928,189,written,,checkpoints/tau_2pi.dump,40
+tau_4pi,tau,12.566370614359172,1.1283791670918057,12.572369470819423,1.1289178257756731,374,written,,checkpoints/tau_4pi.dump,32
+tau_6pi,tau,18.849555921538759,1.6925687506377087,18.875498100394861,1.6948981912589129,560,written,,checkpoints/tau_6pi.dump,40
+terminal,tau,,,24.975299999983996,2.2426211255975321,740,written,actual_terminal_state,checkpoints/terminal.dump,34

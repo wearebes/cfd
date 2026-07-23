@@ -1,0 +1,121 @@
+{
+  "artifacts": {
+    "integral_sha256": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395",
+    "two_phase_clsvof_sha256": "c0f21472c2d6acac0bdda0a2c43602273ee35d6c111cce4a98005ff9f6dbd048"
+  },
+  "benchmark": "stationary_bubble",
+  "case": "stationary_bubble",
+  "completed_at": "2026-07-21T08:41:18.845147+00:00",
+  "created_at": "2026-07-21T08:40:54.279063+00:00",
+  "elapsed_seconds": 24.0,
+  "generator": "generate/stationary_bubble/clsvof.sh",
+  "git": {
+    "changed_path_count": 100,
+    "commit": "106e2d7d1023ad16aae5003236897654d68fe14f",
+    "dirty": true
+  },
+  "imax": 3,
+  "level": 5,
+  "method": "clsvof",
+  "method_role": "method",
+  "model": null,
+  "official_coverage_complete": true,
+  "openmp_threads": 1,
+  "plan": {
+    "benchmark": "stationary_bubble",
+    "case": "stationary_bubble",
+    "commands": {
+      "compile": {
+        "argv": [
+          "/Users/jcy/research/cfd/basilisk/src/qcc",
+          "-O2",
+          "-DSTATIONARY_LEVEL=5",
+          "-DSTATIONARY_TAU_MAX=1.0",
+          "-DSTATIONARY_FIXED_HORIZON=1",
+          "stationary-clsvof.c",
+          "-o",
+          "stationary-clsvof",
+          "-lm"
+        ],
+        "cwd": "$WORK",
+        "display": "/Users/jcy/research/cfd/basilisk/src/qcc -O2 -DSTATIONARY_LEVEL=5 -DSTATIONARY_TAU_MAX=1.0 -DSTATIONARY_FIXED_HORIZON=1 stationary-clsvof.c -o stationary-clsvof -lm > compile.stdout 2> compile.stderr",
+        "stderr": "compile.stderr",
+        "stdout": "compile.stdout"
+      },
+      "run": {
+        "argv": [
+          "./stationary-clsvof"
+        ],
+        "cwd": "$WORK",
+        "display": "./stationary-clsvof > stdout.txt 2> log",
+        "stderr": "log",
+        "stdout": "stdout.txt"
+      }
+    },
+    "environment": {},
+    "generator": {
+      "path": "generate/stationary_bubble/clsvof.sh",
+      "sha256": "91bee146a1e37f12ecc364303409a6999a7d4112ea3fdedfc183c7b296305cbb"
+    },
+    "method": "clsvof",
+    "output": "/Users/jcy/research/cfd/tem/dataset_completion_20260721/stationary/N0032/imax03/clsvof",
+    "parameters": {
+      "compile_only": 0,
+      "imax": 3,
+      "level": 5,
+      "model": null,
+      "openmp_threads": 1,
+      "resolution": 32,
+      "tau_max": 1.0,
+      "termination_policy": "fixed_horizon"
+    },
+    "plan_sha256": "ad3419a74a6d0f6c0a42eb6187b5194a5f0896f27e4952e45941b1b9a6b8d542",
+    "purpose": "formal",
+    "sources": {
+      "case_source": {
+        "bytes": 3848,
+        "path": "generate/stationary_bubble/src/stationary-clsvof.c",
+        "sha256": "0d5d130196617a9edaf80a785448e9802ee01ecfa8b67a29ca471830eb6caa48"
+      },
+      "checkpoint_overlay": {
+        "bytes": 733,
+        "path": "source_snapshot/checkpoint_overlay.json",
+        "sha256": "5a8088748b5b8b904f03527d0d89cd55024a21f24b42ff933a3d28daedce6d74"
+      },
+      "compiled_case": {
+        "bytes": 8050,
+        "path": "source_snapshot/stationary-clsvof.c",
+        "sha256": "a06cb7929ae2cdae0dfdf6cfbc4be254b3078e6c70ddfe378ee90d9e6551b5e3"
+      },
+      "compiled_integral": {
+        "bytes": 6839,
+        "path": "source_snapshot/integral.h",
+        "sha256": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395"
+      },
+      "compiled_two_phase": {
+        "bytes": 2264,
+        "path": "source_snapshot/two-phase-clsvof.h",
+        "sha256": "c0f21472c2d6acac0bdda0a2c43602273ee35d6c111cce4a98005ff9f6dbd048"
+      },
+      "qcc": {
+        "bytes": 490304,
+        "path": "basilisk/src/qcc",
+        "sha256": "ed0fc9f53fb8070723b3aba0f272132118a21e702f720ae2c316ffa0d88239cc"
+      },
+      "redistance_overlay": {
+        "bytes": 365,
+        "path": "source_snapshot/redistance_overlay.json",
+        "sha256": "ce78d2b648cb1665105f36c1d3a38cd53252e734d1244f7c390c3034cc38aad4"
+      }
+    }
+  },
+  "purpose": "formal",
+  "reference_id": null,
+  "resolution": 32,
+  "schema_version": 2,
+  "scientific_artifacts_schema_version": 1,
+  "scientific_artifacts_sha256": "f6be247ab8f5d46236267eef2d37fda41acd80c8165daec77cfad24f3a89c6b7",
+  "started_at": "2026-07-21T08:40:54.279278+00:00",
+  "status": "completed",
+  "tau_max": 1.0
+}

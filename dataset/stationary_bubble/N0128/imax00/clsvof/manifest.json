@@ -1,0 +1,53 @@
+{
+  "actual_terminal_tau": 1.0,
+  "benchmark": "stationary_bubble",
+  "case": "stationary_bubble",
+  "completed_at": "2026-07-21T08:18:40.308632+00:00",
+  "elapsed_seconds": 467.0,
+  "generator": "generate/stationary_bubble/promote_fixed_horizon.py",
+  "imax": 0,
+  "legacy_method_id": "clsvof_native",
+  "level": 7,
+  "method": "clsvof",
+  "method_id": "clsvof",
+  "method_variant": "standard",
+  "model": null,
+  "official_coverage_complete": true,
+  "provenance": {
+    "checkpoint_sha256": {
+      "checkpoints/tau_0.dump": "e7267b87b6c24f51e7b693b5d00da7011895f886c5c0504213c6f366bee561ab",
+      "checkpoints/tau_0p01.dump": "548e6cacee5089e7bcf5b68a15a35cc837abd1c70b74c7b768af92360b914142",
+      "checkpoints/tau_0p1.dump": "996488a4a97874485879ca3947c9ca32131f1129b9cefa9322d9b1246d32fb6e",
+      "checkpoints/tau_0p5.dump": "691b96c2850a8688b27932efb5e56e839dbed874b944b472f6c4823894c432a3",
+      "checkpoints/terminal.dump": "026654cb395cc01261a71ffce910873d7c1dd63e0a5e36babb6e30cc510dac46"
+    },
+    "kind": "verified_existing_run",
+    "source_artifacts": {
+      "checkpoint_index.csv": "4810aeb3482be46d51839a111327ff4cf54dcf4f41104b26f759fbfe1dad2bd3",
+      "compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "integral.h": "234d407ac3012a9be14e91747fae10dfe0a2c4677c5ca5a8bb93ae0d3511a395",
+      "redistance_overlay.json": "fbca9925f739c11384d682901b46ecc0af84c1d3ab678ff56176b1ca651a5507",
+      "runtime.csv": "b70af8b87d538a2b83b30508fc3a3f2fbe0064dc13ceb8e008edd43fa37fbf3a",
+      "solver.log": "26a3c0f861551c4dc1e9c0ab6086f8a0594f0b396ae134fe388393c7122a67b9",
+      "stationary-full.c": "92e02c75e3f1aabd23ce95218449f042b556a9c2de6332f90cbe89d35796865b",
+      "stdout.txt": "8075b550f5799a8604230607351fd3a22b0c10e60147e3f7e1ecc65c0d3b3ccd",
+      "termination.csv": "5d5f8eef76747476e5a6f84a0d316b27e518fc0e8d2df892e1d7d16aed45188e",
+      "timeseries.dat": "af7ec576906f32f408defd5e4593f7736ffd9a2d3ee541b09be3555fa8c0d905",
+      "two-phase-clsvof.h": "633310827cf3434e9bcd1b91022c735027eadc2c874546e3ff88e505d9027d82"
+    },
+    "source_manifest_sha256": "d6a2897f00df5a40a596aeadb1a83f702162430f02e6aced4a4935cec48ec39d",
+    "source_path": "tem/stationary_bubble_full_time_imax0_20260720/runs/N0128/clsvof_native"
+  },
+  "provider_stats": null,
+  "purpose": "formal",
+  "requested_terminal_tau": 1.0,
+  "resolution": 128,
+  "schema_version": 2,
+  "scientific_artifacts_schema_version": 1,
+  "scientific_artifacts_sha256": "5c4b43dfa7e80eb3698db015183b8c16d29b6548e321d113ee7fdbaedbcf3b52",
+  "status": "completed",
+  "tau_max": 1.0,
+  "termination_policy": "fixed_horizon",
+  "termination_reason": "fixed_tau_limit"
+}
