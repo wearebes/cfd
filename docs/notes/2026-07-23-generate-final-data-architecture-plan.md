@@ -7,7 +7,7 @@
 
 ## 1. 需要审核的最终结论
 
-- 新数据集：`data/vof_clsvof_nn_benchmarks_v1/`；历史 `dataset/` 不迁移、不覆盖；旧版同名 smoke 已按用户要求删除。
+- 新数据集：`data/vof_clsvof_nn_benchmarks_v2/`；历史 `dataset/` 不迁移、不覆盖；旧版同名 smoke 已按用户要求删除。
 - 数值方法名只使用 `VOF-HF`、`CLSVOF`、`NN`。
 - `VOF-HF` 是独立官方参考；Oscillating 保留 adaptive 官方 VOF-HF，并加入 uniform VOF-HF/CLSVOF/NN 匹配实验；两者都只用 Standard centered variant。
 - Capillary、Rising case1/2、Oscillating 的 CLSVOF/NN 跑 `imax={0,1,2,3,4,5,10,15,20}`，`imax=3` 是 default，其余八个是正式 sensitivity。
@@ -117,8 +117,8 @@ bash generate/setup_linux.sh --check
 
 ```text
 data/
-├── _smoke/vof_clsvof_nn_benchmarks_v1/
-└── vof_clsvof_nn_benchmarks_v1/
+├── _smoke/vof_clsvof_nn_benchmarks_v2/
+└── vof_clsvof_nn_benchmarks_v2/
     ├── READY.json
     ├── _meta/
     │   ├── run.json

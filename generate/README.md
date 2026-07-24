@@ -25,8 +25,8 @@ the ignored `build/linux-venv/`. `job.sh` finds both automatically; no export is
 required.
 
 The execution contract is native Linux with at least one visible CPU.
-`cpu_slots=auto` uses every CPU available to the process; per-row thread ceilings
-are clamped to that total. `--check` runs both a two-thread GCC/OpenMP probe and
+`cpu_slots=auto` uses every CPU available to the process after Linux affinity and
+cgroup-quota limits; per-row thread ceilings are clamped to that total. `--check` runs both a two-thread GCC/OpenMP probe and
 a minimal `qcc` compile/run probe. Slow Windows-mounted filesystems are rejected.
 
 Campaign commands:
@@ -100,9 +100,9 @@ thread allocation; NN changes only the active curvature provider and model.
 
 The campaign is deliberately not a serial loop. It has two stages:
 
-1. Compile every pending row first, with as many as 32 independent compiler
-   processes.
-2. Run multiple solved rows concurrently under one 32-slot scheduler.
+1. Compile every pending row first, with as many independent compiler
+   processes as there are available CPU slots.
+2. Run multiple solved rows concurrently under one slot-bounded scheduler.
 
 The solve policy in `resource_policy.linux-auto.json` uses all CPUs visible to
 the process. On the current 32-CPU host it resolves to:
@@ -123,7 +123,7 @@ clamped to the available slots. The scheduler launches any queued row that fits 
 rows are introduced early as one-slot backfill instead of leaving a serial
 tail. It records the actual allocation and host CPU/memory/swap samples in
 `_meta/resource_usage.csv`; `_meta/resource_summary.json` reports mean measured
-CPU use while all 32 solve slots were allocated. Slot saturation is the hard
+CPU use while all available solve slots were allocated. Slot saturation is the hard
 contract. Measured utilization can briefly dip during solver serial sections
 and I/O, so the smoke report—not an unsupported promise—is used to review
 whether the candidate policy keeps the target host sufficiently busy.
@@ -144,8 +144,8 @@ blocks the row.
 ```text
 data/
 ├── _smoke/
-│   └── vof_clsvof_nn_benchmarks_v1/
-└── vof_clsvof_nn_benchmarks_v1/
+│   └── vof_clsvof_nn_benchmarks_v2/
+└── vof_clsvof_nn_benchmarks_v2/
     ├── READY.json
     ├── _meta/
     │   ├── run.json

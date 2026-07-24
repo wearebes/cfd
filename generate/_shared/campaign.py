@@ -25,7 +25,7 @@ RESOLUTIONS = (32, 64, 128, 256, 512)
 IMAX_VALUES = (0, 1, 2, 3, 4, 5, 10, 15, 20)
 HIGH_IMAX_VALUES = (10, 15, 20)
 METHODS = ("CLSVOF", "NN")
-DATASET_NAME = "vof_clsvof_nn_benchmarks_v1"
+DATASET_NAME = "vof_clsvof_nn_benchmarks_v2"
 FORMAL_ROW_COUNT = 397
 SMOKE_ROW_COUNT = 56
 DEFAULT_POLICY = ROOT / "generate/resource_policy.linux-auto.json"
@@ -44,11 +44,54 @@ FINAL_ROW_FILES = {
 }
 
 
+def cgroup_cpu_quota(
+    v2_path: Path | None = None,
+    v1_quota_path: Path | None = None,
+    v1_period_path: Path | None = None,
+) -> int | None:
+    """Return the integer CPU quota for the current Linux cgroup, if any."""
+    v2_path = v2_path or Path("/sys/fs/cgroup/cpu.max")
+    try:
+        quota, period = v2_path.read_text(encoding="utf-8").split()[:2]
+        if quota != "max":
+            return max(1, int(quota) // int(period))
+    except (OSError, ValueError):
+        pass
+    locations = (
+        ((v1_quota_path, v1_period_path),)
+        if v1_quota_path is not None and v1_period_path is not None
+        else (
+            (
+                Path("/sys/fs/cgroup/cpu/cpu.cfs_quota_us"),
+                Path("/sys/fs/cgroup/cpu/cpu.cfs_period_us"),
+            ),
+            (
+                Path("/sys/fs/cgroup/cpu,cpuacct/cpu.cfs_quota_us"),
+                Path("/sys/fs/cgroup/cpu,cpuacct/cpu.cfs_period_us"),
+            ),
+        )
+    )
+    for quota_path, period_path in locations:
+        assert quota_path is not None and period_path is not None
+        try:
+            quota = int(quota_path.read_text(encoding="utf-8").strip())
+            period = int(period_path.read_text(encoding="utf-8").strip())
+            if quota >= 0:
+                return max(1, quota // period)
+        except (OSError, ValueError, ZeroDivisionError):
+            pass
+    return None
+
+
 def available_logical_cpus() -> int:
-    """Return CPUs available to this process, respecting Linux affinity/cgroups."""
-    if hasattr(os, "sched_getaffinity"):
-        return max(1, len(os.sched_getaffinity(0)))
-    return os.cpu_count() or 1
+    """Return CPUs available to this process, respecting affinity and cgroup quota."""
+    affinity = (
+        len(os.sched_getaffinity(0))
+        if hasattr(os, "sched_getaffinity")
+        else (os.cpu_count() or 1)
+    )
+    quota = cgroup_cpu_quota()
+    return max(1, min(affinity, quota) if quota is not None else affinity)
 
 
 def configured_qcc() -> Path:
@@ -177,8 +220,8 @@ def scheduler_order(
 ) -> list[tuple[int, "CampaignRow"]]:
     """Order rows for slot packing while keeping high-resolution tail full.
 
-    Single-threaded VOF-HF rows enter early as backfill instead of becoming a
-    24-thread under-filled tail after all OpenMP rows have finished.
+    Single-threaded VOF-HF rows enter early as backfill instead of becoming an
+    under-filled serial tail after all OpenMP rows have finished.
     """
     return sorted(
         rows,
@@ -644,7 +687,11 @@ def source_files() -> list[Path]:
             "basilisk/src/qcc.c",
             "basilisk/src/include.c",
             "basilisk/src/postproc.c",
-            "basilisk/src/config",
+            # Linux setup constructs its isolated qcc toolchain from this
+            # tracked template.  Do not lock ``config`` here: in the upstream
+            # tree it is a host-selected symlink (and may be intentionally
+            # dangling in a clean checkout on another platform).
+            "basilisk/src/config.gcc",
             "basilisk/src/integral.h",
             "basilisk/src/two-phase-clsvof.h",
             "basilisk/src/redistance.h",

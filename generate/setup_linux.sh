@@ -46,6 +46,10 @@ if [ "$install" -eq 1 ]; then
   mkdir -p "$toolchain_root"
   rsync -a --delete --exclude qcc --exclude '*.o' --exclude '*.a' \
     "$repo_root/basilisk/" "$toolchain_root/basilisk/"
+  # The source tree selects its macOS configuration through an absolute
+  # symlink.  rsync preserves that link, which is dangling in a Linux clone;
+  # replace it inside the ignored Linux-only toolchain before copying config.gcc.
+  rm -f "$toolchain_root/basilisk/src/config"
   cp "$toolchain_root/basilisk/src/config.gcc" \
     "$toolchain_root/basilisk/src/config"
   make -C "$toolchain_root/basilisk/src" -B qcc CC=gcc

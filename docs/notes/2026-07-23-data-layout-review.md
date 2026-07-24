@@ -7,7 +7,7 @@ Claude 审核。
 ## 1. 已确认的边界
 
 - 新实验统一写入新的 `data/` 根目录；旧 `dataset/` 只作历史记录，不混跑、不覆盖。
-- 数据集使用科学身份命名，不使用时间戳：`vof_clsvof_nn_benchmarks_v1`。
+- 数据集使用科学身份命名，不使用时间戳：`vof_clsvof_nn_benchmarks_v2`。
 - smoke 与 formal 物理隔离；smoke 用来审核正式产物形态，不能被 formal 续跑。
 - 完整 formal 为 312 项：24 VOF-HF、144 CLSVOF、144 NN。
 - smoke 为 30 项：五个物理分支的 N32/N64，VOF-HF/CLSVOF/NN 各 10 项。
@@ -19,9 +19,9 @@ Claude 审核。
 ```text
 data/
 ├── _smoke/
-│   └── vof_clsvof_nn_benchmarks_v1/
+│   └── vof_clsvof_nn_benchmarks_v2/
 │       └── ...                         # 与 formal 同构，仅有 N32/N64、imax03
-└── vof_clsvof_nn_benchmarks_v1/
+└── vof_clsvof_nn_benchmarks_v2/
     ├── READY.json
     ├── _campaign/
     │   ├── campaign.json

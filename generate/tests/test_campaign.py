@@ -18,6 +18,10 @@ sys.modules[SPEC.name] = CAMPAIGN
 SPEC.loader.exec_module(CAMPAIGN)
 
 
+def test_campaign_uses_the_reviewed_v2_data_identity() -> None:
+    assert CAMPAIGN.DATASET_NAME == "vof_clsvof_nn_benchmarks_v2"
+
+
 def test_formal_campaign_has_397_rows_with_uniform_oscillating_match() -> None:
     rows = CAMPAIGN.formal_rows()
     assert len(rows) == 397
@@ -135,6 +139,22 @@ def test_oscillating_reference_is_part_of_the_campaign_source_lock() -> None:
     assert len(lock["basilisk/src/test/oscillation.ref"]) == 64
 
 
+def test_linux_qcc_template_is_part_of_the_campaign_source_lock() -> None:
+    lock = CAMPAIGN.source_lock()
+    assert "basilisk/src/config.gcc" in lock
+    assert "basilisk/src/config" not in lock
+    assert len(lock["basilisk/src/config.gcc"]) == 64
+
+
+def test_linux_setup_replaces_the_host_specific_config_symlink() -> None:
+    source = (ROOT / "generate/setup_linux.sh").read_text(encoding="utf-8")
+    remove = 'rm -f "$toolchain_root/basilisk/src/config"'
+    copy = 'cp "$toolchain_root/basilisk/src/config.gcc"'
+    assert remove in source
+    assert copy in source
+    assert source.index(remove) < source.index(copy)
+
+
 def test_batch_execution_settings_are_recorded_in_source() -> None:
     source = PATH.read_text()
     assert '"cpu_slots": cpu_slots' in source
@@ -156,6 +176,26 @@ def test_resource_policy_keeps_vof_serial_and_scales_matched_rows() -> None:
     assert CAMPAIGN.row_threads(
         CAMPAIGN.Row("oscillating_droplet", None, 512, 3, "NN"), policy
     ) == min(16, slots)
+
+
+def test_cpu_quota_parser_supports_cgroup_v2_and_v1(tmp_path: Path) -> None:
+    v2 = tmp_path / "cpu.max"
+    v1_quota = tmp_path / "cpu.cfs_quota_us"
+    v1_period = tmp_path / "cpu.cfs_period_us"
+    v2.write_text("300000 100000\n", encoding="utf-8")
+    assert CAMPAIGN.cgroup_cpu_quota(v2, v1_quota, v1_period) == 3
+    v2.write_text("max 100000\n", encoding="utf-8")
+    v1_quota.write_text("200000\n", encoding="utf-8")
+    v1_period.write_text("100000\n", encoding="utf-8")
+    assert CAMPAIGN.cgroup_cpu_quota(v2, v1_quota, v1_period) == 2
+
+
+def test_available_cpu_count_honors_a_smaller_cgroup_quota(monkeypatch) -> None:
+    monkeypatch.setattr(
+        CAMPAIGN.os, "sched_getaffinity", lambda _pid: set(range(32)), raising=False
+    )
+    monkeypatch.setattr(CAMPAIGN, "cgroup_cpu_quota", lambda: 8)
+    assert CAMPAIGN.available_logical_cpus() == 8
 
 
 def test_solver_campaign_requires_linux(monkeypatch) -> None:

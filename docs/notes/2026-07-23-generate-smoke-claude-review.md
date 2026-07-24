@@ -36,7 +36,7 @@
 ## 2. 执行范围与完整性
 
 数据根目录：
-`data/_smoke/vof_clsvof_nn_benchmarks_v1/`
+`data/_smoke/vof_clsvof_nn_benchmarks_v2/`
 
 | 检查 | 结果 |
 |---|---:|
@@ -192,7 +192,7 @@ N64 为 142266 次迭代。`u_star` 在 τ=1 / τ=2 为：
 ## 7. 审核决议（2026-07-23）
 
 Claude 完成 §1 五项审核，用户逐项批准。权威记录：campaign 级
-`data/_smoke/vof_clsvof_nn_benchmarks_v1/science_review.json`（新增文件，
+`data/_smoke/vof_clsvof_nn_benchmarks_v2/science_review.json`（新增文件，
 未触碰任何 smoke 行）。
 
 1. **case-centered 路径**：通过，实地核对与 §3 一致。
