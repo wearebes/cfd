@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -190,6 +191,11 @@ def test_resource_policy_keeps_vof_serial_and_scales_matched_rows() -> None:
     assert policy["cpu_slots"] == slots
     assert policy["compile_slots_config"] == 8
     assert policy["compile_slots"] == min(8, slots)
+    assert policy["compile_slots_during_solve_config"] == 4
+    assert policy["compile_slots_during_solve"] == min(4, min(8, slots))
+    assert policy["build_lookahead"] == 16
+    assert policy["row_attempts"] == 2
+    assert policy["finalize_attempts"] == 3
     assert CAMPAIGN.row_threads(CAMPAIGN.VOFHFRow("capwave", None, 512), policy) == 1
     assert CAMPAIGN.row_threads(
         CAMPAIGN.Row("capwave", None, 32, 3, "CLSVOF"), policy
@@ -394,6 +400,30 @@ def test_two_stage_binding_rejects_compile_command_drift(tmp_path: Path) -> None
         CAMPAIGN.bind_build_to_completed_row(row, campaign_root, artifact)
 
 
+def test_pipeline_replaces_global_precompile_and_stop_on_first_failure() -> None:
+    source = PATH.read_text(encoding="utf-8")
+    assert "def compile_pending_rows(" not in source
+    assert "no new rows will be launched" not in source
+    assert "retry_builds" in source
+    assert "retry_ready" in source
+    assert "READY.json was not created" in source
+
+
+def test_incomplete_row_cleanup_is_exact(tmp_path: Path) -> None:
+    row = CAMPAIGN.Row("capwave", None, 32, 3, "CLSVOF")
+    row_dir = tmp_path / row.relative_output
+    sibling = tmp_path / "capwave/N0032/imax03/NN"
+    row_dir.mkdir(parents=True)
+    sibling.mkdir(parents=True)
+    (row_dir / "partial.txt").write_text("partial\n", encoding="utf-8")
+    (sibling / "keep.txt").write_text("keep\n", encoding="utf-8")
+
+    CAMPAIGN.remove_row_directory(tmp_path, row)
+
+    assert not row_dir.exists()
+    assert (sibling / "keep.txt").read_text(encoding="utf-8") == "keep\n"
+
+
 def test_resource_summary_reports_full_slot_solve_utilization(tmp_path: Path) -> None:
     metadata = tmp_path / "_meta"
     metadata.mkdir()
@@ -458,6 +488,7 @@ def test_layout_is_a_read_only_case_centered_contract(tmp_path: Path) -> None:
     completed = subprocess.run(
         ["bash", str(ROOT / "generate/job.sh"), "layout", "--root", str(tmp_path)],
         cwd=ROOT,
+        env={**os.environ, "CFD_PYTHON": sys.executable},
         text=True,
         capture_output=True,
     )

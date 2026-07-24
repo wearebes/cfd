@@ -15,6 +15,7 @@ import shutil
 import subprocess
 import sys
 import time
+import traceback
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -144,6 +145,22 @@ def load_resource_policy(path: Path | None = None) -> dict[str, object]:
         raise ValueError("resource policy compile_slots must be a positive integer")
     policy["compile_slots_config"] = configured_compile_slots
     policy["compile_slots"] = min(configured_compile_slots, cpu_slots)
+    configured_pipeline_compile_slots = policy.get("compile_slots_during_solve")
+    if (
+        not isinstance(configured_pipeline_compile_slots, int)
+        or configured_pipeline_compile_slots < 1
+    ):
+        raise ValueError(
+            "resource policy compile_slots_during_solve must be a positive integer"
+        )
+    policy["compile_slots_during_solve_config"] = configured_pipeline_compile_slots
+    policy["compile_slots_during_solve"] = min(
+        configured_pipeline_compile_slots, policy["compile_slots"]
+    )
+    for key in ("build_lookahead", "row_attempts", "finalize_attempts"):
+        value = policy.get(key)
+        if not isinstance(value, int) or value < 1:
+            raise ValueError(f"resource policy {key} must be a positive integer")
     if policy.get("vof_hf_threads") != 1:
         raise ValueError("VOF-HF must remain single-threaded")
     raw_threads = policy.get("threads_per_row")
@@ -523,7 +540,21 @@ class ResourceMonitor:
             key, raw = line.split(":", 1)
             values[key] = int(raw.split()[0]) * 1024
         swap_used = values.get("SwapTotal", 0) - values.get("SwapFree", 0)
-        return values.get("MemAvailable"), swap_used
+        available = values.get("MemAvailable")
+        try:
+            raw_limit = Path("/sys/fs/cgroup/memory.max").read_text().strip()
+            if raw_limit != "max":
+                limit = int(raw_limit)
+                current = int(Path("/sys/fs/cgroup/memory.current").read_text().strip())
+                cgroup_available = max(0, limit - current)
+                available = (
+                    cgroup_available
+                    if available is None
+                    else min(available, cgroup_available)
+                )
+        except (OSError, ValueError):
+            pass
+        return available, swap_used
 
     def sample(self, phase: str, active_rows: int, allocated_slots: int) -> None:
         now = time.monotonic()
@@ -558,7 +589,7 @@ def write_resource_summary(campaign_root: Path, cpu_slots: int) -> None:
     full = [
         float(row["cpu_utilization_percent"])
         for row in samples
-        if row["phase"] == "solve"
+        if row["phase"] in {"solve", "pipeline"}
         and int(row["allocated_slots"]) == cpu_slots
         and row["cpu_utilization_percent"]
     ]
@@ -857,7 +888,9 @@ def verify_source_references(
             raise ValueError(f"{row_dir}: source hash mismatch: {source_path}")
 
 
-def compact_row_provenance(row_dir: Path, campaign_root: Path) -> None:
+def compact_row_provenance(
+    row_dir: Path, campaign_root: Path, *, update_index: bool = True
+) -> None:
     """Move row-local source snapshots into the campaign object store."""
     manifest_path = row_dir / "manifest.json"
     manifest = json.loads(manifest_path.read_text())
@@ -904,7 +937,8 @@ def compact_row_provenance(row_dir: Path, campaign_root: Path) -> None:
         for path in directories:
             path.rmdir()
         snapshot.rmdir()
-    regenerate_object_index(campaign_root)
+    if update_index:
+        regenerate_object_index(campaign_root)
 
 
 def regenerate_object_index(campaign_root: Path) -> None:
@@ -1418,6 +1452,22 @@ def remove_build_directory(campaign_root: Path, row: CampaignRow) -> None:
         shutil.rmtree(target)
 
 
+def remove_row_directory(campaign_root: Path, row: CampaignRow) -> None:
+    """Remove one exact incomplete result row without widening cleanup scope."""
+    root = campaign_root.resolve()
+    target = (campaign_root / row.relative_output).resolve()
+    try:
+        relative = target.relative_to(root)
+    except ValueError as error:
+        raise ValueError(f"unsafe row cleanup target: {target}") from error
+    if relative == Path(".") or relative.parts[0] == "_meta":
+        raise ValueError(f"refusing unsafe row cleanup target: {target}")
+    if target.is_symlink() or target.is_file():
+        target.unlink()
+    elif target.is_dir():
+        shutil.rmtree(target)
+
+
 def verify_build_artifact(
     row: CampaignRow,
     campaign_root: Path,
@@ -1557,98 +1607,99 @@ def verify_build_binding(manifest: dict[str, object], label: str) -> None:
             raise ValueError(f"{label}: invalid build binding field {key}")
 
 
-def compile_pending_rows(
-    pending_rows: list[tuple[int, CampaignRow]],
+def format_failure(error: BaseException) -> str:
+    return f"{type(error).__name__}: {error}"
+
+
+def persist_campaign_state(
+    campaign_path: Path,
+    campaign: dict[str, object],
+    completed: set[str],
+    failed_rows: set[str],
+) -> None:
+    campaign["completed_rows"] = sorted(completed)
+    campaign["failed_rows"] = sorted(failed_rows)
+    campaign["updated_at"] = utc_now()
+    atomic_json(campaign_path, campaign)
+
+
+def record_row_failure(
+    campaign_path: Path,
+    campaign: dict[str, object],
+    completed: set[str],
+    failed_rows: set[str],
+    row: CampaignRow,
+    *,
+    phase: str,
+    attempt: int,
+    detail: str,
+    log_path: Path,
+) -> None:
+    history = campaign.setdefault("failure_history", [])
+    if not isinstance(history, list):
+        raise ValueError("campaign failure_history is invalid")
+    history.append(
+        {
+            "row": row.label,
+            "phase": phase,
+            "attempt": attempt,
+            "detail": detail,
+            "log": str(log_path),
+            "failed_at": utc_now(),
+        }
+    )
+    failed_rows.add(row.label)
+    persist_campaign_state(campaign_path, campaign, completed, failed_rows)
+
+
+def finalize_completed_row(
+    row: CampaignRow,
     campaign_root: Path,
     purpose: str,
-    policy: dict[str, object],
-    current_lock: dict[str, str],
-    monitor: ResourceMonitor,
-) -> dict[str, BuildArtifact]:
-    """Compile rows with a memory-safe process cap before the solve stage."""
-    compile_slots = int(policy["compile_slots"])
-    metadata_dir = campaign_root / "_meta"
-    queued: list[tuple[int, CampaignRow]] = []
-    artifacts: dict[str, BuildArtifact] = {}
-    for index, row in pending_rows:
-        if build_directory(campaign_root, row).exists():
+    artifact: BuildArtifact,
+    campaign_path: Path,
+    campaign: dict[str, object],
+    completed: set[str],
+    failed_rows: set[str],
+    attempts: int,
+) -> None:
+    """Finalize a solved row idempotently; transient metadata failures are retried."""
+    row_dir = campaign_root / row.relative_output
+    last_error: BaseException | None = None
+    for finalize_attempt in range(1, attempts + 1):
+        try:
+            bind_build_to_completed_row(row, campaign_root, artifact)
+            verify_row(row, campaign_root, purpose)
+            compact_row_provenance(row_dir, campaign_root, update_index=False)
+            verify_row(row, campaign_root, purpose)
+            completed.add(row.label)
+            failed_rows.discard(row.label)
+            persist_campaign_state(campaign_path, campaign, completed, failed_rows)
             try:
-                artifacts[row.label] = verify_build_artifact(
-                    row, campaign_root, purpose, row_threads(row, policy)
-                )
-                print(f"[build {index}/{len(pending_rows)}] reused {row.label}", flush=True)
-                continue
-            except (OSError, ValueError, json.JSONDecodeError):
                 remove_build_directory(campaign_root, row)
-        queued.append((index, row))
-
-    active: dict[
-        subprocess.Popen[str], tuple[int, CampaignRow, object, Path]
-    ] = {}
-    failure: tuple[CampaignRow, Path, str] | None = None
-    while queued or active:
-        while failure is None and queued and len(active) < compile_slots:
-            index, row = queued.pop(0)
-            if source_lock() != current_lock:
-                raise ValueError("campaign source files changed during compilation")
-            threads = row_threads(row, policy)
-            command = [
-                *row.command(campaign_root / "_meta/builds", purpose, threads),
-                "--compile-only",
-            ]
-            log_path = metadata_dir / "logs/build" / f"{index:03d}.log"
-            log_path.parent.mkdir(parents=True, exist_ok=True)
-            log = log_path.open("w", encoding="utf-8")
-            environment = os.environ.copy()
-            environment["CFD_CAMPAIGN_BUILD"] = "1"
-            process = subprocess.Popen(
-                command,
-                cwd=ROOT,
-                env=environment,
-                text=True,
-                stdout=log,
-                stderr=subprocess.STDOUT,
-                start_new_session=True,
-            )
-            ACTIVE_PROCESS_GROUPS.add(process)
-            active[process] = (index, row, log, log_path)
+            except OSError as cleanup_error:
+                print(
+                    f"warning: completed row build cleanup deferred {row.label}: "
+                    f"{format_failure(cleanup_error)}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+            return
+        except (OSError, ValueError, json.JSONDecodeError) as error:
+            last_error = error
             print(
-                f"[build {index}/{len(pending_rows)}] compiling {row.label} "
-                f"compilers={len(active)}/{compile_slots}",
+                f"validation error {row.label} "
+                f"attempt={finalize_attempt}/{attempts}: {format_failure(error)}",
+                file=sys.stderr,
                 flush=True,
             )
-        monitor.sample("compile", len(active), len(active))
-        finished = [process for process in active if process.poll() is not None]
-        if not finished:
-            if active:
-                time.sleep(0.25)
-                continue
-            break
-        for process in finished:
-            ACTIVE_PROCESS_GROUPS.discard(process)
-            index, row, log, log_path = active.pop(process)
-            log.close()
-            if process.returncode:
-                if failure is None:
-                    failure = (row, log_path, f"exit status {process.returncode}")
-                continue
-            try:
-                artifacts[row.label] = verify_build_artifact(
-                    row, campaign_root, purpose, row_threads(row, policy)
-                )
-                print(f"[build {index}/{len(pending_rows)}] completed {row.label}", flush=True)
-            except (OSError, ValueError, json.JSONDecodeError) as error:
-                if failure is None:
-                    failure = (row, log_path, str(error))
-        if failure is not None and not active:
-            break
-    if failure is not None:
-        row, log_path, detail = failure
-        raise RuntimeError(f"build failed ({row.label}): {detail}; see {log_path}")
-    if set(artifacts) != {row.label for _, row in pending_rows}:
-        missing = sorted({row.label for _, row in pending_rows} - set(artifacts))
-        raise RuntimeError(f"campaign build phase is incomplete: {missing[:3]}")
-    return artifacts
+            traceback.print_exc(file=sys.stderr)
+            if finalize_attempt < attempts:
+                time.sleep(0.25 * finalize_attempt)
+    assert last_error is not None
+    raise RuntimeError(
+        f"finalization failed after {attempts} attempts: {format_failure(last_error)}"
+    ) from last_error
 
 
 def run_campaign(
@@ -1707,134 +1758,332 @@ def run_campaign(
     write_rows_csv(rows, campaign_root)
     monitor = ResourceMonitor(metadata_dir / "resource_usage.csv")
     completed = set(campaign.get("completed_rows", []))
+    failed_rows = set(campaign.get("failed_rows", []))
     pending: list[tuple[int, CampaignRow]] = []
     for index, row in enumerate(rows, 1):
         row_dir = campaign_root / row.relative_output
         if row.label in completed or row_dir.exists():
-            verify_row(row, campaign_root, purpose)
-            compact_row_provenance(row_dir, campaign_root)
-            verify_row(row, campaign_root, purpose)
-            remove_build_directory(campaign_root, row)
-            completed.add(row.label)
-            print(f"[{index}/{len(rows)}] verified {row.label}", flush=True)
-        else:
-            pending.append((index, row))
-
-    builds = compile_pending_rows(
-        pending, campaign_root, purpose, policy, current_lock, monitor
-    )
-    # VOF-HF rows enter early as one-slot backfill. Larger rows remain for a
-    # fully occupied tail rather than leaving only 24 serial references last.
-    pending = scheduler_order(pending, policy)
-    active: dict[
-        subprocess.Popen[str],
-        tuple[int, CampaignRow, int, object, Path],
-    ] = {}
-    used_slots = 0
-    failure: tuple[CampaignRow, Path, str] | None = None
-    while pending or active:
-        launched = False
-        if failure is None:
-            for position, (index, row) in enumerate(pending):
-                slots = row_threads(row, policy)
-                if used_slots + slots > cpu_slots:
-                    continue
-                if source_lock() != current_lock:
-                    raise ValueError("campaign source files changed during execution")
-                artifact = builds[row.label]
-                command = [
-                    *row.command(campaign_root, purpose, slots),
-                    "--precompiled",
-                    str(artifact.executable),
-                ]
-                log_path = metadata_dir / "logs/solve" / f"{index:03d}.log"
-                log_path.parent.mkdir(parents=True, exist_ok=True)
-                log = log_path.open("w", encoding="utf-8")
-                environment = os.environ.copy()
-                environment["CFD_CAMPAIGN_PRECOMPILED"] = "1"
-                process = subprocess.Popen(
-                    command,
-                    cwd=ROOT,
-                    env=environment,
-                    text=True,
-                    stdout=log,
-                    stderr=subprocess.STDOUT,
-                    start_new_session=True,
-                )
-                ACTIVE_PROCESS_GROUPS.add(process)
-                active[process] = (index, row, slots, log, log_path)
-                used_slots += slots
-                pending.pop(position)
+            try:
+                verify_row(row, campaign_root, purpose)
+                compact_row_provenance(row_dir, campaign_root, update_index=False)
+                verify_row(row, campaign_root, purpose)
+                completed.add(row.label)
+                failed_rows.discard(row.label)
+                try:
+                    remove_build_directory(campaign_root, row)
+                except OSError as cleanup_error:
+                    print(
+                        f"warning: verified row build cleanup deferred {row.label}: "
+                        f"{format_failure(cleanup_error)}",
+                        file=sys.stderr,
+                        flush=True,
+                    )
+                print(f"[{index}/{len(rows)}] verified {row.label}", flush=True)
+                continue
+            except (OSError, ValueError, json.JSONDecodeError) as error:
+                if row.label in completed:
+                    raise RuntimeError(
+                        f"completed row became invalid ({row.label}): "
+                        f"{format_failure(error)}"
+                    ) from error
                 print(
-                    f"[{index}/{len(rows)}] running {row.label} "
-                    f"slots={slots} used={used_slots}/{cpu_slots}",
+                    f"[{index}/{len(rows)}] removing incomplete row {row.label}: "
+                    f"{format_failure(error)}",
+                    file=sys.stderr,
                     flush=True,
                 )
-                launched = True
-                break
-        monitor.sample("solve", len(active), used_slots)
-        finished = [process for process in active if process.poll() is not None]
-        if not finished:
-            if active:
-                time.sleep(0.25)
-                continue
-            if pending and not launched:
-                raise ValueError("resource policy cannot schedule a pending row")
+                remove_row_directory(campaign_root, row)
+        pending.append((index, row))
+
+    persist_campaign_state(campaign_path, campaign, completed, failed_rows)
+    # Compile and solve are one bounded pipeline. A small build lookahead keeps
+    # binaries ready without spending hours compiling the full matrix before
+    # the first scientific row can finish.
+    queued = [(*item, 1) for item in scheduler_order(pending, policy)]
+    ready: list[tuple[int, CampaignRow, int, BuildArtifact]] = []
+    for index, row, attempt in list(queued):
+        if not build_directory(campaign_root, row).exists():
             continue
-        for process in finished:
+        try:
+            artifact = verify_build_artifact(
+                row, campaign_root, purpose, row_threads(row, policy)
+            )
+            ready.append((index, row, attempt, artifact))
+            queued.remove((index, row, attempt))
+            print(f"[build {index}/{len(rows)}] reused {row.label}", flush=True)
+        except (OSError, ValueError, json.JSONDecodeError) as error:
+            print(
+                f"[build {index}/{len(rows)}] discarding invalid build "
+                f"{row.label}: {format_failure(error)}",
+                file=sys.stderr,
+                flush=True,
+            )
+            remove_build_directory(campaign_root, row)
+
+    active_builds: dict[
+        subprocess.Popen[str], tuple[int, CampaignRow, int, object, Path]
+    ] = {}
+    active_solves: dict[
+        subprocess.Popen[str],
+        tuple[int, CampaignRow, int, int, object, Path, BuildArtifact],
+    ] = {}
+    retry_builds: list[tuple[int, CampaignRow, int]] = []
+    retry_ready: list[tuple[int, CampaignRow, int, BuildArtifact]] = []
+    permanently_failed: dict[str, str] = {}
+    used_slots = 0
+    compile_slots = int(policy["compile_slots"])
+    pipeline_compile_slots = int(policy["compile_slots_during_solve"])
+    build_lookahead = int(policy["build_lookahead"])
+    row_attempts = int(policy["row_attempts"])
+    finalize_attempts = int(policy["finalize_attempts"])
+
+    while queued or ready or active_builds or active_solves or retry_builds or retry_ready:
+        launched = False
+        while ready:
+            selected: int | None = None
+            for position, (index, row, attempt, artifact) in enumerate(ready):
+                slots = row_threads(row, policy)
+                if used_slots + len(active_builds) + slots > cpu_slots:
+                    continue
+                selected = position
+                break
+            if selected is None:
+                break
+            index, row, attempt, artifact = ready.pop(selected)
+            slots = row_threads(row, policy)
+            if source_lock() != current_lock:
+                raise ValueError("campaign source files changed during execution")
+            command = [
+                *row.command(campaign_root, purpose, slots),
+                "--precompiled",
+                str(artifact.executable),
+            ]
+            log_path = metadata_dir / "logs/solve" / f"{index:03d}.attempt{attempt}.log"
+            log_path.parent.mkdir(parents=True, exist_ok=True)
+            log = log_path.open("w", encoding="utf-8")
+            environment = os.environ.copy()
+            environment["CFD_CAMPAIGN_PRECOMPILED"] = "1"
+            process = subprocess.Popen(
+                command,
+                cwd=ROOT,
+                env=environment,
+                text=True,
+                stdout=log,
+                stderr=subprocess.STDOUT,
+                start_new_session=True,
+            )
+            ACTIVE_PROCESS_GROUPS.add(process)
+            active_solves[process] = (
+                index, row, attempt, slots, log, log_path, artifact
+            )
+            used_slots += slots
+            print(
+                f"[{index}/{len(rows)}] running {row.label} attempt={attempt} "
+                f"slots={slots} solve={used_slots} build={len(active_builds)} "
+                f"total={used_slots + len(active_builds)}/{cpu_slots}",
+                flush=True,
+            )
+            launched = True
+
+        current_compile_limit = (
+            pipeline_compile_slots if active_solves else compile_slots
+        )
+        while (
+            queued
+            and len(active_builds) < current_compile_limit
+            and used_slots + len(active_builds) < cpu_slots
+            and len(ready) + len(active_builds) < build_lookahead
+        ):
+            index, row, attempt = queued.pop(0)
+            if source_lock() != current_lock:
+                raise ValueError("campaign source files changed during compilation")
+            threads = row_threads(row, policy)
+            command = [
+                *row.command(campaign_root / "_meta/builds", purpose, threads),
+                "--compile-only",
+            ]
+            log_path = metadata_dir / "logs/build" / f"{index:03d}.attempt{attempt}.log"
+            log_path.parent.mkdir(parents=True, exist_ok=True)
+            log = log_path.open("w", encoding="utf-8")
+            environment = os.environ.copy()
+            environment["CFD_CAMPAIGN_BUILD"] = "1"
+            process = subprocess.Popen(
+                command,
+                cwd=ROOT,
+                env=environment,
+                text=True,
+                stdout=log,
+                stderr=subprocess.STDOUT,
+                start_new_session=True,
+            )
+            ACTIVE_PROCESS_GROUPS.add(process)
+            active_builds[process] = (index, row, attempt, log, log_path)
+            print(
+                f"[build {index}/{len(rows)}] compiling {row.label} "
+                f"attempt={attempt} compilers={len(active_builds)}/{current_compile_limit} "
+                f"total={used_slots + len(active_builds)}/{cpu_slots}",
+                flush=True,
+            )
+            launched = True
+
+        phase = "pipeline" if active_solves and active_builds else (
+            "solve" if active_solves else "compile"
+        )
+        monitor.sample(
+            phase,
+            len(active_solves) + len(active_builds),
+            used_slots + len(active_builds),
+        )
+        finished_builds = [
+            process for process in active_builds if process.poll() is not None
+        ]
+        finished_solves = [
+            process for process in active_solves if process.poll() is not None
+        ]
+
+        for process in finished_builds:
             ACTIVE_PROCESS_GROUPS.discard(process)
-            index, row, slots, log, log_path = active.pop(process)
+            index, row, attempt, log, log_path = active_builds.pop(process)
+            log.close()
+            error: BaseException | None = None
+            if process.returncode:
+                error = RuntimeError(f"compiler exit status {process.returncode}")
+            else:
+                if source_lock() != current_lock:
+                    raise ValueError("campaign source files changed during compilation")
+                try:
+                    artifact = verify_build_artifact(
+                        row, campaign_root, purpose, row_threads(row, policy)
+                    )
+                    ready.append((index, row, attempt, artifact))
+                except (OSError, ValueError, json.JSONDecodeError) as build_error:
+                    error = build_error
+            if error is None:
+                print(
+                    f"[build {index}/{len(rows)}] completed {row.label} "
+                    f"attempt={attempt}",
+                    flush=True,
+                )
+                continue
+            detail = format_failure(error)
+            print(
+                f"[build {index}/{len(rows)}] failed {row.label} "
+                f"attempt={attempt}: {detail}; see {log_path}",
+                file=sys.stderr,
+                flush=True,
+            )
+            record_row_failure(
+                campaign_path, campaign, completed, failed_rows, row,
+                phase="build", attempt=attempt, detail=detail, log_path=log_path,
+            )
+            remove_build_directory(campaign_root, row)
+            if attempt < row_attempts:
+                retry_builds.append((index, row, attempt + 1))
+            else:
+                permanently_failed[row.label] = detail
+
+        for process in finished_solves:
+            ACTIVE_PROCESS_GROUPS.discard(process)
+            index, row, attempt, slots, log, log_path, artifact = active_solves.pop(
+                process
+            )
             log.close()
             used_slots -= slots
+            error: BaseException | None = None
             if process.returncode:
-                if failure is None:
-                    failure = (row, log_path, f"exit status {process.returncode}")
+                error = RuntimeError(f"solver exit status {process.returncode}")
+            else:
+                try:
+                    finalize_completed_row(
+                        row,
+                        campaign_root,
+                        purpose,
+                        artifact,
+                        campaign_path,
+                        campaign,
+                        completed,
+                        failed_rows,
+                        finalize_attempts,
+                    )
+                except (OSError, ValueError, RuntimeError, json.JSONDecodeError) as row_error:
+                    error = row_error
+            if error is None:
                 print(
-                    f"[{index}/{len(rows)}] failed {row.label}; "
-                    "no new rows will be launched",
-                    file=sys.stderr,
+                    f"[{index}/{len(rows)}] completed {row.label} attempt={attempt} "
+                    f"solve={used_slots}/{cpu_slots}",
                     flush=True,
                 )
                 continue
-            try:
-                artifact = builds[row.label]
-                row_dir = campaign_root / row.relative_output
-                bind_build_to_completed_row(row, campaign_root, artifact)
-                verify_row(row, campaign_root, purpose)
-                compact_row_provenance(row_dir, campaign_root)
-                verify_row(row, campaign_root, purpose)
+            detail = format_failure(error)
+            failure_log = metadata_dir / "logs/failures" / (
+                f"{index:03d}.attempt{attempt}.txt"
+            )
+            failure_log.parent.mkdir(parents=True, exist_ok=True)
+            failure_log.write_text(
+                "".join(
+                    traceback.format_exception(
+                        type(error), error, error.__traceback__
+                    )
+                ),
+                encoding="utf-8",
+            )
+            print(
+                f"[{index}/{len(rows)}] failed {row.label} attempt={attempt}: "
+                f"{detail}; retry will be deferred; see {failure_log}",
+                file=sys.stderr,
+                flush=True,
+            )
+            record_row_failure(
+                campaign_path, campaign, completed, failed_rows, row,
+                phase="solve_or_finalize", attempt=attempt, detail=detail,
+                log_path=failure_log,
+            )
+            remove_row_directory(campaign_root, row)
+            if attempt < row_attempts:
+                retry_ready.append((index, row, attempt + 1, artifact))
+            else:
+                permanently_failed[row.label] = detail
                 remove_build_directory(campaign_root, row)
-                completed.add(row.label)
-                campaign["completed_rows"] = sorted(completed)
-                campaign["updated_at"] = utc_now()
-                atomic_json(campaign_path, campaign)
-                print(
-                    f"[{index}/{len(rows)}] completed {row.label} "
-                    f"used={used_slots}/{cpu_slots}",
-                    flush=True,
-                )
-            except (OSError, ValueError, json.JSONDecodeError) as error:
-                if failure is None:
-                    failure = (row, log_path, str(error))
-                print(
-                    f"[{index}/{len(rows)}] validation failed {row.label}; "
-                    "no new rows will be launched",
-                    file=sys.stderr,
-                    flush=True,
-                )
-    if failure is not None:
-        row, log_path, detail = failure
-        raise RuntimeError(f"row failed ({row.label}): {detail}; see {log_path}")
+
+        if (
+            not queued
+            and not ready
+            and not active_builds
+            and not active_solves
+            and (retry_builds or retry_ready)
+        ):
+            queued, retry_builds = retry_builds, []
+            ready, retry_ready = retry_ready, []
+            print(
+                f"starting deferred retry wave: build={len(queued)} solve={len(ready)}",
+                flush=True,
+            )
+            continue
+        if not launched and not finished_builds and not finished_solves:
+            if active_builds or active_solves:
+                time.sleep(0.25)
+                continue
+            if queued or ready:
+                raise ValueError("resource policy cannot schedule a pending row")
+
+    if permanently_failed:
+        persist_campaign_state(campaign_path, campaign, completed, failed_rows)
+        preview = "; ".join(
+            f"{label}: {detail}" for label, detail in sorted(permanently_failed.items())[:5]
+        )
+        raise RuntimeError(
+            f"{len(permanently_failed)} rows failed after {row_attempts} attempts; "
+            f"READY.json was not created; {preview}"
+        )
     builds_root = metadata_dir / "builds"
     if builds_root.is_dir() and not any(builds_root.iterdir()):
         builds_root.rmdir()
+    regenerate_object_index(campaign_root)
     verify_campaign(rows, campaign_root, purpose)
     write_case_summaries(rows, campaign_root)
     write_oscillating_vof_hf_report(rows, campaign_root)
     write_resource_summary(campaign_root, cpu_slots)
-    campaign["completed_rows"] = sorted(completed)
-    campaign["updated_at"] = utc_now()
-    atomic_json(campaign_path, campaign)
+    persist_campaign_state(campaign_path, campaign, completed, failed_rows)
     ready = {
         "schema_version": 1,
         "status": "ready",

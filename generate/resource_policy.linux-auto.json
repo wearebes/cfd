@@ -1,10 +1,14 @@
 {
   "compile_slots": 8,
+  "compile_slots_during_solve": 4,
+  "build_lookahead": 16,
   "cpu_slots": "auto",
+  "finalize_attempts": 3,
   "host_contract": {
     "environment": "Linux"
   },
   "schema_version": 1,
+  "row_attempts": 2,
   "threads_per_row": {
     "32": 2,
     "64": 4,

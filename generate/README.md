@@ -98,14 +98,15 @@ thread allocation; NN changes only the active curvature provider and model.
 
 ## Parallel execution on Linux
 
-The campaign is deliberately not a serial loop. It has two stages:
-
-1. Compile every pending row first, with at most 8 independent compiler
-   processes. Basilisk qcc translation is memory-intensive, so this cap avoids
-   cgroup memory reclaim on 60 GiB execution containers. The cap is lower than
-   the 32 solver slots because the large oscillating NN translation can use
-   several GiB per qcc process.
-2. Run multiple solved rows concurrently under one slot-bounded scheduler.
+The campaign is deliberately not a serial loop and does not precompile the
+entire matrix. Compilation and solving share one bounded pipeline: up to 8
+independent compilers are allowed before solving begins, at most 4 remain active
+while solvers run, and no more than 16 verified builds may wait ahead. A row is
+eligible to solve immediately after its executable verifies. Compiler processes
+also consume scheduler slots, so the combined compile-plus-solve allocation
+never exceeds the 32 CPUs visible to the container. These caps avoid cgroup
+memory reclaim on 60 GiB execution containers while removing the old
+all-builds-before-any-result delay.
 
 The solve policy in `resource_policy.linux-auto.json` uses all CPUs visible to
 the process. On the current 32-CPU host it resolves to:
@@ -124,7 +125,11 @@ rows active at every N instead of assigning all cores to one two-dimensional
 N512 row. On smaller Linux allocations each per-row value is automatically
 clamped to the available slots. The solve scheduler launches any queued row that fits the remaining slots. VOF-HF
 rows are introduced early as one-slot backfill instead of leaving a serial
-tail. It records the actual allocation and host CPU/memory/swap samples in
+tail. A failed row is recorded with its phase, attempt, exception and log path;
+other rows continue. Failed rows receive one deferred retry after the initial
+wave, and a repeatedly failing row blocks `READY.json` without idling or
+discarding successful rows. It records the actual allocation and host
+CPU/memory/swap samples in
 `_meta/resource_usage.csv`; `_meta/resource_summary.json` reports mean measured
 CPU use while all available solve slots were allocated. Slot saturation is the hard
 contract. Measured utilization can briefly dip during solver serial sections
@@ -134,13 +139,13 @@ whether the candidate policy keeps the target host sufficiently busy.
 VOF-HF remains single-threaded. CLSVOF and NN use OpenMP with
 `OMP_DYNAMIC=false`; both methods receive the same threads at the same N.
 
-For traceability and throughput, the compile stage and solve stage are
-separate. This is not arbitrary precompilation: direct runner calls still
+For traceability, each row still has separate, hash-bound build and solve
+steps even though different rows overlap in the pipeline. Direct runner calls
 reject `--precompiled`. The internal scheduler hashes the executable, compiler
 command, sources, OpenMP environment and scientific parameters, verifies they
 are unchanged at solve time, embeds a `build_binding` in `manifest.json`, then
 deletes the temporary `_meta/builds/<row>` directory. A changed binary or plan
-blocks the row.
+blocks that row.
 
 ## Final data layout
 
@@ -253,15 +258,18 @@ detect corruption; the second copy provides persistence.
 Compiler and solver rows run in separate process groups. `SIGINT`, `SIGTERM` or
 terminal hangup stops every active group before the campaign exits, preventing
 orphaned qcc/solver processes. An ungraceful machine or kernel failure can still
-leave a partial row directory. Before resuming:
+leave a partial row directory. On resume, the scheduler first re-verifies every
+recorded completed row, recovers a valid unrecorded row, and removes only an
+exact invalid partial-row directory before rescheduling it. Before resuming:
 
 1. confirm that no campaign solver process remains;
-2. move the one incomplete row directory aside for diagnosis, or delete that
-   exact row after review;
+2. preserve `_meta/logs/` because it contains per-attempt diagnostics;
 3. rerun the same `job.sh smoke` or `job.sh formal` command.
 
 Completed rows and verified temporary builds are reused. The campaign refuses
-to guess through an incomplete row or mix changed sources/settings.
+to mix changed sources/settings. Row finalization is idempotent and retried
+three times; provenance object-index regeneration is a final campaign gate,
+not a reason to misclassify an already verified scientific row.
 
 ## Completion and review gates
 

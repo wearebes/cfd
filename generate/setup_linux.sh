@@ -95,6 +95,14 @@ if [ "$logical_cpus" -lt 1 ]; then
   exit 1
 fi
 
+memory_limit="$(free -h | awk '/^Mem:/ {print $2}')"
+if [ -r /sys/fs/cgroup/memory.max ]; then
+  cgroup_memory="$(cat /sys/fs/cgroup/memory.max)"
+  if [ "$cgroup_memory" != max ]; then
+    memory_limit="$(numfmt --to=iec --suffix=B "$cgroup_memory")"
+  fi
+fi
+
 probe_root="$(mktemp -d /tmp/cfd-linux-preflight.XXXXXX)"
 case "$probe_root" in /tmp/cfd-linux-preflight.*) ;; *) exit 2 ;; esac
 cleanup_probe() { rm -rf "$probe_root"; }
@@ -136,7 +144,7 @@ printf '%s\n' \
   "repository=$repo_root" \
   "repository_filesystem=$repo_filesystem" \
   "logical_cpus=$logical_cpus" \
-  "memory=$(free -h | awk '/^Mem:/ {print $2}')" \
+  "memory=$memory_limit" \
   "gcc=$(gcc -dumpfullversion -dumpversion)" \
   "gnuplot=$(gnuplot --version)" \
   "python=$python" \
