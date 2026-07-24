@@ -100,7 +100,7 @@ thread allocation; NN changes only the active curvature provider and model.
 
 The campaign is deliberately not a serial loop and does not precompile the
 entire matrix. Compilation and solving share one bounded pipeline: up to 8
-independent compilers are allowed before solving begins, at most 4 remain active
+independent compilers are allowed before solving begins, at most 8 remain active
 while solvers run, and no more than 16 verified builds may wait ahead. A row is
 eligible to solve immediately after its executable verifies. Compiler processes
 also consume scheduler slots, so the combined compile-plus-solve allocation

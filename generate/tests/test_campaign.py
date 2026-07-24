@@ -191,8 +191,8 @@ def test_resource_policy_keeps_vof_serial_and_scales_matched_rows() -> None:
     assert policy["cpu_slots"] == slots
     assert policy["compile_slots_config"] == 8
     assert policy["compile_slots"] == min(8, slots)
-    assert policy["compile_slots_during_solve_config"] == 4
-    assert policy["compile_slots_during_solve"] == min(4, min(8, slots))
+    assert policy["compile_slots_during_solve_config"] == 8
+    assert policy["compile_slots_during_solve"] == min(8, slots)
     assert policy["build_lookahead"] == 16
     assert policy["row_attempts"] == 2
     assert policy["finalize_attempts"] == 3

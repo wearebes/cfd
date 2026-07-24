@@ -1,6 +1,6 @@
 {
   "compile_slots": 8,
-  "compile_slots_during_solve": 4,
+  "compile_slots_during_solve": 8,
   "build_lookahead": 16,
   "cpu_slots": "auto",
   "finalize_attempts": 3,
