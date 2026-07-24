@@ -100,8 +100,9 @@ thread allocation; NN changes only the active curvature provider and model.
 
 The campaign is deliberately not a serial loop. It has two stages:
 
-1. Compile every pending row first, with as many independent compiler
-   processes as there are available CPU slots.
+1. Compile every pending row first, with at most 16 independent compiler
+   processes. Basilisk qcc translation is memory-intensive, so this cap avoids
+   cgroup memory reclaim on 60 GiB execution containers.
 2. Run multiple solved rows concurrently under one slot-bounded scheduler.
 
 The solve policy in `resource_policy.linux-auto.json` uses all CPUs visible to
@@ -119,7 +120,7 @@ the process. On the current 32-CPU host it resolves to:
 This is a throughput-first policy for a 32-CPU allocation: it keeps multiple
 rows active at every N instead of assigning all cores to one two-dimensional
 N512 row. On smaller Linux allocations each per-row value is automatically
-clamped to the available slots. The scheduler launches any queued row that fits the remaining slots. VOF-HF
+clamped to the available slots. The solve scheduler launches any queued row that fits the remaining slots. VOF-HF
 rows are introduced early as one-slot backfill instead of leaving a serial
 tail. It records the actual allocation and host CPU/memory/swap samples in
 `_meta/resource_usage.csv`; `_meta/resource_summary.json` reports mean measured

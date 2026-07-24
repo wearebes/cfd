@@ -1,4 +1,5 @@
 {
+  "compile_slots": 16,
   "cpu_slots": "auto",
   "host_contract": {
     "environment": "Linux"

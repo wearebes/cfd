@@ -52,6 +52,9 @@ if [ "$install" -eq 1 ]; then
   rm -f "$toolchain_root/basilisk/src/config"
   cp "$toolchain_root/basilisk/src/config.gcc" \
     "$toolchain_root/basilisk/src/config"
+  # qcc links the AST archive, but the top-level Makefile deliberately does
+  # not provide a rule that builds it.  Build the archive explicitly first.
+  make -C "$toolchain_root/basilisk/src/ast"
   make -C "$toolchain_root/basilisk/src" -B qcc CC=gcc
 fi
 
@@ -102,7 +105,7 @@ printf '%s\n' \
   'int main(void) { int n = 0;' \
   '#pragma omp parallel reduction(+:n)' \
   '  n += 1;' \
-  '  printf("%d\\n", n); return 0; }' \
+  '  printf("%d\n", n); return 0; }' \
   > "$probe_root/openmp.c"
 gcc -O2 -fopenmp "$probe_root/openmp.c" -o "$probe_root/openmp"
 if [ "$(OMP_NUM_THREADS=2 "$probe_root/openmp")" != 2 ]; then

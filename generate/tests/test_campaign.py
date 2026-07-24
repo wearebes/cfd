@@ -150,9 +150,20 @@ def test_linux_setup_replaces_the_host_specific_config_symlink() -> None:
     source = (ROOT / "generate/setup_linux.sh").read_text(encoding="utf-8")
     remove = 'rm -f "$toolchain_root/basilisk/src/config"'
     copy = 'cp "$toolchain_root/basilisk/src/config.gcc"'
+    build_ast = 'make -C "$toolchain_root/basilisk/src/ast"'
+    build_qcc = 'make -C "$toolchain_root/basilisk/src" -B qcc CC=gcc'
     assert remove in source
     assert copy in source
+    assert build_ast in source
+    assert build_qcc in source
     assert source.index(remove) < source.index(copy)
+    assert source.index(copy) < source.index(build_ast) < source.index(build_qcc)
+
+
+def test_linux_setup_openmp_probe_emits_a_real_newline() -> None:
+    source = (ROOT / "generate/setup_linux.sh").read_text(encoding="utf-8")
+    assert "'  printf(\"%d\\n\", n); return 0; }'" in source
+    assert "'  printf(\"%d\\\\n\", n); return 0; }'" not in source
 
 
 def test_batch_execution_settings_are_recorded_in_source() -> None:
@@ -169,6 +180,8 @@ def test_resource_policy_keeps_vof_serial_and_scales_matched_rows() -> None:
     slots = CAMPAIGN.available_logical_cpus()
     assert policy["cpu_slots_config"] == "auto"
     assert policy["cpu_slots"] == slots
+    assert policy["compile_slots_config"] == 16
+    assert policy["compile_slots"] == min(16, slots)
     assert CAMPAIGN.row_threads(CAMPAIGN.VOFHFRow("capwave", None, 512), policy) == 1
     assert CAMPAIGN.row_threads(
         CAMPAIGN.Row("capwave", None, 32, 3, "CLSVOF"), policy

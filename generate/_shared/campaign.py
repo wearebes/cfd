@@ -139,6 +139,11 @@ def load_resource_policy(path: Path | None = None) -> dict[str, object]:
     policy["cpu_slots_config"] = configured_slots
     policy["cpu_slots"] = cpu_slots
     policy["detected_logical_cpus"] = available_logical_cpus()
+    configured_compile_slots = policy.get("compile_slots")
+    if not isinstance(configured_compile_slots, int) or configured_compile_slots < 1:
+        raise ValueError("resource policy compile_slots must be a positive integer")
+    policy["compile_slots_config"] = configured_compile_slots
+    policy["compile_slots"] = min(configured_compile_slots, cpu_slots)
     if policy.get("vof_hf_threads") != 1:
         raise ValueError("VOF-HF must remain single-threaded")
     raw_threads = policy.get("threads_per_row")
@@ -1560,8 +1565,8 @@ def compile_pending_rows(
     current_lock: dict[str, str],
     monitor: ResourceMonitor,
 ) -> dict[str, BuildArtifact]:
-    """Compile all pending rows first, using up to one compiler per CPU slot."""
-    cpu_slots = int(policy["cpu_slots"])
+    """Compile rows with a memory-safe process cap before the solve stage."""
+    compile_slots = int(policy["compile_slots"])
     metadata_dir = campaign_root / "_meta"
     queued: list[tuple[int, CampaignRow]] = []
     artifacts: dict[str, BuildArtifact] = {}
@@ -1582,7 +1587,7 @@ def compile_pending_rows(
     ] = {}
     failure: tuple[CampaignRow, Path, str] | None = None
     while queued or active:
-        while failure is None and queued and len(active) < cpu_slots:
+        while failure is None and queued and len(active) < compile_slots:
             index, row = queued.pop(0)
             if source_lock() != current_lock:
                 raise ValueError("campaign source files changed during compilation")
@@ -1609,7 +1614,7 @@ def compile_pending_rows(
             active[process] = (index, row, log, log_path)
             print(
                 f"[build {index}/{len(pending_rows)}] compiling {row.label} "
-                f"compilers={len(active)}/{cpu_slots}",
+                f"compilers={len(active)}/{compile_slots}",
                 flush=True,
             )
         monitor.sample("compile", len(active), len(active))
