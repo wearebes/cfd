@@ -36,6 +36,11 @@ FIELD_COLUMNS = [
     "active_curvature_valid",
 ]
 
+# Basilisk's bounded VOF fraction can exceed [0, 1] by a few 1e-12 from
+# floating-point roundoff.  Keep the scientific guard strict enough to reject
+# material overshoots while accepting those representational residues.
+PHASE_FRACTION_TOLERANCE = 1e-10
+
 ROW_FILES = {
     "capwave": ["timeseries.csv", "fields.csv.gz", "run.log"],
     "rising_bubble": [
@@ -126,7 +131,11 @@ def compact_fields(root: Path) -> dict[str, object]:
             iteration = int(row["iteration"])
             delta = finite(row["Delta"], "Delta")
             phase = finite(row["phase_fraction"], "phase_fraction")
-            if delta <= 0.0 or not (-1e-12 <= phase <= 1.0 + 1e-12):
+            if delta <= 0.0 or not (
+                -PHASE_FRACTION_TOLERANCE
+                <= phase
+                <= 1.0 + PHASE_FRACTION_TOLERANCE
+            ):
                 raise ValueError("invalid field geometry or phase fraction")
             for field in ("x", "y", "u_x", "u_y", "pressure", "vorticity"):
                 finite(row[field], field)

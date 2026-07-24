@@ -7,6 +7,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[2]
 FINALIZER = ROOT / "generate/_shared/finalize_row.py"
@@ -51,7 +53,7 @@ def test_capwave_intermediates_compact_to_exact_reviewed_row_schema(
     (row / "fields.csv").write_text(
         FIELD_HEADER
         + "middle,1,1.01,2,10,0,0,0.1,5,0,0,1,0,0.5,2,1,,0\n"
-        + "final,2,2,4,20,0,0,0.1,5,0,0,1,0,0.5,2,1,3,1\n",
+        + "final,2,2,4,20,0,0,0.1,5,0,0,1,0,1.0000000000016573,2,1,3,1\n",
         encoding="utf-8",
     )
     (row / "compile.stdout").write_text("compiled\n", encoding="utf-8")
@@ -80,6 +82,23 @@ def test_capwave_intermediates_compact_to_exact_reviewed_row_schema(
     assert set(manifest["field_snapshots"]["snapshots"]) == {"middle", "final"}
     with gzip.open(row / "fields.csv.gz", "rt", encoding="utf-8") as stream:
         assert stream.readline() == FIELD_HEADER
+
+
+def test_field_compaction_rejects_material_phase_fraction_overshoot(
+    tmp_path: Path,
+) -> None:
+    sys.path.insert(0, str(FINALIZER.parent))
+    import finalize_row
+
+    (tmp_path / "fields.csv").write_text(
+        FIELD_HEADER
+        + "middle,1,1,1,1,0,0,0.1,5,0,0,1,0,0.5,2,1,3,1\n"
+        + "final,2,2,2,2,0,0,0.1,5,0,0,1,0,1.000001,2,1,3,1\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="invalid field geometry or phase fraction"):
+        finalize_row.compact_fields(tmp_path)
 
 
 def test_stationary_milestone_compaction_adds_tau2_and_capillary_number(
