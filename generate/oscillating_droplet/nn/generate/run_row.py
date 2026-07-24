@@ -258,27 +258,31 @@ def plan_arguments(
     }
     for key, value in parameters.items():
         values.extend(["--parameter", f"{key}={json.dumps(value)}"])
+    # The finalizer intentionally removes top-level transient source copies.
+    # Manifest completion happens afterwards, so non-dry runs must re-hash the
+    # persistent snapshot rather than the soon-to-be-deleted working copies.
+    source_root = work if args.dry_run else work / "source_snapshot"
     sources: list[tuple[str, str, Path]] = [
         ("official_host_case", "basilisk/src/test/oscillation.c", HOST),
-        ("compiled_case", "source_snapshot/source.c", work / "source.c"),
-        ("method_host_overlay", "source_snapshot/method_host_overlay.json", work / "method_host_overlay.json"),
-        ("oscillation_adapter", f"source_snapshot/{ADAPTER.name}", work / ADAPTER.name),
-        ("stock_integral", "source_snapshot/integral.stock.h", work / "integral.stock.h"),
-        ("compiled_two_phase", "source_snapshot/two-phase-clsvof.h", work / "two-phase-clsvof.h"),
-        ("redistance_overlay", "source_snapshot/redistance_overlay.json", work / "redistance_overlay.json"),
-        ("field_snapshots", f"source_snapshot/{FIELD_HEADER.name}", work / FIELD_HEADER.name),
+        ("compiled_case", "source_snapshot/source.c", source_root / "source.c"),
+        ("method_host_overlay", "source_snapshot/method_host_overlay.json", source_root / "method_host_overlay.json"),
+        ("oscillation_adapter", f"source_snapshot/{ADAPTER.name}", source_root / ADAPTER.name),
+        ("stock_integral", "source_snapshot/integral.stock.h", source_root / "integral.stock.h"),
+        ("compiled_two_phase", "source_snapshot/two-phase-clsvof.h", source_root / "two-phase-clsvof.h"),
+        ("redistance_overlay", "source_snapshot/redistance_overlay.json", source_root / "redistance_overlay.json"),
+        ("field_snapshots", f"source_snapshot/{FIELD_HEADER.name}", source_root / FIELD_HEADER.name),
         ("qcc", "toolchain/qcc", QCC),
     ]
     if method_nn:
         assert model_dir is not None and checkpoint is not None
         sources.extend(
             [
-                ("compiled_integral", "source_snapshot/integral.h", work / "integral.h"),
-                ("nn_runtime", "source_snapshot/clsvof_nn_cell_curvature.h", work / "clsvof_nn_cell_curvature.h"),
-                ("nn_stats", "source_snapshot/kappa_offset_stats.h", work / "kappa_offset_stats.h"),
-                ("nn_inference", "source_snapshot/clsvof_mlp_infer.h", work / "clsvof_mlp_infer.h"),
-                ("nn_weights", "source_snapshot/nn_weights.h", work / "nn_weights.h"),
-                ("model_export", "source_snapshot/export_manifest.json", work / "export_manifest.json"),
+                ("compiled_integral", "source_snapshot/integral.h", source_root / "integral.h"),
+                ("nn_runtime", "source_snapshot/clsvof_nn_cell_curvature.h", source_root / "clsvof_nn_cell_curvature.h"),
+                ("nn_stats", "source_snapshot/kappa_offset_stats.h", source_root / "kappa_offset_stats.h"),
+                ("nn_inference", "source_snapshot/clsvof_mlp_infer.h", source_root / "clsvof_mlp_infer.h"),
+                ("nn_weights", "source_snapshot/nn_weights.h", source_root / "nn_weights.h"),
+                ("model_export", "source_snapshot/export_manifest.json", source_root / "export_manifest.json"),
                 ("training_checkpoint", str(checkpoint.relative_to(ROOT)), checkpoint),
             ]
         )
