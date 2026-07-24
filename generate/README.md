@@ -100,9 +100,11 @@ thread allocation; NN changes only the active curvature provider and model.
 
 The campaign is deliberately not a serial loop. It has two stages:
 
-1. Compile every pending row first, with at most 16 independent compiler
+1. Compile every pending row first, with at most 12 independent compiler
    processes. Basilisk qcc translation is memory-intensive, so this cap avoids
-   cgroup memory reclaim on 60 GiB execution containers.
+   cgroup memory reclaim on 60 GiB execution containers. The cap is lower than
+   the 32 solver slots because the large oscillating NN translation can use
+   several GiB per qcc process.
 2. Run multiple solved rows concurrently under one slot-bounded scheduler.
 
 The solve policy in `resource_policy.linux-auto.json` uses all CPUs visible to

@@ -188,8 +188,8 @@ def test_resource_policy_keeps_vof_serial_and_scales_matched_rows() -> None:
     slots = CAMPAIGN.available_logical_cpus()
     assert policy["cpu_slots_config"] == "auto"
     assert policy["cpu_slots"] == slots
-    assert policy["compile_slots_config"] == 16
-    assert policy["compile_slots"] == min(16, slots)
+    assert policy["compile_slots_config"] == 12
+    assert policy["compile_slots"] == min(12, slots)
     assert CAMPAIGN.row_threads(CAMPAIGN.VOFHFRow("capwave", None, 512), policy) == 1
     assert CAMPAIGN.row_threads(
         CAMPAIGN.Row("capwave", None, 32, 3, "CLSVOF"), policy
