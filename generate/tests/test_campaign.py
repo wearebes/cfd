@@ -166,6 +166,14 @@ def test_linux_setup_openmp_probe_emits_a_real_newline() -> None:
     assert "'  printf(\"%d\\\\n\", n); return 0; }'" not in source
 
 
+def test_linux_qcc_probe_uses_a_relative_source_path() -> None:
+    source = (ROOT / "generate/setup_linux.sh").read_text(encoding="utf-8")
+    assert 'cd "$probe_root"' in source
+    assert '"$qcc" -O2 qcc_probe.c -o qcc_probe -lm' in source
+    assert './qcc_probe' in source
+    assert '"$qcc" -O2 "$probe_root/qcc_probe.c"' not in source
+
+
 def test_batch_execution_settings_are_recorded_in_source() -> None:
     source = PATH.read_text()
     assert '"cpu_slots": cpu_slots' in source

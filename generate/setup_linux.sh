@@ -116,8 +116,13 @@ printf '%s\n' \
   '#include "grid/cartesian.h"' \
   'int main(void) { init_grid (8); return 0; }' \
   > "$probe_root/qcc_probe.c"
-"$qcc" -O2 "$probe_root/qcc_probe.c" -o "$probe_root/qcc_probe" -lm
-"$probe_root/qcc_probe"
+# qcc creates its intermediate source under its working directory and does
+# not support an absolute input path.  Run this probe in its own directory.
+(
+  cd "$probe_root"
+  "$qcc" -O2 qcc_probe.c -o qcc_probe -lm
+  ./qcc_probe
+)
 "$python" -c 'import pytest'
 
 distribution=Linux
