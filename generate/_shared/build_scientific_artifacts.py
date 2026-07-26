@@ -68,7 +68,8 @@ REQUIRED_METRICS = {
         "laplace_number", "u_star_final", "shape_error_avg", "shape_error_rms",
         "shape_error_max", "official_style_ekmax", "active_provider_ekmax",
         "active_provider_samples", "official_style_relative_curvature_error",
-        "active_provider_relative_curvature_error", "u_star_tau_1",
+        "active_provider_relative_curvature_error",
+        "duplicate_tau_samples_removed", "u_star_tau_1",
         "shape_error_avg_tau_1", "shape_error_rms_tau_1", "shape_error_max_tau_1",
         "official_style_ekmax_tau_1", "active_provider_ekmax_tau_1",
         "active_provider_samples_tau_1",
@@ -134,6 +135,39 @@ def numeric_rows(path: Path, minimum: int = 1) -> list[list[float]]:
 def require_strictly_increasing(values: list[float], label: str) -> None:
     if any(right <= left for left, right in zip(values, values[1:])):
         raise ValueError(f"{label} is not strictly increasing")
+
+
+def normalize_duplicate_stationary_samples(
+    series: list[list[float]],
+) -> tuple[list[list[float]], int]:
+    """Collapse repeated logfile samples while preserving the latest state.
+
+    The stationary logger is intended to record each solver time once.  Older
+    hosts can schedule it more than once at a time event (including the fixed
+    endpoint), yielding adjacent duplicate ``tau`` values.  Such records are
+    output artifacts, so retain their final state and count every removal for
+    the manifest.  A decrease remains invalid solver output rather than a
+    candidate for normalization.
+    """
+    normalized: list[list[float]] = []
+    duplicate_samples_removed = 0
+    tolerance = 1e-9
+    for sample in series:
+        if not normalized:
+            normalized.append(sample)
+            continue
+        previous_tau = normalized[-1][0]
+        tau = sample[0]
+        if tau > previous_tau + tolerance:
+            normalized.append(sample)
+        elif abs(tau - previous_tau) <= tolerance:
+            normalized[-1] = sample
+            duplicate_samples_removed += 1
+        else:
+            raise ValueError(
+                "stationary tau decreases; refusing to normalize solver output"
+            )
+    return normalized, duplicate_samples_removed
 
 
 def write_csv(path: Path, fieldnames: list[str], rows: Iterable[dict[str, object]]) -> None:
@@ -367,6 +401,19 @@ def stationary(root: Path, identity: dict[str, object]) -> tuple[list[dict], lis
     series = [row for row in numeric_rows(series_path, 3) if len(row) == 3]
     if not series:
         raise ValueError("stationary time series is empty")
+    termination_path = root / "termination.csv"
+    if not termination_path.is_file():
+        raise ValueError("stationary termination.csv is missing")
+    with termination_path.open(newline="", encoding="utf-8") as stream:
+        termination_rows = list(csv.DictReader(stream))
+    if len(termination_rows) != 1:
+        raise ValueError("stationary termination.csv must contain exactly one row")
+    terminal_tau = float(termination_rows[0]["actual_terminal_tau"])
+    requested_tau = float(termination_rows[0]["requested_terminal_tau"])
+    stop_reason = termination_rows[0]["reason"]
+    if not math.isfinite(terminal_tau) or not math.isfinite(requested_tau):
+        raise ValueError("stationary terminal tau is non-finite")
+    series, duplicate_tau_samples_removed = normalize_duplicate_stationary_samples(series)
     require_strictly_increasing([row[0] for row in series], "stationary tau")
     official_rows = [
         row for row in numeric_rows(root / "runtime_and_terminal.log", 7)
@@ -393,18 +440,6 @@ def stationary(root: Path, identity: dict[str, object]) -> tuple[list[dict], lis
         ["tau", "u_star", "delta_fraction", "capillary_number"],
         plot_rows,
     )
-    termination_path = root / "termination.csv"
-    if not termination_path.is_file():
-        raise ValueError("stationary termination.csv is missing")
-    with termination_path.open(newline="", encoding="utf-8") as stream:
-        termination_rows = list(csv.DictReader(stream))
-    if len(termination_rows) != 1:
-        raise ValueError("stationary termination.csv must contain exactly one row")
-    terminal_tau = float(termination_rows[0]["actual_terminal_tau"])
-    requested_tau = float(termination_rows[0]["requested_terminal_tau"])
-    stop_reason = termination_rows[0]["reason"]
-    if not math.isfinite(terminal_tau) or not math.isfinite(requested_tau):
-        raise ValueError("stationary terminal tau is non-finite")
     if stop_reason != "fixed_tau_limit":
         raise ValueError(f"stationary row did not use the fixed horizon: {stop_reason}")
     if abs(terminal_tau - requested_tau) > 1e-9:
@@ -485,6 +520,7 @@ def stationary(root: Path, identity: dict[str, object]) -> tuple[list[dict], lis
     metrics = [
         metric("actual_terminal_tau", terminal_tau, "1", "terminal", "mu*t/D^2", termination_path.relative_to(root).as_posix(), time=terminal_tau, origin="repo_extension"),
         metric("termination_reason", stop_reason, "category", "terminal", "solver stop condition", termination_path.relative_to(root).as_posix(), time=terminal_tau, origin="repo_extension"),
+        metric("duplicate_tau_samples_removed", duplicate_tau_samples_removed, "samples", "postprocess", "adjacent repeated logfile samples removed before strict time validation", series_path.name, origin="postprocess"),
         metric("level", int(official[0]), "level", "official_resolution", "grid refinement level", "official_terminal.dat"),
         metric("diameter_cells", 0.8 * int(identity["resolution"]), "cells_per_diameter", "official_resolution", "D*N", "manifest.json", origin="derived_from_benchmark_identity"),
         metric("laplace_number", official[1], "1", "identity", "sigma*rho*D/mu^2", "official_terminal.dat"),

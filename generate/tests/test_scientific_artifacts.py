@@ -6,6 +6,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[2]
 PATH = ROOT / "generate/_shared/build_scientific_artifacts.py"
@@ -162,10 +164,63 @@ def test_vof_hf_stationary_retains_tau1_tau2_and_curvature_inputs(
     metric_map = {item["metric"]: item for item in metrics}
     assert metric_map["u_star_tau_1"]["time"] == 1.0
     assert metric_map["actual_terminal_tau"]["value"] == 2.0
+    assert metric_map["duplicate_tau_samples_removed"]["value"] == 0
     assert "VOF height-function" in metric_map["active_provider_ekmax"]["definition"]
     assert {item["path"] for item in artifacts} >= {
         "timeseries.dat", "milestones.csv", "termination.csv"
     }
+
+
+def test_stationary_deduplicates_only_the_repeated_recorded_terminal(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "timeseries.dat").write_text(
+        "0 0.2 0.01\n1 0.1 0.001\n2 0.06 0.0002\n2 0.05 0.0001\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "runtime_and_terminal.log").write_text(
+        "6 12000 0.05 0.01 0.02 0.03 0.04\n", encoding="utf-8"
+    )
+    (tmp_path / "termination.csv").write_text(
+        "reason,requested_terminal_tau,actual_terminal_tau,iteration\n"
+        "fixed_tau_limit,2,2,20\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "milestones.csv").write_text(
+        "milestone,tau,iteration,u_star,shape_error_avg,shape_error_rms,"
+        "shape_error_max,official_style_ekmax,active_provider_ekmax,"
+        "active_provider_samples\n"
+        "tau_1,1,10,0.1,0.01,0.02,0.03,0.04,0.04,12\n"
+        "terminal,2,20,0.05,0.005,0.01,0.02,0.03,0.03,14\n",
+        encoding="utf-8",
+    )
+
+    metrics, _ = MODULE.stationary(
+        tmp_path, {"method": "CLSVOF", "tau_max": 2, "resolution": 64}
+    )
+
+    plot_rows = (tmp_path / "plot_data.csv").read_text(encoding="utf-8").splitlines()
+    assert len(plot_rows) == 4
+    assert plot_rows[-1].startswith("2.0,0.05,")
+    assert {row["metric"]: row["value"] for row in metrics}[
+        "duplicate_tau_samples_removed"
+    ] == 1
+
+
+def test_stationary_deduplicates_an_interior_duplicate() -> None:
+    series, removed = MODULE.normalize_duplicate_stationary_samples(
+        [[0.0, 0.2, 0.01], [1.0, 0.1, 0.001], [1.0, 0.09, 0.0009], [2.0, 0.05, 0.0001]],
+    )
+    assert [row[0] for row in series] == [0.0, 1.0, 2.0]
+    assert series[1][1] == 0.09
+    assert removed == 1
+
+
+def test_stationary_rejects_a_decreasing_time() -> None:
+    with pytest.raises(ValueError, match="stationary tau decreases"):
+        MODULE.normalize_duplicate_stationary_samples(
+            [[0.0, 0.2, 0.01], [1.0, 0.1, 0.001], [0.5, 0.09, 0.0009]],
+        )
 
 
 def test_vof_hf_oscillating_retains_fit_and_kinetic_inputs(tmp_path: Path) -> None:
