@@ -29,6 +29,21 @@ OFFICIAL = [
         ("--resolution", "32"),
     ),
 ]
+NN_CASES = [
+    (ROOT / "generate/capwave/NN.sh", ("--resolution", "32", "--imax", "3")),
+    (
+        ROOT / "generate/rising_bubble/NN.sh",
+        ("--case", "1", "--resolution", "32", "--imax", "3"),
+    ),
+    (
+        ROOT / "generate/stationary_bubble/NN.sh",
+        ("--resolution", "32", "--imax", "0"),
+    ),
+    (
+        ROOT / "generate/oscillating_droplet/NN.sh",
+        ("--resolution", "32", "--imax", "3"),
+    ),
+]
 
 
 def run(script: Path, *args: str) -> subprocess.CompletedProcess[str]:
@@ -41,6 +56,33 @@ def run(script: Path, *args: str) -> subprocess.CompletedProcess[str]:
         text=True,
         capture_output=True,
     )
+
+
+@pytest.mark.parametrize(("script", "case_args"), NN_CASES)
+def test_all_nn_cases_honor_shared_inference_precision(
+    script: Path, case_args: tuple[str, ...]
+) -> None:
+    environment = os.environ.copy()
+    environment["CFD_NN_INFERENCE_PRECISION"] = "float64-forward"
+    completed = subprocess.run(
+        [
+            "bash",
+            str(script),
+            *case_args,
+            "--formal",
+            "--dry-run",
+            "--output",
+            str(ROOT / f"tem/dry_run_contract/tests/{script.parent.name}_fp64"),
+        ],
+        cwd=ROOT,
+        env=environment,
+        text=True,
+        capture_output=True,
+    )
+    assert completed.returncode == 0, completed.stderr
+    plan = json.loads(completed.stdout)["plan"]
+    assert plan["parameters"]["inference_precision"] == "float64-forward"
+    assert "-DKAPPA_OFFSET_INFERENCE_DOUBLE=1" in plan["commands"]["compile"]["argv"]
 
 
 @pytest.mark.parametrize("script", SCRIPTS)

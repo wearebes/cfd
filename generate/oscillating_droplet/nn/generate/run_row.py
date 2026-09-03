@@ -256,6 +256,8 @@ def plan_arguments(
         "compile_only": args.compile_only,
         "compile_reused": bool(args.precompiled),
     }
+    if method_nn:
+        parameters["inference_precision"] = args.inference_precision
     for key, value in parameters.items():
         values.extend(["--parameter", f"{key}={json.dumps(value)}"])
     # The finalizer intentionally removes top-level transient source copies.
@@ -350,6 +352,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--grid", choices=("adaptive", "uniform"), default="uniform")
     parser.add_argument("--model")
+    parser.add_argument(
+        "--inference-precision",
+        choices=("float32", "float64-forward", "float64-accum"),
+        default=os.environ.get("CFD_NN_INFERENCE_PRECISION", "float32"),
+    )
     purpose = parser.add_mutually_exclusive_group()
     purpose.add_argument("--smoke", action="store_true")
     purpose.add_argument("--formal", action="store_true")
@@ -359,6 +366,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--compile-only", action="store_true")
     parser.add_argument("--precompiled", type=Path)
     args = parser.parse_args(argv)
+
+    if args.inference_precision not in {
+        "float32",
+        "float64-forward",
+        "float64-accum",
+    }:
+        parser.error(
+            "CFD_NN_INFERENCE_PRECISION must be float32 or float64-forward"
+        )
+    if args.inference_precision == "float64-accum":
+        args.inference_precision = "float64-forward"
 
     if args.compile_only and args.precompiled:
         parser.error("--compile-only and --precompiled are mutually exclusive")
@@ -373,6 +391,8 @@ def main(argv: list[str] | None = None) -> int:
     method_nn = args.method == "NN"
     if args.model and not method_nn:
         parser.error("--model is only valid for NN")
+    if not method_nn and args.inference_precision != "float32":
+        parser.error("--inference-precision is only valid for NN")
     model_name = args.model or (
         f"baseline_{resolution_value}_hgradient" if method_nn else None
     )
@@ -435,6 +455,9 @@ def main(argv: list[str] | None = None) -> int:
         f"-DLEVEL={level}",
         f"-DMETHOD_NN={1 if method_nn else 0}",
     ]
+    if method_nn:
+        inference_double = int(args.inference_precision != "float32")
+        defines.append(f"-DKAPPA_OFFSET_INFERENCE_DOUBLE={inference_double}")
     compile_cmd = [
         str(QCC),
         "-O2",
@@ -520,6 +543,7 @@ def main(argv: list[str] | None = None) -> int:
             "t_end": 1.0,
             "fit_enabled": True,
             "model_name": model_name,
+            "inference_precision": args.inference_precision if method_nn else None,
             "checkpoint_sha256": sha256(checkpoint) if checkpoint else None,
             "weights_sha256": sha256(model_dir / "nn_weights.h") if model_dir else None,
             "export_manifest_sha256": sha256(model_dir / "export_manifest.json") if model_dir else None,
@@ -566,6 +590,9 @@ def main(argv: list[str] | None = None) -> int:
                 "N": resolution_value,
                 "method": args.method,
                 "model_name": model_name,
+                "inference_precision": (
+                    args.inference_precision if method_nn else None
+                ),
                 "compile_command": shlex.join(compile_cmd),
                 "compile_returncode": compile_completed.returncode,
                 "executable_sha256": sha256(work / "oscillation") if compiled else None,

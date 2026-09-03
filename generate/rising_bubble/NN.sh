@@ -22,11 +22,13 @@ compile_only=0
 threads=1
 model_name=""
 precompiled=""
+inference_precision="${CFD_NN_INFERENCE_PRECISION:-float32}"
 
 usage() {
   printf '%s\n' \
     "usage: $0 --case 1|2 [--imax 0|1|2|3|4|5|10|15|20] [--resolution 32|64|128|256|512]" \
-    "          [--model NAME] [--smoke|--formal] --output PATH" \
+    "          [--model NAME] [--inference-precision float32|float64-forward]" \
+    "          [--smoke|--formal] --output PATH" \
     "          [--threads N] [--dry-run] [--compile-only] [--precompiled PATH]"
 }
 
@@ -36,6 +38,7 @@ while [ "$#" -gt 0 ]; do
     --imax) imax="${2:?missing value for --imax}"; shift 2 ;;
     --resolution) resolution="${2:?missing value for --resolution}"; shift 2 ;;
     --model) model_name="${2:?missing value for --model}"; shift 2 ;;
+    --inference-precision) inference_precision="${2:?missing value for --inference-precision}"; shift 2 ;;
     --smoke) purpose=smoke; shift ;;
     --formal) purpose=formal; shift ;;
     --output) output="${2:?missing value for --output}"; shift 2 ;;
@@ -47,6 +50,18 @@ while [ "$#" -gt 0 ]; do
     *) printf 'error: unknown argument %s\n' "$1" >&2; usage >&2; exit 2 ;;
   esac
 done
+
+case "$inference_precision" in
+  float32) inference_double=0 ;;
+  float64-forward|float64-accum)
+    inference_precision=float64-forward
+    inference_double=1
+    ;;
+  *)
+    printf 'error: --inference-precision must be float32 or float64-forward\n' >&2
+    exit 2
+    ;;
+esac
 
 case "$benchmark_case" in 1|2) ;; *)
   printf 'error: --case must be 1 or 2\n' >&2; exit 2;; esac
@@ -140,6 +155,7 @@ compile_cmd=(
 if [ "$benchmark_case" -eq 2 ]; then compile_cmd+=("-DCASE2=1"); fi
 if [ "$threads" -gt 1 ]; then compile_cmd+=("-fopenmp"); fi
 compile_cmd+=(
+  "-DKAPPA_OFFSET_INFERENCE_DOUBLE=$inference_double"
   -DKAPPA_OFFSET_CLAMP_FACTOR=1.0 -DKAPPA_OFFSET_PROBE_INTERVAL=0
   -disable-dimensions -I. rising-clsvof.c -o rising-clsvof -lm
 )
@@ -158,6 +174,7 @@ plan_args=(
   --parameter "experiment_role=$experiment_role"
   --parameter grid_strategy=uniform
   --parameter "model=$model_name" --parameter "openmp_threads=$threads"
+  --parameter "inference_precision=$inference_precision"
   --parameter "compile_only=$compile_only"
   --parameter "compile_reused=$([ -n "$precompiled" ] && printf true || printf false)"
   --run-env "OMP_NUM_THREADS=$threads" --run-env OMP_DYNAMIC=false

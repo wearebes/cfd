@@ -14,6 +14,14 @@
 #ifndef KAPPA_OFFSET_PROBE_INTERVAL
 #define KAPPA_OFFSET_PROBE_INTERVAL 0.0
 #endif
+#ifndef KAPPA_OFFSET_INFERENCE_DOUBLE
+#define KAPPA_OFFSET_INFERENCE_DOUBLE 0
+#endif
+#if KAPPA_OFFSET_INFERENCE_DOUBLE
+typedef double kappa_offset_inference_real;
+#else
+typedef float kappa_offset_inference_real;
+#endif
 #ifndef KAPPA_OFFSET_MODEL_PHI_SIGN
 #define KAPPA_OFFSET_MODEL_PHI_SIGN 1.0
 #endif
@@ -99,12 +107,13 @@ static inline void clsvof_nn_cell_build_raw27_from_patch5 (
 #include "kappa_offset_stats.h"
 
 static inline void kappa_offset_build_raw27 (Point point, scalar d,
-                                              float raw[27])
+                                              kappa_offset_inference_real raw[27])
 {
   int p = 0;
   for (int j = 1; j >= -1; j--)
     for (int i = -1; i <= 1; i++)
-      raw[p++] = (float) (KAPPA_OFFSET_MODEL_PHI_SIGN*d[i,j]/Delta);
+      raw[p++] = (kappa_offset_inference_real)
+        (KAPPA_OFFSET_MODEL_PHI_SIGN*d[i,j]/Delta);
   for (int j = 1; j >= -1; j--)
     for (int i = -1; i <= 1; i++) {
       double gx = KAPPA_OFFSET_MODEL_PHI_SIGN*
@@ -112,7 +121,7 @@ static inline void kappa_offset_build_raw27 (Point point, scalar d,
       double gy = KAPPA_OFFSET_MODEL_PHI_SIGN*
         (d[i,j + 1] - d[i,j - 1])/(2.*Delta);
       double norm = sqrt (gx*gx + gy*gy) + 1e-30;
-      raw[p++] = (float) (gx/norm);
+      raw[p++] = (kappa_offset_inference_real) (gx/norm);
     }
   for (int j = 1; j >= -1; j--)
     for (int i = -1; i <= 1; i++) {
@@ -121,7 +130,7 @@ static inline void kappa_offset_build_raw27 (Point point, scalar d,
       double gy = KAPPA_OFFSET_MODEL_PHI_SIGN*
         (d[i,j + 1] - d[i,j - 1])/(2.*Delta);
       double norm = sqrt (gx*gx + gy*gy) + 1e-30;
-      raw[p++] = (float) (gy/norm);
+      raw[p++] = (kappa_offset_inference_real) (gy/norm);
     }
 }
 
@@ -181,7 +190,7 @@ static inline double kappa_offset_provider_value (Point point, scalar d,
                                                    int record_stats,
                                                    int record_probe)
 {
-  float raw[CLSVOF_NN_INPUT_DIM];
+  kappa_offset_inference_real raw[CLSVOF_NN_INPUT_DIM];
   kappa_offset_build_raw27 (point, d, raw);
   double q_gamma_model = (double) clsvof_nn_predict_hkappa (raw);
   double q_gamma_solver = KAPPA_OFFSET_MODEL_PHI_SIGN*q_gamma_model;

@@ -9,7 +9,10 @@ from conftest import FIXTURE, ROOT
 
 
 @pytest.mark.parametrize("resolution", [64, 128])
-def test_c_forward_matches_recorded_pytorch_golden(tmp_path, resolution: int) -> None:
+@pytest.mark.parametrize("inference_double", [0, 1])
+def test_c_forward_matches_recorded_pytorch_golden(
+    tmp_path, resolution: int, inference_double: int
+) -> None:
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     expected = fixture["models"][f"baseline_{resolution}_hgradient"]["pytorch_hkappa"]
     raw = ",".join(f"{float(value):.9g}f" for value in fixture["raw27"])
@@ -18,7 +21,7 @@ def test_c_forward_matches_recorded_pytorch_golden(tmp_path, resolution: int) ->
 #include "nn_weights.h"
 #include "clsvof_mlp_infer.h"
 int main(void) {{
-  const float raw[CLSVOF_NN_INPUT_DIM] = {{{raw}}};
+  const clsvof_nn_infer_real raw[CLSVOF_NN_INPUT_DIM] = {{{raw}}};
   printf("%.9g\\n", (double) clsvof_nn_predict_hkappa(raw));
 }}
 """
@@ -28,7 +31,9 @@ int main(void) {{
     model = ROOT / f"dataset/model/c_exports/baseline_{resolution}_hgradient"
     infer = ROOT / "generate/_shared/nn_runtime/src"
     subprocess.run(
-        ["cc", "-std=c99", "-Wall", "-Wextra", "-Werror", f"-I{model}", f"-I{infer}",
+        ["cc", "-std=c99", "-Wall", "-Wextra", "-Werror",
+         f"-DKAPPA_OFFSET_INFERENCE_DOUBLE={inference_double}",
+         f"-I{model}", f"-I{infer}",
          str(c_file), "-o", str(binary)],
         check=True,
     )

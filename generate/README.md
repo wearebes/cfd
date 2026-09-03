@@ -51,6 +51,19 @@ should run from a fresh, clean Linux checkout after the reviewed implementation
 commit; this preserves the strict clean-worktree gate without forcing unrelated
 Mac-side research artifacts into Git.
 
+## NN inference precision
+
+All existing NN case runners accept
+`--inference-precision float32|float64-forward`. The compatibility spelling
+`float64-accum` is normalized to the public manifest value `float64-forward`.
+Set `CFD_NN_INFERENCE_PRECISION` to apply the same setting to every NN row
+launched by `job.sh`; the default remains `float32`.
+
+Inference precision is a recorded numerical parameter, not a new case, method,
+data root or plotting workflow. Formal outputs retain the existing case-first
+paths under `data/`, and figures retain their existing case-local plot scripts.
+The manifest and compile command record the chosen precision.
+
 ## Fixed task matrix
 
 Method names and directories are exactly `VOF-HF`, `CLSVOF` and `NN`.

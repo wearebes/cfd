@@ -22,10 +22,12 @@ compile_only=0
 threads=1
 model_name=""
 precompiled=""
+inference_precision="${CFD_NN_INFERENCE_PRECISION:-float32}"
 
 usage() {
   printf '%s\n' \
     "usage: $0 [--imax 0] [--resolution 32|64|128|256] [--model NAME]" \
+    "          [--inference-precision float32|float64-forward]" \
     "          [--smoke|--formal] [--tau-max VALUE] --output PATH" \
     "          [--threads N] [--dry-run] [--compile-only] [--precompiled PATH]"
 }
@@ -35,6 +37,7 @@ while [ "$#" -gt 0 ]; do
     --imax) imax="${2:?missing value for --imax}"; shift 2 ;;
     --resolution) resolution="${2:?missing value for --resolution}"; shift 2 ;;
     --model) model_name="${2:?missing value for --model}"; shift 2 ;;
+    --inference-precision) inference_precision="${2:?missing value for --inference-precision}"; shift 2 ;;
     --smoke) purpose=smoke; shift ;;
     --formal) purpose=formal; tau_max=2.0; shift ;;
     --tau-max) tau_max="${2:?missing value for --tau-max}"; shift 2 ;;
@@ -47,6 +50,18 @@ while [ "$#" -gt 0 ]; do
     *) printf 'error: unknown argument %s\n' "$1" >&2; usage >&2; exit 2 ;;
   esac
 done
+
+case "$inference_precision" in
+  float32) inference_double=0 ;;
+  float64-forward|float64-accum)
+    inference_precision=float64-forward
+    inference_double=1
+    ;;
+  *)
+    printf 'error: --inference-precision must be float32 or float64-forward\n' >&2
+    exit 2
+    ;;
+esac
 
 if [ "$imax" != 0 ]; then
   printf 'error: stationary bubble is frozen to --imax 0\n' >&2; exit 2
@@ -135,6 +150,7 @@ compile_cmd=("$qcc" -disable-dimensions -O2)
 if [ "$threads" -gt 1 ]; then compile_cmd+=("-fopenmp"); fi
 compile_cmd+=(
   "-DSTATIONARY_LEVEL=$level" "-DSTATIONARY_TAU_MAX=$tau_max" -DMETHOD_NN=1
+  "-DKAPPA_OFFSET_INFERENCE_DOUBLE=$inference_double"
   -DKAPPA_OFFSET_CLAMP_FACTOR=1.0 -DKAPPA_OFFSET_PROBE_INTERVAL=0
   -I. stationary-clsvof.c -o stationary-clsvof -lm
 )
@@ -149,6 +165,7 @@ plan_args=(
   --generator-logical generate/stationary_bubble/NN.sh
   --parameter "resolution=$resolution" --parameter "level=$level"
   --parameter "imax=$imax" --parameter "tau_max=$tau_max"
+  --parameter "inference_precision=$inference_precision"
   --parameter "experiment_role=$experiment_role"
   --parameter grid_strategy=uniform
   --parameter "model=$model_name" --parameter "openmp_threads=$threads"
