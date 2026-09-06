@@ -29,3 +29,26 @@
   under `tem/`, not in the formal figure tree.
 - Preserve upstream/reference-only images under `tem/` or their source-data
   archive; do not mix them with locally reproducible formal figure outputs.
+
+## Current FP64 manuscript plots
+
+The manuscript plots restored from `chore/figures-reorg-fp64-switch` read
+original run artifacts under `data/` through `data_paths.py`. They default to
+`CFD_NN_INFERENCE_PRECISION=float64-forward`; the loader checks the recorded
+precision, compile flag, completion state and published artifact hashes.
+The Hysing reference files remain under `dataset/rising_bubble/case*/reference/hysing/`.
+The older figure families above still use their existing historical sources.
+
+The manuscript result entry points are `stationary_bubble/ca_terminal_vs_grid`,
+`stationary_bubble/ca_time_n32_n128`, `stationary_bubble/velocity_fields`,
+`capwave/amplitude_histories`, `capwave/e2_grid_convergence`,
+`rising_bubble/interfaces_imax3`, and `rising_bubble/histories_imax3`.
+Each contains `plot.py`. For the velocity-field manuscript panel, pass
+`--resolution 32 --tau 1 --nn-source crossing`.
+Stationary terminal and history plots use the whole-domain maximum, matching
+the manuscript definition. Stationary N256 has complete published terminal
+artifacts but a failed runner status; the loader warns about this explicit
+exception. N512 stationary output is not used.
+
+Build the paper with `latexmk -cd -pdf -outdir=../tem/paper_build_fp64 paper/main.tex`
+from the repository root, keeping build output outside `paper/`.

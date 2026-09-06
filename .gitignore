@@ -14,3 +14,7 @@ hpc/packages/
 tem/
 build/
 /data/
+
+# Local backups and the independently versioned manuscript
+/backups/
+/paper/
