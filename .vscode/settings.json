@@ -1,4 +1,20 @@
 {
-    "cmake.configureOnOpen": false,
-    "cmake.sourceDirectory": "${workspaceFolder}/basilisk/src/wsServer"
+    "cmake.configureOnOpen": true,
+    "cmake.sourceDirectory": "${workspaceFolder}/tem/vscode_basilisk/cmake",
+    "C_Cpp.debugShortcut": false,
+    "code-runner.showRunIconInEditorTitleMenu": true,
+    "code-runner.runInTerminal": true,
+    "code-runner.ignoreSelection": true,
+    "code-runner.saveFileBeforeRun": true,
+    "code-runner.executorMap": {
+        "c": "mkdir -p \"$workspaceRoot/tem/vscode_basilisk/$fileNameWithoutExt\" && cd \"$dir\" && BASILISK=\"$workspaceRoot/basilisk/src\" \"$workspaceRoot/basilisk/src/qcc\" -g -O2 -Wall \"$fileName\" -o \"$workspaceRoot/tem/vscode_basilisk/$fileNameWithoutExt/solver\" -lm && cd \"$workspaceRoot/tem/vscode_basilisk/$fileNameWithoutExt\" && ./solver"
+    },
+    "cmake.buildDirectory": "${workspaceFolder}/tem/vscode_basilisk/cmake-build",
+    "cmake.generator": "Unix Makefiles",
+    "cmake.useCMakePresets": "never",
+    "cmake.configureSettings": {
+        "CMAKE_C_COMPILER": "/usr/bin/clang",
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true
+    }
 }

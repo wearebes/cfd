@@ -25,6 +25,15 @@ typedef float kappa_offset_inference_real;
 #ifndef KAPPA_OFFSET_MODEL_PHI_SIGN
 #define KAPPA_OFFSET_MODEL_PHI_SIGN 1.0
 #endif
+#define KAPPA_OFFSET_TRANSFORM_CELL 1
+#define KAPPA_OFFSET_TRANSFORM_INTERFACE 2
+#ifndef KAPPA_OFFSET_TRANSFORM_MODE
+#define KAPPA_OFFSET_TRANSFORM_MODE KAPPA_OFFSET_TRANSFORM_CELL
+#endif
+#if KAPPA_OFFSET_TRANSFORM_MODE != KAPPA_OFFSET_TRANSFORM_CELL && \
+    KAPPA_OFFSET_TRANSFORM_MODE != KAPPA_OFFSET_TRANSFORM_INTERFACE
+#error "KAPPA_OFFSET_TRANSFORM_MODE must be CELL or INTERFACE"
+#endif
 #ifndef KAPPA_OFFSET_PROBE_ONLY
 #define KAPPA_OFFSET_PROBE_ONLY 0
 #endif
@@ -51,6 +60,26 @@ static inline double kappa_offset_q_cell (double q_gamma, double d_over_h,
   if (denominator)
     *denominator = raw;
   return q_gamma/kappa_offset_safe_denominator (raw, guard_hit);
+}
+
+/* Select the curvature inserted into integral.h's cell-local ki slot.  The
+ * cell mode maps the predicted interface curvature to the current distance
+ * contour; the interface mode deliberately injects the predicted zero-contour
+ * curvature unchanged. */
+static inline double kappa_offset_q_provider (double q_gamma, double d_over_h,
+                                              int * guard_hit,
+                                              double * denominator)
+{
+#if KAPPA_OFFSET_TRANSFORM_MODE == KAPPA_OFFSET_TRANSFORM_CELL
+  return kappa_offset_q_cell (q_gamma, d_over_h, guard_hit, denominator);
+#else
+  (void) d_over_h;
+  if (guard_hit)
+    *guard_hit = 0;
+  if (denominator)
+    *denominator = 1.;
+  return q_gamma;
+#endif
 }
 
 /* Test-only inverse; never used for solver inference. */
@@ -106,16 +135,50 @@ static inline void clsvof_nn_cell_build_raw27_from_patch5 (
 #include "clsvof_mlp_infer.h"
 #include "kappa_offset_stats.h"
 
+/* Strict phi9-only normals: C nx, C ny, L ny, R ny, T nx, B nx.
+ * Tangential centered differences and first-order inward differences.
+ * Canonical order is TL,T,TR,L,C,R,BL,B,BR. No second-ring reads. */
+static inline void kappa_offset_local_normals (kappa_offset_inference_real * raw)
+{
+  double p[9];
+  for (int k = 0; k < 9; k++) p[k] = raw[k];
+  double gx[5] = {.5*(p[5]-p[3]), p[4]-p[3], p[5]-p[4],
+                  .5*(p[2]-p[0]), .5*(p[8]-p[6])};
+  double gy[5] = {.5*(p[1]-p[7]), .5*(p[0]-p[6]), .5*(p[2]-p[8]),
+                  p[1]-p[4], p[4]-p[7]};
+  double nx[5], ny[5];
+  for (int k = 0; k < 5; k++) {
+    double mag = hypot(gx[k], gy[k]);
+    if (mag == 0.) mag = 1.;
+    nx[k] = gx[k]/mag; ny[k] = gy[k]/mag;
+  }
+  raw[9] = nx[0]; raw[10] = ny[0]; raw[11] = ny[1];
+  raw[12] = ny[2]; raw[13] = nx[3]; raw[14] = nx[4];
+}
+
 static inline void kappa_offset_build_raw27 (Point point, scalar d,
-                                              kappa_offset_inference_real raw[27])
+                                              kappa_offset_inference_real raw[CLSVOF_NN_INPUT_DIM])
 {
   int p = 0;
   for (int j = 1; j >= -1; j--)
     for (int i = -1; i <= 1; i++)
       raw[p++] = (kappa_offset_inference_real)
         (KAPPA_OFFSET_MODEL_PHI_SIGN*d[i,j]/Delta);
+#if CLSVOF_NN_INPUT_DIM == 15
+  kappa_offset_local_normals(raw);
+  return;
+#endif
   for (int j = 1; j >= -1; j--)
     for (int i = -1; i <= 1; i++) {
+#if CLSVOF_NN_INPUT_DIM == 9 || CLSVOF_NN_INPUT_DIM == 15
+      continue;
+#elif CLSVOF_NN_INPUT_DIM == 11
+      if (i != 0 || j != 0) continue;
+#elif CLSVOF_NN_INPUT_DIM == 19
+      if (abs(i) + abs(j) > 1) continue;
+#elif CLSVOF_NN_INPUT_DIM != 27
+#error "Unsupported normal feature dimension"
+#endif
       double gx = KAPPA_OFFSET_MODEL_PHI_SIGN*
         (d[i + 1,j] - d[i - 1,j])/(2.*Delta);
       double gy = KAPPA_OFFSET_MODEL_PHI_SIGN*
@@ -125,6 +188,15 @@ static inline void kappa_offset_build_raw27 (Point point, scalar d,
     }
   for (int j = 1; j >= -1; j--)
     for (int i = -1; i <= 1; i++) {
+#if CLSVOF_NN_INPUT_DIM == 9 || CLSVOF_NN_INPUT_DIM == 15
+      continue;
+#elif CLSVOF_NN_INPUT_DIM == 11
+      if (i != 0 || j != 0) continue;
+#elif CLSVOF_NN_INPUT_DIM == 19
+      if (abs(i) + abs(j) > 1) continue;
+#elif CLSVOF_NN_INPUT_DIM != 27
+#error "Unsupported normal feature dimension"
+#endif
       double gx = KAPPA_OFFSET_MODEL_PHI_SIGN*
         (d[i + 1,j] - d[i - 1,j])/(2.*Delta);
       double gy = KAPPA_OFFSET_MODEL_PHI_SIGN*
@@ -198,13 +270,14 @@ static inline double kappa_offset_provider_value (Point point, scalar d,
   double grad = kappa_offset_grad_norm (point, d);
   int guard = 0, clamped = 0;
   double denominator = 1.;
-  double q_cell = kappa_offset_q_cell (q_gamma_solver, s, &guard, &denominator);
-  if (q_cell > KAPPA_OFFSET_CLAMP_FACTOR) {
-    q_cell = KAPPA_OFFSET_CLAMP_FACTOR;
+  double q_provider = kappa_offset_q_provider (q_gamma_solver, s, &guard,
+                                                &denominator);
+  if (q_provider > KAPPA_OFFSET_CLAMP_FACTOR) {
+    q_provider = KAPPA_OFFSET_CLAMP_FACTOR;
     clamped = 1;
   }
-  else if (q_cell < -KAPPA_OFFSET_CLAMP_FACTOR) {
-    q_cell = -KAPPA_OFFSET_CLAMP_FACTOR;
+  else if (q_provider < -KAPPA_OFFSET_CLAMP_FACTOR) {
+    q_provider = -KAPPA_OFFSET_CLAMP_FACTOR;
     clamped = 1;
   }
   if (record_stats)
@@ -216,13 +289,13 @@ static inline double kappa_offset_provider_value (Point point, scalar d,
     {
       fprintf (stderr,
                "KAPPA_OFFSET_PROBE %.17g %.17g %.17g %.17g %.17g %.17g %.17g %.17g %.17g %.17g %d %d\n",
-               t, x, y, s, grad, q_gamma_model, q_gamma_solver, q_cell,
+               t, x, y, s, grad, q_gamma_model, q_gamma_solver, q_provider,
                distance_curvature (point, d)*Delta, denominator, clamped, guard);
     }
   }
   if (KAPPA_OFFSET_PROBE_ONLY)
     return distance_curvature (point, d);
-  return q_cell/Delta;
+  return q_provider/Delta;
 }
 
 static inline double kappa_offset_provider (Point point, scalar d)

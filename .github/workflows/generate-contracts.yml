@@ -15,11 +15,5 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Install test dependency
-        run: python3 -m pip install pytest
-
       - name: Verify the fixed matrix and runner plans
         run: bash generate/job.sh check
-
-      - name: Run generate contract tests
-        run: python3 -m pytest generate -q

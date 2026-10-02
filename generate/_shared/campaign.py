@@ -45,38 +45,18 @@ FINAL_ROW_FILES = {
 }
 
 
-def cgroup_cpu_quota(
-    v2_path: Path | None = None,
-    v1_quota_path: Path | None = None,
-    v1_period_path: Path | None = None,
-) -> int | None:
+def cgroup_cpu_quota() -> int | None:
     """Return the integer CPU quota for the current Linux cgroup, if any."""
-    v2_path = v2_path or Path("/sys/fs/cgroup/cpu.max")
     try:
-        quota, period = v2_path.read_text(encoding="utf-8").split()[:2]
+        quota, period = Path("/sys/fs/cgroup/cpu.max").read_text().split()[:2]
         if quota != "max":
             return max(1, int(quota) // int(period))
     except (OSError, ValueError):
         pass
-    locations = (
-        ((v1_quota_path, v1_period_path),)
-        if v1_quota_path is not None and v1_period_path is not None
-        else (
-            (
-                Path("/sys/fs/cgroup/cpu/cpu.cfs_quota_us"),
-                Path("/sys/fs/cgroup/cpu/cpu.cfs_period_us"),
-            ),
-            (
-                Path("/sys/fs/cgroup/cpu,cpuacct/cpu.cfs_quota_us"),
-                Path("/sys/fs/cgroup/cpu,cpuacct/cpu.cfs_period_us"),
-            ),
-        )
-    )
-    for quota_path, period_path in locations:
-        assert quota_path is not None and period_path is not None
+    for directory in ("/sys/fs/cgroup/cpu", "/sys/fs/cgroup/cpu,cpuacct"):
         try:
-            quota = int(quota_path.read_text(encoding="utf-8").strip())
-            period = int(period_path.read_text(encoding="utf-8").strip())
+            quota = int((Path(directory) / "cpu.cfs_quota_us").read_text())
+            period = int((Path(directory) / "cpu.cfs_period_us").read_text())
             if quota >= 0:
                 return max(1, quota // period)
         except (OSError, ValueError, ZeroDivisionError):
@@ -183,7 +163,6 @@ def row_threads(row: "CampaignRow", policy: dict[str, object]) -> int:
     if isinstance(row, VOFHFRow):
         return 1
     threads = policy["threads_per_row"]
-    assert isinstance(threads, dict)
     return min(int(threads[str(row.resolution)]), int(policy["cpu_slots"]))
 
 
@@ -194,7 +173,7 @@ def verify_execution_host(policy: dict[str, object]) -> None:
     if platform.system() != "Linux":
         raise ValueError(
             "solver execution requires Linux; "
-            "layout, check and plan remain available on this machine"
+            "check and plan remain available on this machine"
         )
     qcc = configured_qcc()
     if not qcc.is_file() or not os.access(qcc, os.X_OK):
@@ -501,116 +480,6 @@ class BuildArtifact:
     manifest_sha256: str
 
 
-class ResourceMonitor:
-    """Record host utilization without adding a non-standard dependency."""
-
-    def __init__(self, path: Path, interval_seconds: float = 1.0) -> None:
-        self.path = path
-        self.interval_seconds = interval_seconds
-        self.last_sample = 0.0
-        self.last_cpu = self._cpu_counters()
-        path.parent.mkdir(parents=True, exist_ok=True)
-        if not path.exists():
-            with path.open("w", newline="", encoding="utf-8") as stream:
-                csv.writer(stream).writerow(
-                    (
-                        "timestamp", "phase", "active_rows", "allocated_slots",
-                        "cpu_utilization_percent", "memory_available_bytes",
-                        "swap_used_bytes",
-                    )
-                )
-
-    @staticmethod
-    def _cpu_counters() -> tuple[int, int] | None:
-        path = Path("/proc/stat")
-        if not path.is_file():
-            return None
-        fields = path.read_text(encoding="utf-8").splitlines()[0].split()[1:]
-        values = [int(value) for value in fields]
-        idle = values[3] + (values[4] if len(values) > 4 else 0)
-        return sum(values), idle
-
-    @staticmethod
-    def _memory() -> tuple[int | None, int | None]:
-        path = Path("/proc/meminfo")
-        if not path.is_file():
-            return None, None
-        values = {}
-        for line in path.read_text(encoding="utf-8").splitlines():
-            key, raw = line.split(":", 1)
-            values[key] = int(raw.split()[0]) * 1024
-        swap_used = values.get("SwapTotal", 0) - values.get("SwapFree", 0)
-        available = values.get("MemAvailable")
-        try:
-            raw_limit = Path("/sys/fs/cgroup/memory.max").read_text().strip()
-            if raw_limit != "max":
-                limit = int(raw_limit)
-                current = int(Path("/sys/fs/cgroup/memory.current").read_text().strip())
-                cgroup_available = max(0, limit - current)
-                available = (
-                    cgroup_available
-                    if available is None
-                    else min(available, cgroup_available)
-                )
-        except (OSError, ValueError):
-            pass
-        return available, swap_used
-
-    def sample(self, phase: str, active_rows: int, allocated_slots: int) -> None:
-        now = time.monotonic()
-        if now - self.last_sample < self.interval_seconds:
-            return
-        current = self._cpu_counters()
-        utilization: float | str = ""
-        if current is not None and self.last_cpu is not None:
-            total_delta = current[0] - self.last_cpu[0]
-            idle_delta = current[1] - self.last_cpu[1]
-            if total_delta > 0:
-                utilization = 100.0 * (total_delta - idle_delta) / total_delta
-        self.last_cpu = current
-        self.last_sample = now
-        memory_available, swap_used = self._memory()
-        with self.path.open("a", newline="", encoding="utf-8") as stream:
-            csv.writer(stream).writerow(
-                (
-                    utc_now(), phase, active_rows, allocated_slots, utilization,
-                    "" if memory_available is None else memory_available,
-                    "" if swap_used is None else swap_used,
-                )
-            )
-
-
-def write_resource_summary(campaign_root: Path, cpu_slots: int) -> None:
-    path = campaign_root / "_meta/resource_usage.csv"
-    samples = []
-    if path.is_file():
-        with path.open(newline="", encoding="utf-8") as stream:
-            samples = list(csv.DictReader(stream))
-    full = [
-        float(row["cpu_utilization_percent"])
-        for row in samples
-        if row["phase"] in {"solve", "pipeline"}
-        and int(row["allocated_slots"]) == cpu_slots
-        and row["cpu_utilization_percent"]
-    ]
-    atomic_json(
-        campaign_root / "_meta/resource_summary.json",
-        {
-            "schema_version": 1,
-            "cpu_slots": cpu_slots,
-            "samples": len(samples),
-            "full_slot_solve_samples": len(full),
-            "full_slot_mean_cpu_utilization_percent": (
-                sum(full) / len(full) if full else None
-            ),
-            "interpretation": (
-                "allocated slots are the scheduler contract; measured CPU can dip "
-                "during solver serial sections and I/O"
-            ),
-        },
-    )
-
-
 def matched_rows() -> list[Row]:
     rows: list[Row] = []
     for case, cases, resolutions in (
@@ -850,7 +719,6 @@ def initialize_provenance(
     for relative, source in named_sources.items():
         object_path = ensure_provenance_object(source, campaign_root)
         ensure_named_hardlink(object_path, metadata / relative)
-    regenerate_object_index(campaign_root)
 
 
 def provenance_source_records(manifest: dict[str, object]) -> dict[str, dict[str, object]]:
@@ -889,7 +757,7 @@ def verify_source_references(
 
 
 def compact_row_provenance(
-    row_dir: Path, campaign_root: Path, *, update_index: bool = True
+    row_dir: Path, campaign_root: Path
 ) -> None:
     """Move row-local source snapshots into the campaign object store."""
     manifest_path = row_dir / "manifest.json"
@@ -937,52 +805,6 @@ def compact_row_provenance(
         for path in directories:
             path.rmdir()
         snapshot.rmdir()
-    if update_index:
-        regenerate_object_index(campaign_root)
-
-
-def regenerate_object_index(campaign_root: Path) -> None:
-    objects_root = campaign_root / "_meta/sources/sha256"
-    references: dict[str, list[str]] = {}
-    for manifest_path in campaign_root.glob("**/manifest.json"):
-        if "_meta" in manifest_path.parts:
-            continue
-        manifest = json.loads(manifest_path.read_text())
-        for record in provenance_source_records(manifest).values():
-            object_relative = str(record["object"])
-            references.setdefault(object_relative, []).append(
-                f"{manifest_path.parent.relative_to(campaign_root).as_posix()}::"
-                f"{record['logical_path']}"
-            )
-    metadata = campaign_root / "_meta"
-    named_paths = list((metadata / "references").glob("**/*"))
-    if (metadata / "models").is_dir():
-        named_paths.extend((metadata / "models").glob("*/*"))
-    for named in named_paths:
-        if named.is_file():
-            object_relative = object_relative_path(sha256(named)).as_posix()
-            references.setdefault(object_relative, []).append(
-                named.relative_to(campaign_root).as_posix()
-            )
-    entries = []
-    if objects_root.is_dir():
-        for object_path in sorted(path for path in objects_root.iterdir() if path.is_file()):
-            digest = object_path.name
-            if sha256(object_path) != digest:
-                raise ValueError(f"corrupt provenance object: {object_path}")
-            relative = object_path.relative_to(campaign_root).as_posix()
-            entries.append(
-                {
-                    "sha256": digest,
-                    "bytes": object_path.stat().st_size,
-                    "object": relative,
-                    "references": sorted(references.get(relative, [])),
-                }
-            )
-    atomic_json(
-        metadata / "object_index.json",
-        {"schema_version": 1, "object_count": len(entries), "objects": entries},
-    )
 
 
 def write_rows_csv(rows: list[CampaignRow], campaign_root: Path) -> None:
@@ -1116,45 +938,7 @@ def verify_compact_artifacts(
         raise ValueError(f"{label}: compressed field schema mismatch")
 
 
-def verify_vof_hf_row(row: VOFHFRow, campaign_root: Path, purpose: str) -> None:
-    row_dir = campaign_root / row.relative_output
-    manifest_path = row_dir / "manifest.json"
-    if not manifest_path.is_file():
-        raise ValueError(f"incomplete VOF-HF row: {row.label}")
-    manifest = json.loads(manifest_path.read_text())
-    expected = {
-        "status": "completed",
-        "case": row.case,
-        "method": "VOF-HF",
-        "purpose": purpose,
-        "resolution": row.resolution,
-        "experiment_role": row.experiment_role,
-        "grid_strategy": row.grid_strategy,
-        "grid_role": row.grid_role,
-        "analysis_ready": True,
-    }
-    for key, value in expected.items():
-        if manifest.get(key) != value:
-            raise ValueError(
-                f"{row.label}: manifest {key}={manifest.get(key)!r}, expected {value!r}"
-            )
-    if not manifest.get("plan", {}).get("plan_sha256"):
-        raise ValueError(f"{row.label}: missing resolved plan hash")
-    if Path(manifest["plan"]["output"]) != row_dir.resolve():
-        raise ValueError(f"{row.label}: manifest output path mismatch")
-    verify_build_binding(manifest, row.label)
-    if row.case == "oscillating_droplet":
-        verification = manifest.get("oscillating_vof_hf_verification")
-        if not isinstance(verification, dict):
-            raise ValueError(f"{row.label}: missing embedded VOF-HF verification")
-    verify_compact_artifacts(manifest, row_dir, row.case, row.label)
-    verify_source_references(manifest, row_dir, campaign_root)
-
-
 def verify_row(row: CampaignRow, campaign_root: Path, purpose: str) -> None:
-    if isinstance(row, VOFHFRow):
-        verify_vof_hf_row(row, campaign_root, purpose)
-        return
     row_dir = campaign_root / row.relative_output
     manifest_path = row_dir / "manifest.json"
     if not manifest_path.is_file():
@@ -1166,12 +950,14 @@ def verify_row(row: CampaignRow, campaign_root: Path, purpose: str) -> None:
         "method": row.method,
         "purpose": purpose,
         "resolution": row.resolution,
-        "imax": row.imax,
-        "model": row.model,
         "experiment_role": row.experiment_role,
         "grid_strategy": row.grid_strategy,
         "analysis_ready": True,
     }
+    if isinstance(row, VOFHFRow):
+        expected["grid_role"] = row.grid_role
+    else:
+        expected.update(imax=row.imax, model=row.model)
     for key, value in expected.items():
         if manifest.get(key) != value:
             raise ValueError(
@@ -1182,8 +968,14 @@ def verify_row(row: CampaignRow, campaign_root: Path, purpose: str) -> None:
     if Path(manifest["plan"]["output"]) != row_dir.resolve():
         raise ValueError(f"{row.label}: manifest output path mismatch")
     verify_build_binding(manifest, row.label)
+    if isinstance(row, VOFHFRow) and row.case == "oscillating_droplet":
+        verification = manifest.get("oscillating_vof_hf_verification")
+        if not isinstance(verification, dict):
+            raise ValueError(f"{row.label}: missing embedded VOF-HF verification")
     verify_compact_artifacts(manifest, row_dir, row.case, row.label)
     verify_source_references(manifest, row_dir, campaign_root)
+    if isinstance(row, VOFHFRow):
+        return
     evaluations = provider_evaluations(manifest)
     if row.method == "NN" and (evaluations is None or evaluations <= 0):
         raise ValueError(f"{row.label}: NN provider was not exercised")
@@ -1236,79 +1028,6 @@ def verify_campaign(
             if (row_dir / "prosperetti.h").exists():
                 raise ValueError(f"{row.label}: capwave reference was not shared")
     verify_pairs(rows, campaign_root)
-
-
-def write_oscillating_vof_hf_report(
-    rows: list[CampaignRow], campaign_root: Path
-) -> None:
-    """One campaign-level report replaces the removed per-row status files.
-
-    Derived idempotently from the compact verification record embedded in each
-    row manifest; written only by
-    run_campaign after verify_campaign, never by the read-only verify path.
-    """
-    entries = []
-    for row in rows:
-        if (
-            not isinstance(row, VOFHFRow)
-            or row.case != "oscillating_droplet"
-            or row.experiment_role != "official_reference"
-        ):
-            continue
-        row_dir = campaign_root / row.relative_output
-        manifest = json.loads((row_dir / "manifest.json").read_text())
-        verification = manifest.get("oscillating_vof_hf_verification")
-        if not isinstance(verification, dict):
-            raise ValueError(f"{row.label}: missing compact official verification")
-        execution = verification.get("execution_status", {})
-        if not isinstance(execution, dict):
-            raise ValueError(f"{row.label}: invalid compact execution status")
-        strict_match = (
-            bool(verification.get("strict_log_ref_match"))
-            if row.grid_role == "stock_native"
-            else None
-        )
-        if strict_match is None:
-            status = "stock_compatible_extension"
-        elif strict_match:
-            status = "official_pass"
-        else:
-            status = "official_regression_mismatch"
-        entries.append(
-            {
-                "row": row.relative_output.as_posix(),
-                "resolution": row.resolution,
-                "grid_role": row.grid_role,
-                "status": status,
-                "strict_log_ref_match": strict_match,
-                "compile_exit_status": int(verification["compile_exit_status"]),
-                "standard_run_exit_status": int(verification["run_exit_status"]),
-                "started_at": verification["started_at"],
-                "ended_at": verification["ended_at"],
-                "wall_seconds": int(verification["wall_seconds"]),
-                "fit_summary_sha256": verification["actual_log_sha256"],
-                "official_ref_sha256": verification["official_ref_sha256"],
-            }
-        )
-    if not entries:
-        return
-    atomic_json(
-        campaign_root / "_meta/oscillating_vof_hf_official.json",
-        {
-            "schema_version": 1,
-            "case": "oscillating_droplet",
-            "method": "VOF-HF",
-            "solver_variant": "Standard",
-            "excluded_solver_variants": ["Momentum", "Compressible"],
-            "replaces_row_files": [
-                "VOF-HF_report.json",
-                "VOF-HF_RESULTS.md",
-                "verification.json",
-            ],
-            "generated_at": utc_now(),
-            "rows": entries,
-        },
-    )
 
 
 def plan(
@@ -1670,7 +1389,7 @@ def finalize_completed_row(
         try:
             bind_build_to_completed_row(row, campaign_root, artifact)
             verify_row(row, campaign_root, purpose)
-            compact_row_provenance(row_dir, campaign_root, update_index=False)
+            compact_row_provenance(row_dir, campaign_root)
             verify_row(row, campaign_root, purpose)
             completed.add(row.label)
             failed_rows.discard(row.label)
@@ -1708,6 +1427,7 @@ def run_campaign(
     purpose: str,
     policy: dict[str, object],
 ) -> None:
+    # 1. 核对运行环境和参数，恢复已有任务进度。
     verify_execution_host(policy)
     metadata_dir = campaign_root / "_meta"
     campaign_path = metadata_dir / "run.json"
@@ -1756,16 +1476,16 @@ def run_campaign(
     publish_schema(campaign_root)
     initialize_provenance(campaign_root, current_lock, rows)
     write_rows_csv(rows, campaign_root)
-    monitor = ResourceMonitor(metadata_dir / "resource_usage.csv")
     completed = set(campaign.get("completed_rows", []))
     failed_rows = set(campaign.get("failed_rows", []))
+    # 2. 已完成的结果通过核验后跳过，其余任务进入队列。
     pending: list[tuple[int, CampaignRow]] = []
     for index, row in enumerate(rows, 1):
         row_dir = campaign_root / row.relative_output
         if row.label in completed or row_dir.exists():
             try:
                 verify_row(row, campaign_root, purpose)
-                compact_row_provenance(row_dir, campaign_root, update_index=False)
+                compact_row_provenance(row_dir, campaign_root)
                 verify_row(row, campaign_root, purpose)
                 completed.add(row.label)
                 failed_rows.discard(row.label)
@@ -1837,6 +1557,7 @@ def run_campaign(
     row_attempts = int(policy["row_attempts"])
     finalize_attempts = int(policy["finalize_attempts"])
 
+    # 3. 按可用 CPU 槽位交替推进编译与求解；失败任务留到下一轮重试。
     while queued or ready or active_builds or active_solves or retry_builds or retry_ready:
         launched = False
         while ready:
@@ -1926,14 +1647,6 @@ def run_campaign(
             )
             launched = True
 
-        phase = "pipeline" if active_solves and active_builds else (
-            "solve" if active_solves else "compile"
-        )
-        monitor.sample(
-            phase,
-            len(active_solves) + len(active_builds),
-            used_slots + len(active_builds),
-        )
         finished_builds = [
             process for process in active_builds if process.poll() is not None
         ]
@@ -2078,11 +1791,9 @@ def run_campaign(
     builds_root = metadata_dir / "builds"
     if builds_root.is_dir() and not any(builds_root.iterdir()):
         builds_root.rmdir()
-    regenerate_object_index(campaign_root)
+    # 4. 全部结果通过核验后，保存汇总和完成标记。
     verify_campaign(rows, campaign_root, purpose)
     write_case_summaries(rows, campaign_root)
-    write_oscillating_vof_hf_report(rows, campaign_root)
-    write_resource_summary(campaign_root, cpu_slots)
     persist_campaign_state(campaign_path, campaign, completed, failed_rows)
     ready = {
         "schema_version": 1,
@@ -2121,54 +1832,16 @@ def check(policy: dict[str, object]) -> None:
     )
 
 
-def layout() -> None:
-    """Print the implemented review-candidate tree without creating directories."""
-    print(
-        f"""status=implementation_ready_for_review
-data/
-├── _smoke/{DATASET_NAME}/
-└── {DATASET_NAME}/
-    ├── READY.json
-    ├── _meta/
-    │   ├── run.json
-    │   ├── tasks.csv
-    │   ├── schema.json
-    │   ├── source_lock.json
-    │   ├── resource_policy.json
-    │   ├── resource_usage.csv
-    │   ├── resource_summary.json
-    │   ├── object_index.json
-    │   ├── oscillating_vof_hf_official.json
-    │   ├── logs/
-    │   ├── sources/sha256/<hash>
-    │   ├── references/{{prosperetti.h,hysing/*}}
-    │   └── models/baseline_<N>_hgradient/{{export_manifest.json,nn_weights.h}}
-    ├── capwave/{{summary.csv,Nxxxx/{{VOF-HF,imaxNN/{{CLSVOF,NN}}}}}}/
-    ├── rising_bubble/caseK/{{summary.csv,Nxxxx/{{VOF-HF,imaxNN/{{CLSVOF,NN}}}}}}/
-    ├── stationary_bubble/{{summary.csv,Nxxxx/{{VOF-HF,imax00/{{CLSVOF,NN}}}}}}/
-    └── oscillating_droplet/
-        ├── summary.csv
-        ├── adaptive/Nxxxx/VOF-HF/
-        └── uniform/Nxxxx/{{VOF-HF,imaxNN/{{CLSVOF,NN}}}}/
-
-formal_items={FORMAL_ROW_COUNT} smoke_items={SMOKE_ROW_COUNT}
-note=case-centered paths and one compact dataset-level _meta directory are active"""
-    )
-
-
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "action",
-        choices=("layout", "check", "plan", "smoke", "canary", "formal", "verify"),
+        choices=("check", "plan", "smoke", "canary", "formal", "verify"),
     )
     parser.add_argument("--root", type=Path)
     parser.add_argument("--policy", type=Path, default=DEFAULT_POLICY)
     parser.add_argument("--scope", choices=("smoke", "formal"), default="formal")
     args = parser.parse_args()
-    if args.action == "layout":
-        layout()
-        return 0
     policy = load_resource_policy(args.policy)
     if args.action == "check":
         check(policy)

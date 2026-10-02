@@ -3,8 +3,8 @@
  * test/spurious.c.
  *
  * This case intentionally uses the official CLSVOF update path.  The native
- * build includes Basilisk's integral.h unchanged.  The NN build uses a local
- * integral.h overlay that swaps only the active ki provider.
+ * build includes Basilisk's integral.h unchanged.  The NN and Oracle builds
+ * use local integral.h overlays that swap only the active ki provider.
  */
 
 #define JACOBI 1
@@ -27,15 +27,40 @@
 # define METHOD_NN 0
 #endif
 
+#ifndef METHOD_ORACLE
+# define METHOD_ORACLE 0
+#endif
+
+#if METHOD_NN && METHOD_ORACLE
+# error "METHOD_NN and METHOD_ORACLE are mutually exclusive"
+#endif
+
+#ifndef STATIONARY_FULL_DOMAIN
+# define STATIONARY_FULL_DOMAIN 0
+#endif
+
 #define DIAMETER 0.8
 #define RADIUS (DIAMETER/2.)
 #define LAPLACE 12000.
 #define MU sqrt(DIAMETER/LAPLACE)
 #define TMAX (STATIONARY_TAU_MAX*sq(DIAMETER)/MU)
 #define TAU_ONE_TIME (sq(DIAMETER)/MU)
+#ifndef STATIONARY_CA_BAND_CELLS
+# define STATIONARY_CA_BAND_CELLS 4.
+#endif
+#ifndef STATIONARY_NN_C2_TRACE
+# define STATIONARY_NN_C2_TRACE 0
+#endif
+#ifndef STATIONARY_NN_C2_TRACE_TAU_START
+# define STATIONARY_NN_C2_TRACE_TAU_START 0.
+#endif
+#ifndef STATIONARY_NN_C2_TRACE_TAU_END
+# define STATIONARY_NN_C2_TRACE_TAU_END 0.
+#endif
 
 scalar fn[];
 FILE * fp = NULL;
+FILE * fp_whole = NULL;
 FILE * milestones_fp = NULL;
 const char * stationary_stop_reason = "fixed_tau_limit";
 double stationary_stop_tau = -1.;
@@ -43,6 +68,10 @@ int stationary_stop_iteration = -1;
 
 int main (void)
 {
+#if STATIONARY_FULL_DOMAIN
+  size (2.);
+  origin (-1., -1.);
+#endif
   DT = HUGE [0];
   TOLERANCE = 1e-6 [*];
   stokes = true;
@@ -62,8 +91,10 @@ event init (i = 0)
   char name[80];
   sprintf (name, "La-%g-%d", LAPLACE, STATIONARY_LEVEL);
   fp = fopen (name, "w");
+  sprintf (name, "La-whole-%g-%d", LAPLACE, STATIONARY_LEVEL);
+  fp_whole = fopen (name, "w");
   milestones_fp = fopen ("milestones.csv", "w");
-  if (!fp || !milestones_fp) {
+  if (!fp || !fp_whole || !milestones_fp) {
     perror ("stationary output");
     exit (1);
   }
@@ -83,15 +114,63 @@ event init (i = 0)
     fn[] = f[];
 }
 
-event logfile (i++; t <= TMAX)
+static double stationary_interface_band_u_star (void)
 {
-  double df = change (f, fn);
+  /* STATIONARY_CA_BAND_CELLS is the total band width in Delta units. */
+  double umax = 0.;
+  foreach (reduction(max:umax))
+    if (fabs(sqrt(sq(x) + sq(y)) - RADIUS) <=
+        0.5*STATIONARY_CA_BAND_CELLS*Delta) {
+      double speed = norm(u);
+      if (speed > umax)
+        umax = speed;
+    }
+  return umax*sqrt(DIAMETER);
+}
+
+static double stationary_whole_domain_u_star (void)
+{
   scalar un[];
   foreach()
     un[] = norm (u);
+  return normf(un).max*sqrt(DIAMETER);
+}
+
+#if METHOD_NN && STATIONARY_NN_C2_TRACE
+static void stationary_trace_nn_c2_endpoints (void)
+{
+  double tau = MU*t/sq(DIAMETER);
+  if (tau < STATIONARY_NN_C2_TRACE_TAU_START ||
+      tau > STATIONARY_NN_C2_TRACE_TAU_END)
+    return;
+  foreach() {
+    int endpoint_needed = 0;
+    foreach_dimension()
+      for (int neighbor = -1; neighbor <= 1; neighbor += 2)
+        if (nn_interface_c2_endpoint_needed (d[], d[neighbor]))
+          endpoint_needed = 1;
+    if (endpoint_needed) {
+      double kappa = kappa_offset_provider_value (point, d, 0, 0);
+      fprintf (stderr,
+               "NN_C2_ENDPOINT_TRACE %.17g %.17g %.17g %.17g %.17g %.17g\n",
+               t, x, y, d[]/Delta, kappa*Delta, tau);
+    }
+  }
+}
+#endif
+
+event logfile (i++; t <= TMAX)
+{
+  double df = change (f, fn);
   fprintf (fp, "%g %g %g\n", MU*t/sq(DIAMETER),
-           normf(un).max*sqrt(DIAMETER), df);
+           stationary_interface_band_u_star(), df);
   fflush (fp);
+  fprintf (fp_whole, "%g %g %g\n", MU*t/sq(DIAMETER),
+           stationary_whole_domain_u_star(), df);
+  fflush (fp_whole);
+#if METHOD_NN && STATIONARY_NN_C2_TRACE
+  stationary_trace_nn_c2_endpoints ();
+#endif
 }
 
 typedef struct {
@@ -114,13 +193,12 @@ static stationary_diagnostics stationary_measure (void)
   boundary ({bubble});
 
   double vol = statsf(bubble).sum;
-  double radius = sqrt(4.*vol/pi);
-  scalar fref[], un[], ef[], kappa[];
+  double radius = sqrt((STATIONARY_FULL_DOMAIN ? 1. : 4.)*vol/pi);
+  scalar fref[], ef[], kappa[];
   fraction (fref, sq(RADIUS) - sq(x) - sq(y));
   curvature (bubble, kappa);
   double official_ekmax = 0.;
   foreach (reduction(max:official_ekmax)) {
-    un[] = norm(u);
     ef[] = bubble[] - fref[];
     if (kappa[] != nodata) {
       double ek = fabs(kappa[] - 1./radius);
@@ -130,7 +208,7 @@ static stationary_diagnostics stationary_measure (void)
   }
 
   /* Match the cells used by integral.h's active diagonal-stress provider.
-   * The diagnostic NN call deliberately records neither stats nor probes. */
+   * Diagnostic provider calls must not alter runtime provider statistics. */
   double active_ekmax = 0.;
   int active_samples = 0;
   foreach (reduction(max:active_ekmax) reduction(+:active_samples)) {
@@ -143,6 +221,8 @@ static stationary_diagnostics stationary_measure (void)
     if (active) {
 #if METHOD_NN
       double active_kappa = kappa_offset_provider_diagnostic (point, d);
+#elif METHOD_ORACLE
+      double active_kappa = oracle_curvature_provider (point, d);
 #else
       double active_kappa = distance_curvature (point, d);
 #endif
@@ -155,7 +235,7 @@ static stationary_diagnostics stationary_measure (void)
 
   norm ne = normf (ef);
   stationary_diagnostics diagnostics = {
-    normf(un).max*sqrt(DIAMETER), ne.avg, ne.rms, ne.max,
+    stationary_interface_band_u_star(), ne.avg, ne.rms, ne.max,
     official_ekmax, active_ekmax, active_samples
   };
   return diagnostics;
@@ -218,6 +298,8 @@ event error (t = end)
   fclose (termination_fp);
   if (fp)
     fclose (fp);
+  if (fp_whole)
+    fclose (fp_whole);
   if (milestones_fp)
     fclose (milestones_fp);
 }

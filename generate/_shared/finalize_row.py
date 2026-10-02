@@ -217,12 +217,15 @@ def compact_rising_interface(root: Path) -> None:
     )
 
 
-def compact_stationary_milestones(root: Path) -> None:
+def compact_stationary_milestones(root: Path, tau_max: float = 2.0) -> None:
     source = root / "milestones.csv"
     with source.open(newline="", encoding="utf-8") as stream:
         rows = list(csv.DictReader(stream))
-    if len(rows) != 2:
-        raise ValueError("stationary milestones must contain tau=1 and tau=2")
+    expected_rows = 2 if tau_max >= 1.0 else 1
+    if len(rows) != expected_rows:
+        raise ValueError(
+            "stationary milestone count does not match the requested horizon"
+        )
     fieldnames = [
         "milestone",
         "tau",
@@ -239,7 +242,11 @@ def compact_stationary_milestones(root: Path) -> None:
     normalized = []
     for row in rows:
         tau = finite(row["tau"], "milestone tau")
-        label = "tau_2" if row["milestone"] == "terminal" else row["milestone"]
+        label = (
+            "tau_2"
+            if row["milestone"] == "terminal" and abs(tau - 2.0) <= 1e-9
+            else row["milestone"]
+        )
         normalized.append(
             {
                 **{field: row[field] for field in fieldnames if field not in {"milestone", "capillary_number"}},
@@ -248,7 +255,12 @@ def compact_stationary_milestones(root: Path) -> None:
                 "tau": tau,
             }
         )
-    if {row["milestone"] for row in normalized} != {"tau_1", "tau_2"}:
+    expected_labels = (
+        {"terminal"}
+        if tau_max < 1.0
+        else {"tau_1", "tau_2" if abs(tau_max - 2.0) <= 1e-9 else "terminal"}
+    )
+    if {row["milestone"] for row in normalized} != expected_labels:
         raise ValueError("stationary milestone labels are incomplete")
     temporary = source.with_name(f".{source.name}.tmp.{os.getpid()}")
     with temporary.open("w", encoding="utf-8", newline="") as stream:
@@ -354,7 +366,7 @@ def main() -> int:
     if case == "rising_bubble":
         compact_rising_interface(root)
     elif case == "stationary_bubble":
-        compact_stationary_milestones(root)
+        compact_stationary_milestones(root, float(manifest["tau_max"]))
     elif case == "oscillating_droplet":
         compact_oscillating_fit(root, metrics)
     write_run_log(root, case)
@@ -367,14 +379,42 @@ def main() -> int:
         if len(rows) != 1:
             raise ValueError("provider_stats.csv must contain exactly one row")
         provider_stats = rows[0]
+    c2_endpoint_stats = None
+    c2_path = root / "c2_endpoint_stats.csv"
+    if c2_path.is_file():
+        with c2_path.open(newline="", encoding="utf-8") as stream:
+            rows = list(csv.DictReader(stream))
+        if len(rows) != 1:
+            raise ValueError("c2_endpoint_stats.csv must contain exactly one row")
+        c2_endpoint_stats = rows[0]
+    redistance_steps_stats = None
+    redistance_steps_path = root / "redistance_steps.csv"
+    if redistance_steps_path.is_file():
+        with redistance_steps_path.open(newline="", encoding="utf-8") as stream:
+            rows = list(csv.DictReader(stream))
+        if len(rows) != 1:
+            raise ValueError("redistance_steps.csv must contain exactly one row")
+        redistance_steps_stats = rows[0]
+    if manifest.get("redistance_policy") == "fixed_steps":
+        if redistance_steps_stats is None:
+            raise ValueError("fixed-steps row is missing redistance_steps.csv")
+    elif redistance_steps_stats is not None:
+        raise ValueError("legacy imax row unexpectedly has redistance_steps.csv")
     vof_hf_record = (
         oscillating_vof_hf_record(root)
         if case == "oscillating_droplet" and manifest.get("method") == "VOF-HF"
         else None
     )
 
+    row_files = list(ROW_FILES[case])
+    if case == "stationary_bubble" and (
+        root / "whole_domain_timeseries.csv"
+    ).is_file():
+        row_files.append("whole_domain_timeseries.csv")
+    if redistance_steps_stats is not None:
+        row_files.append("redistance_steps.csv")
     published = {}
-    for name in ROW_FILES[case]:
+    for name in row_files:
         path = root / name
         if not path.is_file() or path.stat().st_size == 0:
             raise ValueError(f"missing compact row artifact: {name}")
@@ -391,6 +431,8 @@ def main() -> int:
         "required_metric_names": contract["required_metric_names"],
         "metrics": metrics,
         "provider_stats": provider_stats,
+        "c2_endpoint_stats": c2_endpoint_stats,
+        "redistance_steps_stats": redistance_steps_stats,
     }
     manifest["field_snapshots"] = field_summary
     manifest["published_artifacts"] = published
@@ -403,7 +445,7 @@ def main() -> int:
         manifest.pop(key, None)
     atomic_json(manifest_path, manifest)
 
-    keep = {"manifest.json", "source_snapshot", *ROW_FILES[case]}
+    keep = {"manifest.json", "source_snapshot", *row_files}
     for path in root.iterdir():
         if path.name in keep:
             continue
@@ -413,7 +455,7 @@ def main() -> int:
         json.dumps(
             {
                 "case": case,
-                "files": ROW_FILES[case],
+                "files": row_files,
                 "field_snapshots": field_summary["snapshots"],
             },
             sort_keys=True,

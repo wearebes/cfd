@@ -101,6 +101,24 @@ PROVIDER_INTEGER_FIELDS = {
     "denominator_guard_hits",
     "grad_samples",
 }
+C2_STATS_FIELDS = ["crossings", "endpoint_predictions", "missing_endpoint"]
+REDISTANCE_STEPS_FIELDS = [
+    "requested_steps",
+    "redistance_calls",
+    "min_iterations_per_call",
+    "max_iterations_per_call",
+    "mismatch_count",
+    "total_iterations",
+]
+
+
+def required_metrics_for(
+    case: str, identity: dict[str, object]
+) -> set[str]:
+    required = set(REQUIRED_METRICS[case])
+    if case == "stationary_bubble" and float(identity["tau_max"]) < 1.0:
+        required = {name for name in required if not name.endswith("_tau_1")}
+    return required
 
 
 def sha256(path: Path) -> str:
@@ -440,6 +458,41 @@ def stationary(root: Path, identity: dict[str, object]) -> tuple[list[dict], lis
         ["tau", "u_star", "delta_fraction", "capillary_number"],
         plot_rows,
     )
+    whole_domain_path = root / "timeseries_whole_domain.dat"
+    whole_domain_series = None
+    if whole_domain_path.is_file():
+        whole_domain_series = [
+            row for row in numeric_rows(whole_domain_path, 3) if len(row) == 3
+        ]
+        if not whole_domain_series:
+            raise ValueError("stationary whole-domain time series is empty")
+        whole_domain_series, _ = normalize_duplicate_stationary_samples(
+            whole_domain_series
+        )
+        require_strictly_increasing(
+            [row[0] for row in whole_domain_series],
+            "stationary whole-domain tau",
+        )
+        if len(whole_domain_series) != len(series) or any(
+            abs(whole[0] - selected[0]) > 1e-12
+            for whole, selected in zip(whole_domain_series, series)
+        ):
+            raise ValueError(
+                "stationary whole-domain and selected-region times do not align"
+            )
+        write_csv(
+            root / "whole_domain_timeseries.csv",
+            ["tau", "u_star", "delta_fraction", "capillary_number"],
+            [
+                {
+                    "tau": row[0],
+                    "u_star": row[1],
+                    "delta_fraction": row[2],
+                    "capillary_number": row[1] / sqrt_la,
+                }
+                for row in whole_domain_series
+            ],
+        )
     if stop_reason != "fixed_tau_limit":
         raise ValueError(f"stationary row did not use the fixed horizon: {stop_reason}")
     if abs(terminal_tau - requested_tau) > 1e-9:
@@ -522,7 +575,7 @@ def stationary(root: Path, identity: dict[str, object]) -> tuple[list[dict], lis
         metric("termination_reason", stop_reason, "category", "terminal", "solver stop condition", termination_path.relative_to(root).as_posix(), time=terminal_tau, origin="repo_extension"),
         metric("duplicate_tau_samples_removed", duplicate_tau_samples_removed, "samples", "postprocess", "adjacent repeated logfile samples removed before strict time validation", series_path.name, origin="postprocess"),
         metric("level", int(official[0]), "level", "official_resolution", "grid refinement level", "official_terminal.dat"),
-        metric("diameter_cells", 0.8 * int(identity["resolution"]), "cells_per_diameter", "official_resolution", "D*N", "manifest.json", origin="derived_from_benchmark_identity"),
+        metric("diameter_cells", 0.8 * int(identity["resolution"]), "cells_per_diameter", "official_resolution", "D*resolution", "manifest.json", origin="derived_from_benchmark_identity"),
         metric("laplace_number", official[1], "1", "identity", "sigma*rho*D/mu^2", "official_terminal.dat"),
         metric("u_star_final", terminal_milestone["u_star"], "1", "terminal", "max(|u|)*sqrt(D/sigma)", "milestones.csv", time=terminal_tau),
         metric("shape_error_avg", terminal_milestone["shape_error_avg"], "1", "terminal", "normf(c-c_ref).avg", "milestones.csv", time=terminal_tau),
@@ -534,6 +587,14 @@ def stationary(root: Path, identity: dict[str, object]) -> tuple[list[dict], lis
         metric("official_style_relative_curvature_error", terminal_milestone["official_style_ekmax"] / 2.5, "1", "terminal", "official_style_ekmax/(1/R), R=0.4", "milestones.csv", time=terminal_tau, origin="derived"),
         metric("active_provider_relative_curvature_error", terminal_milestone["active_provider_ekmax"] / 2.5, "1", "terminal", "active_provider_ekmax/(1/R), R=0.4", "milestones.csv", time=terminal_tau, origin="derived"),
     ]
+    if whole_domain_series is not None:
+        whole_domain_ca = [row[1] / sqrt_la for row in whole_domain_series]
+        metrics.extend(
+            [
+                metric("whole_domain_capillary_number_max", max(whole_domain_ca), "1", "global", "max_t(max_Omega(|u|))*sqrt(D/sigma)/sqrt(La)", "whole_domain_timeseries.csv", origin="repo_extension"),
+                metric("whole_domain_capillary_number_final", whole_domain_ca[-1], "1", "terminal", "max_Omega(|u|)*sqrt(D/sigma)/sqrt(La)", "whole_domain_timeseries.csv", time=terminal_tau, origin="repo_extension"),
+            ]
+        )
     if "tau_1" in parsed_milestones:
         tau_one = parsed_milestones["tau_1"]
         metrics.extend(
@@ -554,6 +615,13 @@ def stationary(root: Path, identity: dict[str, object]) -> tuple[list[dict], lis
         artifact(root, termination_path.relative_to(root).as_posix(), "extension_raw", "termination.csv", True),
         artifact(root, milestones_path.relative_to(root).as_posix(), "extension_raw", "milestones.csv", True),
     ]
+    if whole_domain_series is not None:
+        artifacts.extend(
+            [
+                artifact(root, "timeseries_whole_domain.dat", "extension_raw", "timeseries_whole_domain.dat", True),
+                artifact(root, "whole_domain_timeseries.csv", "extension_processed", "whole_domain_timeseries.csv", True),
+            ]
+        )
     return metrics, artifacts
 
 
@@ -698,17 +766,7 @@ def parse_provider_stats(values: dict[str, object]) -> dict[str, int | float]:
     return parsed
 
 
-def parse_provider_stats_line(line: str) -> dict[str, int | float]:
-    values: dict[str, object] = {}
-    for item in line.split()[1:]:
-        name, value = item.split("=", 1)
-        values[name] = value
-    return parse_provider_stats(values)
-
-
-def provider_runtime_metrics(
-    root: Path, identity: dict[str, object]
-) -> tuple[list[dict[str, object]], dict[str, object] | None]:
+def runtime_stats_lines(root: Path, prefix: str) -> list[tuple[Path, str]]:
     runtime_names = (
         "official_error.dat",
         "interface.dat",
@@ -723,8 +781,26 @@ def provider_runtime_metrics(
         for line in candidate.read_text(
             encoding="utf-8", errors="replace"
         ).splitlines():
-            if line.startswith("kappa_offset_provider_stats "):
+            if line.startswith(prefix):
                 matches.append((candidate, line))
+    return matches
+
+
+def remove_runtime_stats_line(candidate: Path, matched_line: str) -> None:
+    """Move provider metadata out of the physical benchmark log."""
+    original = candidate.read_text(encoding="utf-8", errors="replace")
+    kept = [
+        line
+        for line in original.splitlines(keepends=True)
+        if line.rstrip("\r\n") != matched_line
+    ]
+    candidate.write_text("".join(kept), encoding="utf-8")
+
+
+def provider_runtime_artifact(
+    root: Path, identity: dict[str, object]
+) -> dict[str, object] | None:
+    matches = runtime_stats_lines(root, "kappa_offset_provider_stats ")
 
     stats_path = root / "provider_stats.csv"
     existing_stats: dict[str, int | float] | None = None
@@ -745,11 +821,14 @@ def provider_runtime_metrics(
     if method != "NN":
         if matches or existing_stats is not None or parsed_manifest_stats is not None:
             raise ValueError("non-NN row unexpectedly emitted provider runtime stats")
-        return [], None
+        return None
     if len(matches) > 1:
         raise ValueError(f"expected one provider stats row, found {len(matches)}")
 
-    parsed_line_stats = parse_provider_stats_line(matches[0][1]) if matches else None
+    parsed_line_stats = (
+        parse_provider_stats(dict(item.split("=", 1) for item in matches[0][1].split()[1:]))
+        if matches else None
+    )
     candidates = [
         values
         for values in (existing_stats, parsed_manifest_stats, parsed_line_stats)
@@ -766,17 +845,10 @@ def provider_runtime_metrics(
     # Keep benchmark/runtime channels scientifically pure.  The provider line
     # is metadata and lives in exactly one row artifact after this extraction.
     if matches:
-        candidate, matched_line = matches[0]
-        original = candidate.read_text(encoding="utf-8", errors="replace")
-        kept = [
-            line
-            for line in original.splitlines(keepends=True)
-            if line.rstrip("\r\n") != matched_line
-        ]
-        candidate.write_text("".join(kept), encoding="utf-8")
+        remove_runtime_stats_line(*matches[0])
     write_csv(stats_path, PROVIDER_STATS_FIELDS, [stats])
 
-    return [], artifact(
+    return artifact(
         root,
         "provider_stats.csv",
         "extension_raw",
@@ -784,6 +856,102 @@ def provider_runtime_metrics(
         True,
         PROVIDER_STATS_FIELDS,
     )
+
+
+def c2_runtime_artifact(
+    root: Path, identity: dict[str, object]
+) -> tuple[dict[str, object] | None, dict[str, int] | None]:
+    matches = runtime_stats_lines(root, "nn_interface_c2_stats ")
+
+    required = (
+        identity.get("method") == "NN"
+        and identity.get("curvature_contract") == "interface_interpolation_c2"
+    )
+    if not required:
+        if matches:
+            raise ValueError("non-C2 row unexpectedly emitted NN C2 endpoint stats")
+        return None, None
+    if len(matches) != 1:
+        raise ValueError(f"expected one NN C2 endpoint stats row, found {len(matches)}")
+
+    values: dict[str, int] = {}
+    for item in matches[0][1].split()[1:]:
+        name, value = item.split("=", 1)
+        values[name] = int(value)
+    if list(values) != C2_STATS_FIELDS:
+        raise ValueError(
+            f"NN C2 stats fields mismatch: expected={C2_STATS_FIELDS} actual={list(values)}"
+        )
+    if values["crossings"] <= 0 or values["endpoint_predictions"] <= 0:
+        raise ValueError("NN C2 provider did not evaluate crossings and endpoints")
+    if values["missing_endpoint"] != 0:
+        raise ValueError("NN C2 provider reported missing endpoint coverage")
+
+    remove_runtime_stats_line(*matches[0])
+    stats_path = root / "c2_endpoint_stats.csv"
+    write_csv(stats_path, C2_STATS_FIELDS, [values])
+    return artifact(
+        root,
+        "c2_endpoint_stats.csv",
+        "extension_raw",
+        "c2_endpoint_stats.csv",
+        True,
+        C2_STATS_FIELDS,
+    ), values
+
+
+def redistance_steps_runtime_artifact(
+    root: Path, identity: dict[str, object]
+) -> tuple[dict[str, object] | None, dict[str, int] | None]:
+    matches = runtime_stats_lines(root, "redistance_fixed_steps_stats ")
+
+    required = identity.get("redistance_policy") == "fixed_steps"
+    if not required:
+        if matches:
+            raise ValueError(
+                "non-fixed-steps row unexpectedly emitted redistance step stats"
+            )
+        return None, None
+    if len(matches) != 1:
+        raise ValueError(
+            f"expected one fixed-step redistance stats row, found {len(matches)}"
+        )
+
+    values: dict[str, int] = {}
+    for item in matches[0][1].split()[1:]:
+        name, value = item.split("=", 1)
+        values[name] = int(value)
+    if list(values) != REDISTANCE_STEPS_FIELDS:
+        raise ValueError(
+            "redistance step stats fields mismatch: "
+            f"expected={REDISTANCE_STEPS_FIELDS} actual={list(values)}"
+        )
+
+    requested = int(identity["steps"])
+    if values["requested_steps"] != requested:
+        raise ValueError("redistance requested-steps identity mismatch")
+    if values["redistance_calls"] <= 0:
+        raise ValueError("fixed-step redistance was never called")
+    if (
+        values["min_iterations_per_call"] != requested
+        or values["max_iterations_per_call"] != requested
+        or values["mismatch_count"] != 0
+        or values["total_iterations"]
+        != requested * values["redistance_calls"]
+    ):
+        raise ValueError(f"fixed-step redistance contract failed: {values}")
+
+    remove_runtime_stats_line(*matches[0])
+    stats_path = root / "redistance_steps.csv"
+    write_csv(stats_path, REDISTANCE_STEPS_FIELDS, [values])
+    return artifact(
+        root,
+        "redistance_steps.csv",
+        "extension_raw",
+        "redistance_steps.csv",
+        True,
+        REDISTANCE_STEPS_FIELDS,
+    ), values
 
 
 def main() -> int:
@@ -795,21 +963,24 @@ def main() -> int:
     identity = json.loads(manifest_path.read_text(encoding="utf-8"))
     case = str(identity.get("case_id") or identity.get("case"))
     benchmark = str(identity.get("benchmark") or case)
-    provider_metrics, provider_artifact = provider_runtime_metrics(root, identity)
-    if case == "capwave":
-        metrics, artifacts = capwave(root, identity)
-    elif case == "rising_bubble":
-        metrics, artifacts = rising(root, identity)
-    elif case == "stationary_bubble":
-        metrics, artifacts = stationary(root, identity)
-    elif case == "oscillating_droplet":
-        metrics, artifacts = oscillating(root, identity)
-    else:
+    redistance_steps_artifact, redistance_steps_stats = (
+        redistance_steps_runtime_artifact(root, identity)
+    )
+    c2_artifact, c2_stats = c2_runtime_artifact(root, identity)
+    provider_artifact = provider_runtime_artifact(root, identity)
+    builders = {
+        "capwave": capwave,
+        "rising_bubble": rising,
+        "stationary_bubble": stationary,
+        "oscillating_droplet": oscillating,
+    }
+    if case not in builders:
         raise SystemExit(f"unsupported scientific case: {case}")
-
-    metrics.extend(provider_metrics)
-    if provider_artifact is not None:
-        artifacts.append(provider_artifact)
+    metrics, artifacts = builders[case](root, identity)
+    artifacts.extend(
+        item for item in (provider_artifact, c2_artifact, redistance_steps_artifact)
+        if item is not None
+    )
 
     write_csv(root / "metrics.csv", METRIC_FIELDS, metrics)
     artifacts.extend(
@@ -833,7 +1004,8 @@ def main() -> int:
             f"benchmark output coverage incomplete for {case}: {missing_output_names}"
         )
     metric_names = {str(item["metric"]) for item in metrics}
-    missing_metrics = sorted(REQUIRED_METRICS[case] - metric_names)
+    required_metrics = required_metrics_for(case, identity)
+    missing_metrics = sorted(required_metrics - metric_names)
     with (root / "plot_data.csv").open(newline="", encoding="utf-8") as stream:
         plot_columns = list(csv.DictReader(stream).fieldnames or [])
     if missing_metrics or plot_columns != REQUIRED_PLOT_COLUMNS[case]:
@@ -848,11 +1020,14 @@ def main() -> int:
         "method": identity.get("method"),
         "resolution": identity.get("N") or identity.get("resolution"),
         "imax": identity.get("redistance_imax") if "redistance_imax" in identity else identity.get("imax"),
+        "steps": identity.get("steps"),
+        "redistance_policy": identity.get("redistance_policy", "imax_limit"),
+        "redistance_steps_stats": redistance_steps_stats,
         "model_id": identity.get("model_name") or identity.get("model"),
         "experiment_role": identity.get("experiment_role"),
         "grid_role": identity.get("grid_role"),
         "model_resolution": (
-            identity.get("N") or identity.get("resolution")
+            identity.get("model_resolution") or identity.get("N") or identity.get("resolution")
             if (identity.get("model_name") or identity.get("model"))
             else None
         ),
@@ -862,7 +1037,8 @@ def main() -> int:
         "expected_benchmark_output_names": sorted(expected_output_names),
         "missing_benchmark_output_names": missing_output_names,
         "analysis_ready": True,
-        "required_metric_names": sorted(REQUIRED_METRICS[case]),
+        "c2_endpoint_stats": c2_stats,
+        "required_metric_names": sorted(required_metrics),
         "metric_names": sorted(metric_names),
         "plot_columns": plot_columns,
         "artifacts": artifacts,

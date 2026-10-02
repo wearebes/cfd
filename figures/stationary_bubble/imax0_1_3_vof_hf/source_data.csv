@@ -1,4 +1,0 @@
-method_id,resolution,laplace_number,samples,terminal_tau,u_star_max,u_star_final,delta_c_final,ca_max,ca_final,endpoint_basis,source_file
-vof_hf,64,12000,3672,0.051607599999999997,0.0079869899999999994,9.5652099999999994e-08,2.5522600000000002e-10,7.2910909826136432e-05,8.7318021404566488e-10,last_recorded_sample,dataset/stationary_bubble/reference/csf_default/N0064/timeseries.dat
-vof_hf,128,12000,10439,0.051880200000000001,0.0059170999999999998,2.24055e-07,1.14658e-10,5.4015485750230306e-05,2.0453329603636666e-09,last_recorded_sample,dataset/stationary_bubble/reference/csf_default/N0128/timeseries.dat
-vof_hf,256,12000,13546,0.023802299999999998,0.0039670199999999999,1.8921699999999999e-07,1.3727399999999999e-10,3.6213772334569068e-05,1.7273069860575835e-09,last_recorded_sample,dataset/stationary_bubble/reference/csf_default/N0256/timeseries.dat

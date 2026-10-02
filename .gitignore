@@ -7,14 +7,12 @@ __pycache__/
 *.o
 *.a
 
-hpc/work/
-hpc/results/
-hpc/packages/
 
 tem/
 build/
 /data/
 
+/docs/
 # Local backups and the independently versioned manuscript
 /backups/
 /paper/

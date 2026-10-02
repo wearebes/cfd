@@ -13,6 +13,8 @@ field_header="$shared_root/field_snapshots.h"
 finalizer="$shared_root/finalize_row.py"
 
 imax=3
+imax_explicit=0
+steps=""
 resolution=64
 purpose=smoke
 output=""
@@ -20,23 +22,34 @@ dry_run=0
 compile_only=0
 threads=1
 model_name=""
+feature_mode=phi9_full_normal
 precompiled=""
+curvature_mode=cell
 inference_precision="${CFD_NN_INFERENCE_PRECISION:-float32}"
 
 usage() {
   printf '%s\n' \
-    "usage: $0 [--imax 0|1|2|3|4|5|10|15|20] [--resolution 32|64|128|256|512]" \
-    "          [--model NAME] [--inference-precision float32|float64-forward]" \
+    "usage: $0 [--imax 0|1|2|3|4|5|10|15|20 | --steps 0|1|2|3|4|5|10]" \
+    "          [--resolution 32|64|128|256|512]" \
+    "          [--model NAME] [--curvature-mode cell|direct|interface]" \
+    "          [--feature-mode phi9|phi9_full_normal|phi9_center_normal|phi9_cross_normal|phi9_local_normal]" \
+    "          [--inference-precision float32|float64-forward]" \
     "          [--smoke|--formal] --output PATH" \
     "          [--threads N] [--dry-run] [--compile-only] [--precompiled PATH]"
 }
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
-    --imax) imax="${2:?missing value for --imax}"; shift 2 ;;
+    --imax) imax="${2:?missing value for --imax}"; imax_explicit=1; shift 2 ;;
+    --steps) steps="${2:?missing value for --steps}"; shift 2 ;;
     --resolution) resolution="${2:?missing value for --resolution}"; shift 2 ;;
+    --feature-mode) feature_mode="${2:?missing feature mode}"; shift 2 ;;
     --model) model_name="${2:?missing value for --model}"; shift 2 ;;
-    --inference-precision) inference_precision="${2:?missing value for --inference-precision}"; shift 2 ;;
+    --curvature-mode) curvature_mode="${2:?missing value for --curvature-mode}"; shift 2 ;;
+    --inference-precision)
+      inference_precision="${2:?missing value for --inference-precision}"
+      shift 2
+      ;;
     --smoke) purpose=smoke; shift ;;
     --formal) purpose=formal; shift ;;
     --output) output="${2:?missing value for --output}"; shift 2 ;;
@@ -48,6 +61,10 @@ while [ "$#" -gt 0 ]; do
     *) printf 'error: unknown argument %s\n' "$1" >&2; usage >&2; exit 2 ;;
   esac
 done
+
+if [ "$imax_explicit" -eq 1 ] && [ -n "$steps" ]; then
+  printf 'error: --imax and --steps are mutually exclusive\n' >&2; exit 2
+fi
 
 case "$inference_precision" in
   float32) inference_double=0 ;;
@@ -61,9 +78,45 @@ case "$inference_precision" in
     ;;
 esac
 
-case "$imax" in 0|1|2|3|4|5|10|15|20) ;; *)
-  printf 'error: --imax must be one of 0,1,2,3,4,5,10,15,20\n' >&2; exit 2;; esac
-if [ "$imax" = 3 ]; then experiment_role=default; else experiment_role=sensitivity; fi
+case "$curvature_mode" in
+  cell)
+    curvature_mode_define=1
+    curvature_contract=cell_transform_c1
+    nn_provider=cell_transform
+    nn_provider_contract=cell_transform
+    overlay_method=nn-cell
+    ;;
+  direct)
+    curvature_mode_define=2
+    curvature_contract=interface_direct_c1
+    nn_provider=interface
+    nn_provider_contract=q_gamma_over_delta
+    overlay_method=nn-cell
+    ;;
+  interface)
+    curvature_mode_define=2
+    curvature_contract=interface_interpolation_c2
+    nn_provider=interface
+    nn_provider_contract=q_gamma_over_delta
+    overlay_method=nn-c2
+    ;;
+  *) printf 'error: --curvature-mode must be cell, direct or interface\n' >&2; exit 2 ;;
+esac
+
+if [ -n "$steps" ]; then
+  case "$steps" in 0|1|2|3|4|5|10) ;; *)
+    printf 'error: --steps must be one of 0,1,2,3,4,5,10\n' >&2; exit 2;; esac
+  if [ "$curvature_mode" != interface ] && [ "$curvature_mode" != direct ]; then
+    printf 'error: --steps requires --curvature-mode interface or direct\n' >&2; exit 2
+  fi
+  experiment_role=fixed_steps_validation
+  redistance_policy=fixed_steps
+else
+  case "$imax" in 0|1|2|3|4|5|10|15|20) ;; *)
+    printf 'error: --imax must be one of 0,1,2,3,4,5,10,15,20\n' >&2; exit 2;; esac
+  if [ "$imax" = 3 ]; then experiment_role=default; else experiment_role=sensitivity; fi
+  redistance_policy=imax_limit
+fi
 case "$resolution" in 32|64|128|256|512) ;; *)
   printf 'error: --resolution must be one of 32,64,128,256,512\n' >&2; exit 2;; esac
 case "$threads" in ''|*[!0-9]*|0)
@@ -83,15 +136,30 @@ fi
 if [ -n "$precompiled" ] && [ "${CFD_CAMPAIGN_PRECOMPILED:-0}" != 1 ]; then
   printf 'error: --precompiled is reserved for the verified campaign scheduler\n' >&2; exit 2
 fi
-if [ -z "$model_name" ]; then model_name="baseline_${resolution}_hgradient"; fi
-if [ "$purpose" = formal ] && [ "$model_name" != "baseline_${resolution}_hgradient" ]; then
-  printf 'error: formal NN rows require model baseline_%s_hgradient\n' "$resolution" >&2
-  exit 2
+case "$feature_mode" in
+  phi9) feature_dim=9; model_suffix=phi9 ;;
+  phi9_full_normal) feature_dim=27; model_suffix=hgradient ;;
+  phi9_center_normal) feature_dim=11; model_suffix=hcenter_normal ;;
+  phi9_local_normal) feature_dim=15; model_suffix=hlocal_normal ;;
+  phi9_cross_normal) feature_dim=19; model_suffix=hcross_normal ;;
+  *) printf 'error: unsupported --feature-mode %s\n' "$feature_mode" >&2; exit 2 ;;
+esac
+if [ -z "$model_name" ]; then
+  if [ "$feature_dim" = 27 ]; then model_name="baseline_${resolution}_hgradient";
+  else model_name="cell_${resolution}_${model_suffix}"; fi
 fi
-model_dir="$repo_root/dataset/model/c_exports/$model_name"
+if [ "$purpose" = formal ] && [ "$model_name" != "cell_${resolution}_${model_suffix}" ] &&
+   { [ "$feature_dim" != 27 ] || [ "$model_name" != "baseline_${resolution}_hgradient" ]; }; then
+  printf 'error: formal model must match resolution and feature mode\n' >&2; exit 2
+fi
+model_dir="$repo_root/data/model/c_exports/$model_name"
+if [ ! -f "$model_dir/nn_weights.h" ] || [ ! -f "$model_dir/export_manifest.json" ]; then
+  model_dir="$repo_root/dataset/model/c_exports/$model_name"
+fi
 if [ ! -f "$model_dir/nn_weights.h" ] || [ ! -f "$model_dir/export_manifest.json" ]; then
   printf 'error: incomplete model export %s\n' "$model_dir" >&2; exit 1
 fi
+python3 "$shared_root/nn_runtime/feature_contract.py" --manifest "$model_dir/export_manifest.json" --feature-mode "$feature_mode"
 recorded_model="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["name"])' "$model_dir/export_manifest.json")"
 if [ "$recorded_model" != "$model_name" ]; then
   printf 'error: model export identity mismatch: %s != %s\n' "$recorded_model" "$model_name" >&2
@@ -140,16 +208,37 @@ cp "$nn_root/src/kappa_offset_stats.h" "$work/"
 cp "$nn_root/src/clsvof_mlp_infer.h" "$work/"
 cp "$model_dir/nn_weights.h" "$model_dir/export_manifest.json" "$work/"
 python3 "$nn_root/src/make_overlay_integral.py" \
-  "$repo_root/basilisk/src/integral.h" "$work/integral.h"
+  "$repo_root/basilisk/src/integral.h" "$work/integral.h" \
+  --method "$overlay_method"
+if [ "$curvature_mode" = interface ]; then
+  cp "$nn_root/src/c2_interface_provider.h" "$work/"
+fi
+redistance_args=(--imax "$imax")
+if [ -n "$steps" ]; then
+  redistance_args=(--steps "$steps")
+  cp "$redistance_root/src/redistance_steps_stats.h" "$work/"
+  cp "$redistance_root/src/redistance_fixed_steps.h" "$work/redistance.h"
+fi
 python3 "$redistance_root/src/make_redistance_overlay.py" \
   "$repo_root/basilisk/src/two-phase-clsvof.h" "$work/two-phase-clsvof.h" \
-  --imax "$imax" --no-metrics --provenance "$work/redistance_overlay.json"
+  "${redistance_args[@]}" --no-metrics \
+  --provenance "$work/redistance_overlay.json"
 python3 "$field_overlay" "$work/capwave-clsvof.c" --case capwave --clsvof
 cp "$field_header" "$work/field_snapshots.h"
+
+if [ -n "$steps" ]; then
+  cp "$work/redistance.h" "$work/redistance_fixed_steps.h"
+  python3 - "$work/two-phase-clsvof.h" <<'PYOVERLAY'
+import sys
+from pathlib import Path
+p=Path(sys.argv[1]);p.write_text(p.read_text().replace('#include "redistance.h"', '#include "redistance_fixed_steps.h"'))
+PYOVERLAY
+fi
 
 compile_cmd=("$qcc" -O2 -DCLSVOF=1)
 if [ "$threads" -gt 1 ]; then compile_cmd+=("-fopenmp"); fi
 compile_cmd+=(
+  "-DKAPPA_OFFSET_TRANSFORM_MODE=$curvature_mode_define"
   "-DKAPPA_OFFSET_INFERENCE_DOUBLE=$inference_double"
   -DKAPPA_OFFSET_CLAMP_FACTOR=1.0 -DKAPPA_OFFSET_PROBE_INTERVAL=0
   -disable-dimensions -I. capwave-clsvof.c -o capwave-clsvof -lm
@@ -164,11 +253,18 @@ plan_args=(
   --generator "$script_dir/NN.sh"
   --generator-logical generate/capwave/NN.sh
   --parameter "resolution=$resolution"
-  --parameter "imax=$imax"
   --parameter "experiment_role=$experiment_role"
+  --parameter "redistance_policy=$redistance_policy"
   --parameter grid_strategy=uniform
   --parameter "model=$model_name"
+  --parameter "feature_mode=$feature_mode"
+  --parameter "feature_dim_raw=$feature_dim"
+  --parameter "curvature_mode=$curvature_mode"
   --parameter "inference_precision=$inference_precision"
+  --parameter "curvature_contract=$curvature_contract"
+  --parameter "curvature_consumer=$curvature_mode"
+  --parameter "nn_provider=$nn_provider"
+  --parameter "nn_provider_contract=$nn_provider_contract"
   --parameter "openmp_threads=$threads"
   --parameter "compile_only=$compile_only"
   --parameter "compile_reused=$([ -n "$precompiled" ] && printf true || printf false)"
@@ -189,6 +285,18 @@ plan_args=(
   --compile-cwd '$WORK' --run-cwd '$WORK'
   --run-stdout stdout.txt --run-stderr log
 )
+if [ -n "$steps" ]; then
+  plan_args+=(
+    --parameter imax=null --parameter "steps=$steps"
+    --source "redistance_core=source_snapshot/redistance.h::$work/redistance.h"
+    --source "redistance_steps_stats=source_snapshot/redistance_steps_stats.h::$work/redistance_steps_stats.h"
+  )
+else
+  plan_args+=(--parameter "imax=$imax")
+fi
+if [ "$curvature_mode" = interface ]; then
+  plan_args+=(--source "c2_interface_provider=source_snapshot/c2_interface_provider.h::$work/c2_interface_provider.h")
+fi
 for arg in "${compile_cmd[@]}"; do plan_args+=("--compile-arg=$arg"); done
 if [ -n "$precompiled" ]; then
   plan_args+=(--source "precompiled_executable=build/precompiled_executable::$precompiled")
@@ -208,6 +316,13 @@ cp "$work/capwave-clsvof.c" "$work/integral.h" "$work/two-phase-clsvof.h" \
   "$work/prosperetti.h" "$work/redistance_overlay.json" \
   "$work/field_snapshots.h" \
   "$output/source_snapshot/"
+if [ -n "$steps" ]; then
+  cp "$work/redistance.h" "$work/redistance_fixed_steps.h" "$output/source_snapshot/"
+  cp "$work/redistance_steps_stats.h" "$output/source_snapshot/"
+fi
+if [ "$curvature_mode" = interface ]; then
+  cp "$work/c2_interface_provider.h" "$output/source_snapshot/"
+fi
 python3 "$manifest_tool" start "${plan_args[@]}" --manifest "$output/manifest.json"
 
 SECONDS=0

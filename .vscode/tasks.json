@@ -2,34 +2,53 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "type": "shell",
-            "label": "Basilisk/qcc: 生成活动文件",
-            "command": "${workspaceFolder}/tools/basilisk-cc",
+            "label": "Basilisk: 准备运行目录",
+            "type": "process",
+            "command": "/bin/mkdir",
             "args": [
-                "${file}",
+                "-p",
+                "${workspaceFolder}/tem/vscode_basilisk/${fileBasenameNoExtension}"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Basilisk/qcc: 生成活动文件",
+            "type": "cppbuild",
+            "command": "${workspaceFolder}/basilisk/src/qcc",
+            "args": [
+                "-g",
+                "-O2",
+                "-Wall",
+                "${fileBasename}",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}",
+                "${workspaceFolder}/tem/vscode_basilisk/${fileBasenameNoExtension}/solver",
                 "-lm"
             ],
+            "options": {
+                "cwd": "${fileDirname}",
+                "env": {
+                    "BASILISK": "${workspaceFolder}/basilisk/src"
+                }
+            },
+            "dependsOn": "Basilisk: 准备运行目录",
             "problemMatcher": [
                 "$gcc"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
-            },
-            "detail": "Use the repository Basilisk compiler wrapper instead of VS Code generated gcc tasks."
+            }
         },
         {
-            "type": "shell",
             "label": "Basilisk/qcc: 运行活动文件",
-            "command": "${workspaceFolder}/tools/basilisk-run",
-            "args": [
-                "${file}"
-            ],
+            "type": "process",
+            "command": "${workspaceFolder}/tem/vscode_basilisk/${fileBasenameNoExtension}/solver",
+            "options": {
+                "cwd": "${workspaceFolder}/tem/vscode_basilisk/${fileBasenameNoExtension}"
+            },
+            "dependsOn": "Basilisk/qcc: 生成活动文件",
             "problemMatcher": [],
-            "group": "test",
-            "detail": "Build the active file with the repository Basilisk wrapper, then run it from the source directory."
+            "group": "test"
         }
     ]
 }

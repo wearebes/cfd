@@ -5,10 +5,10 @@
             "name": "Basilisk/qcc: 调试活动文件",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}/${fileBasenameNoExtension}",
+            "program": "${workspaceFolder}/tem/vscode_basilisk/${fileBasenameNoExtension}/solver",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceFolder}/tem/vscode_basilisk/${fileBasenameNoExtension}",
             "environment": [
                 {
                     "name": "BASILISK",

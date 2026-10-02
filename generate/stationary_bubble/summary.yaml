@@ -11,6 +11,7 @@ sources:
   stock_case: basilisk/src/test/spurious.c
   vof_hf_host: generate/stationary_bubble/src/make_fixed_horizon_vof_host.py
   clsvof_case: generate/stationary_bubble/src/stationary-clsvof.c
+  whole_domain_case: generate/stationary_bubble/src/stationary-bubble-whole.c
 
 formal_matrix:
   resolutions: [32, 64, 128, 256]
@@ -42,3 +43,15 @@ completion_gate:
   canary_tau: 2
   formal_tau: 2
   check: every method has tau=1 and tau=2 method-aware curvature milestones
+
+whole_domain:
+  selection: --domain whole
+  bounds: [-1, 1, -1, 1]
+  radius: 0.4
+  resolution_definition: inverse_grid_spacing_and_model_resolution
+  grid_spacing: 1/resolution
+  cells_per_side: 2*resolution
+  matched_model_resolution: resolution
+  boundary_conditions: symmetry_on_all_outer_boundaries
+  campaign_membership: separate_extension
+  timing_seconds: [compile_seconds, solver_seconds, elapsed_seconds]

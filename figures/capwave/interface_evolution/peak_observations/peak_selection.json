@@ -1,0 +1,30 @@
+{
+  "source": "/Users/jcy/research/cfd/data/capwave/crossing/uniform/N0128/steps03/Cell-NN-C2-FP64",
+  "manifest_sha256": "2d2d0b3473d95a278ba7df16d65cae065b61392e4ac69891104ec119f52f15f6",
+  "sample_indices": [
+    100,
+    203,
+    305
+  ],
+  "definition": "first three local maxima of unsigned amplitude after t=0",
+  "original_peak_rows": [
+    {
+      "tau": 3.38878,
+      "amplitude": 0.00729373,
+      "reference_amplitude": 0.0072993,
+      "amplitude_error": -5.569999999999881e-06
+    },
+    {
+      "tau": 6.87922,
+      "amplitude": 0.0050029,
+      "reference_amplitude": 0.0049947,
+      "amplitude_error": 8.199999999999874e-06
+    },
+    {
+      "tau": 10.3358,
+      "amplitude": 0.00349785,
+      "reference_amplitude": 0.00348877,
+      "amplitude_error": 9.079999999999852e-06
+    }
+  ]
+}

@@ -138,7 +138,7 @@ def replace_once(source: str, target: str, replacement: str) -> str:
     return source.replace(target, replacement, 1)
 
 
-def build(source: str) -> str:
+def build(source: str, domain: str = "quarter") -> str:
     source = replace_once(source, STOCK_TMAX, FIXED_TMAX)
     main_start = source.index(MAIN_START)
     main_end = source.index(MAIN_END, main_start)
@@ -150,7 +150,14 @@ def build(source: str) -> str:
     )
     error_start = source.index(ERROR_START)
     error_end = source.index(ERROR_END, error_start)
-    return source[:error_start] + DIAGNOSTICS + source[error_end:]
+    source = source[:error_start] + DIAGNOSTICS + source[error_end:]
+    if domain == "whole":
+        source = replace_once(source, "  DT = HUGE [0];",
+                              "  size (2.);\n  origin (-1., -1.);\n  DT = HUGE [0];")
+        source = replace_once(source, "sqrt(4.*vol/pi)", "sqrt(vol/pi)")
+    elif domain != "quarter":
+        raise ValueError(f"unsupported domain: {domain}")
+    return source
 
 
 def main() -> int:
@@ -158,9 +165,10 @@ def main() -> int:
     parser.add_argument("source", type=Path)
     parser.add_argument("output", type=Path)
     parser.add_argument("--provenance", type=Path, required=True)
+    parser.add_argument("--domain", choices=("quarter", "whole"), default="quarter")
     args = parser.parse_args()
     stock = args.source.read_text(encoding="utf-8")
-    generated = build(stock)
+    generated = build(stock, args.domain)
     args.output.write_text(generated, encoding="utf-8")
     args.provenance.write_text(
         json.dumps(
@@ -170,11 +178,14 @@ def main() -> int:
                 "source_sha256": sha256(stock),
                 "generated_sha256": sha256(generated),
                 "method": "VOF-HF",
+                "domain": args.domain,
                 "allowed_changes": [
                     "single_grid_selection",
                     "fixed_tau_2_horizon",
                     "disable_convergence_early_stop",
                     "tau_1_and_tau_2_observations",
+                    *(["full_circle_domain", "full_circle_equivalent_radius"]
+                      if args.domain == "whole" else []),
                 ],
             },
             indent=2,

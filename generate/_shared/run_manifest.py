@@ -174,8 +174,13 @@ def payload_for(plan: dict[str, Any], status: str, root: Path) -> dict[str, Any]
         "inference_header_sha256": "nn_inference",
         "weights_sha256": "nn_weights",
         "integral_sha256": "compiled_integral",
-        "two_phase_clsvof_sha256": "compiled_two_phase",
     }
+    two_phase_field = (
+        "two_phase_levelset_sha256"
+        if parameters.get("solver_host") == "pure_levelset"
+        else "two_phase_clsvof_sha256"
+    )
+    artifact_sources[two_phase_field] = "compiled_two_phase"
     payload = {
         "schema_version": SCHEMA_VERSION,
         "status": status,
@@ -192,8 +197,18 @@ def payload_for(plan: dict[str, Any], status: str, root: Path) -> dict[str, Any]
     # need to reinterpret the richer resolved-plan schema.
     for key in (
         "resolution",
+        "domain",
+        "domain_length",
+        "domain_origin",
+        "cells_per_side",
+        "grid_spacing",
+        "model_resolution",
+        "n_lambda",
         "level",
         "imax",
+        "redistance_imax",
+        "steps",
+        "redistance_policy",
         "model",
         "openmp_threads",
         "benchmark_case",
@@ -204,6 +219,20 @@ def payload_for(plan: dict[str, Any], status: str, root: Path) -> dict[str, Any]
         "grid_strategy",
         "grid_role",
         "cells_per_diameter",
+        "oracle_mode",
+        "oracle_formula",
+        "oracle_radius",
+        "distance_sign",
+        "provider_site",
+        "oracle_semantics",
+        "curvature_mode",
+        "nn_provider",
+        "curvature_contract",
+        "curvature_consumer",
+        "nn_provider_contract",
+        "nn_insertion",
+        "nn_cell_conversion",
+        "solver_host",
     ):
         if key in parameters:
             payload[key] = parameters[key]
@@ -223,7 +252,11 @@ def add_plan_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--repo-root", type=Path, required=True)
     parser.add_argument("--case", required=True)
     parser.add_argument("--benchmark", required=True)
-    parser.add_argument("--method", choices=("VOF-HF", "CLSVOF", "NN"), required=True)
+    parser.add_argument(
+        "--method",
+        choices=("VOF-HF", "CLSVOF", "LevelSet", "NN", "ORACLE"),
+        required=True,
+    )
     parser.add_argument("--purpose", choices=("smoke", "formal"), required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--generator", required=True)
@@ -253,6 +286,8 @@ def main(argv: list[str] | None = None) -> int:
     add_plan_arguments(complete)
     complete.add_argument("--manifest", type=Path, required=True)
     complete.add_argument("--elapsed-seconds", type=float, required=True)
+    complete.add_argument("--compile-seconds", type=float)
+    complete.add_argument("--solver-seconds", type=float)
     fail = subparsers.add_parser("fail")
     fail.add_argument("--manifest", type=Path, required=True)
     fail.add_argument("--error", required=True)
@@ -297,6 +332,10 @@ def main(argv: list[str] | None = None) -> int:
     payload["status"] = "completed"
     payload["completed_at"] = utc_now()
     payload["elapsed_seconds"] = args.elapsed_seconds
+    if args.compile_seconds is not None:
+        payload["compile_seconds"] = args.compile_seconds
+    if args.solver_seconds is not None:
+        payload["solver_seconds"] = args.solver_seconds
     atomic_json(args.manifest, payload)
     return 0
 

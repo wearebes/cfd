@@ -13,6 +13,7 @@ finalizer="$shared_root/finalize_row.py"
 
 imax=0
 resolution=64
+domain=quarter
 purpose=smoke
 tau_max=2.0
 output=""
@@ -23,13 +24,14 @@ precompiled=""
 
 usage() {
   printf '%s\n' \
-    "usage: $0 [--imax 0] [--resolution 32|64|128|256] [--smoke|--formal]" \
+    "usage: $0 [--domain quarter|whole] [--imax 0] [--resolution 32|64|128|256|512] [--smoke|--formal]" \
     "          [--tau-max VALUE] --output PATH [--threads N]" \
     "          [--dry-run] [--compile-only] [--precompiled PATH]"
 }
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
+    --domain) domain="${2:?missing value for --domain}"; shift 2 ;;
     --imax) imax="${2:?missing value for --imax}"; shift 2 ;;
     --resolution) resolution="${2:?missing value for --resolution}"; shift 2 ;;
     --smoke) purpose=smoke; shift ;;
@@ -49,13 +51,25 @@ if [ "$imax" != 0 ]; then
   printf 'error: stationary bubble is frozen to --imax 0\n' >&2; exit 2
 fi
 experiment_role=default
+case "$domain" in
+  quarter) domain_length=1; domain_origin=0 ;;
+  whole) domain_length=2; domain_origin=-1 ;;
+  *) printf 'error: --domain must be quarter or whole\n' >&2; exit 2 ;;
+esac
+
 case "$resolution" in
   32) level=5 ;;
   64) level=6 ;;
   128) level=7 ;;
   256) level=8 ;;
+  512) if [ "$domain" != whole ]; then printf 'error: quadrant N512 is outside the formal matrix\n' >&2; exit 2; fi; level=9 ;;
   *) printf 'error: --resolution must be one of 32,64,128,256; stationary N512 is outside the formal matrix\n' >&2; exit 2 ;;
 esac
+# resolution selects h=1/resolution and the same-numbered model.
+model_resolution=$resolution
+cells_per_side=$((domain_length * resolution))
+if [ "$domain" = whole ]; then level=$((level + 1)); fi
+grid_spacing="$(python3 -c 'import sys; print(1.0/int(sys.argv[1]))' "$resolution")"
 case "$threads" in ''|*[!0-9]*|0)
   printf 'error: --threads must be a positive integer\n' >&2; exit 2;; esac
 if [ "$purpose" = formal ] && [ "$tau_max" != 2.0 ] && [ "$tau_max" != 2 ]; then
@@ -101,6 +115,11 @@ cleanup() {
 trap cleanup EXIT
 
 cp "$script_dir/src/stationary-clsvof.c" "$work/stationary-clsvof.c"
+case_file=stationary-clsvof.c
+if [ "$domain" = whole ]; then
+  case_file=stationary-bubble-whole.c
+  cp "$script_dir/src/$case_file" "$work/$case_file"
+fi
 python3 "$field_overlay" "$work/stationary-clsvof.c" \
   --case stationary_bubble --clsvof
 cp "$field_header" "$work/field_snapshots.h"
@@ -113,7 +132,7 @@ compile_cmd=("$qcc" -disable-dimensions -O2)
 if [ "$threads" -gt 1 ]; then compile_cmd+=("-fopenmp"); fi
 compile_cmd+=(
   "-DSTATIONARY_LEVEL=$level" "-DSTATIONARY_TAU_MAX=$tau_max" -DMETHOD_NN=0
-  stationary-clsvof.c -o stationary-clsvof -lm
+  "$case_file" -o stationary-clsvof -lm
 )
 run_cmd=(./stationary-clsvof)
 if [ "$compile_only" -eq 1 ]; then run_cmd=(); fi
@@ -125,6 +144,9 @@ plan_args=(
   --generator "$script_dir/CLSVOF.sh"
   --generator-logical generate/stationary_bubble/CLSVOF.sh
   --parameter "resolution=$resolution" --parameter "level=$level"
+  --parameter "domain=$domain" --parameter "domain_length=$domain_length"
+  --parameter "domain_origin=$domain_origin"
+  --parameter "cells_per_side=$cells_per_side" --parameter "grid_spacing=$grid_spacing"
   --parameter "imax=$imax" --parameter "tau_max=$tau_max"
   --parameter "experiment_role=$experiment_role"
   --parameter grid_strategy=uniform
@@ -142,6 +164,9 @@ plan_args=(
   --compile-cwd '$WORK' --run-cwd '$WORK'
   --run-stdout stdout.txt --run-stderr log
 )
+if [ "$domain" = whole ]; then
+  plan_args+=(--source "whole_domain_case=source_snapshot/$case_file::$work/$case_file")
+fi
 for arg in "${compile_cmd[@]}"; do plan_args+=("--compile-arg=$arg"); done
 if [ -n "$precompiled" ]; then plan_args+=(--source "precompiled_executable=build/precompiled_executable::$precompiled"); fi
 if [ "$compile_only" -eq 0 ]; then
@@ -156,26 +181,32 @@ fi
 cp "$work/stationary-clsvof.c" "$work/integral.h" "$work/two-phase-clsvof.h" \
   "$work/redistance_overlay.json" "$work/field_snapshots.h" \
   "$output/source_snapshot/"
+if [ "$domain" = whole ]; then cp "$work/$case_file" "$output/source_snapshot/"; fi
 python3 "$manifest_tool" start "${plan_args[@]}" --manifest "$output/manifest.json"
 
 SECONDS=0
+solver_seconds=0
 if [ -n "$precompiled" ]; then
   cp "$precompiled" "$work/stationary-clsvof"
   printf 'campaign-built executable reused\n' > "$work/compile.stdout"; : > "$work/compile.stderr"
 else
   (cd "$work"; "${compile_cmd[@]}" > compile.stdout 2> compile.stderr)
 fi
+compile_seconds="$SECONDS"
 cp "$work/compile.stdout" "$work/compile.stderr" "$output/"
 if [ "$compile_only" -eq 1 ]; then cp "$work/stationary-clsvof" "$output/executable"; fi
 if [ "$compile_only" -eq 0 ]; then
+  solver_started="$SECONDS"
   (
     cd "$work"
     OMP_NUM_THREADS="$threads" OMP_DYNAMIC=false "${run_cmd[@]}" > stdout.txt 2> log
   )
+  solver_seconds=$((SECONDS - solver_started))
   test -s "$work/La-12000-$level"
   test -s "$work/termination.csv"
   test -s "$work/milestones.csv"
   cp "$work/La-12000-$level" "$output/timeseries.dat"
+  cp "$work/La-whole-12000-$level" "$output/timeseries_whole_domain.dat"
   cp "$work/log" "$output/runtime_and_terminal.log"
   cp "$work/stdout.txt" "$output/solver.stdout.txt"
   cp "$work/termination.csv" "$output/termination.csv"
@@ -187,6 +218,7 @@ if [ "$compile_only" -eq 0 ]; then
 fi
 elapsed="$SECONDS"
 python3 "$manifest_tool" complete "${plan_args[@]}" \
+  --compile-seconds "$compile_seconds" --solver-seconds "$solver_seconds" \
   --manifest "$output/manifest.json" --elapsed-seconds "$elapsed"
 
 trap - EXIT

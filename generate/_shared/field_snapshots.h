@@ -30,6 +30,9 @@
 #ifndef METHOD_NN
 # define METHOD_NN 0
 #endif
+#ifndef METHOD_ORACLE
+# define METHOD_ORACLE 0
+#endif
 
 static int cfd_middle_snapshot_written = 0;
 
@@ -71,6 +74,8 @@ static void cfd_write_field_snapshot (const char * label,
     if (active_valid) {
 # if METHOD_NN
       active_curvature = kappa_offset_provider_diagnostic (point, d);
+# elif METHOD_ORACLE
+      active_curvature = oracle_curvature_provider (point, d);
 # else
       active_curvature = distance_curvature (point, d);
 # endif

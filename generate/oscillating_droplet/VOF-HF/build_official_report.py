@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 """Validate one grid-matched Standard VOF-HF oscillation row.
 
-Writes the per-row strict stock diff (fit_summary_vs_ref.diff) and prints the
-verification record to stdout (captured in the campaign row log). The per-row
-status files VOF-HF_report.json / VOF-HF_RESULTS.md / verification.json were
-removed by the 2026-07-23 smoke review; their content now lives in the
-campaign-level _meta/oscillating_vof_hf_official.json rollup."""
+Writes the strict stock diff (fit_summary_vs_ref.diff) and prints the
+verification record to stdout. Row finalization embeds that record in
+manifest.json."""
 from __future__ import annotations
 
 import argparse

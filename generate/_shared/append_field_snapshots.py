@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+from typing import Optional
 
 
 SETTINGS = {
@@ -36,12 +37,15 @@ SETTINGS = {
 }
 
 
-def append_overlay(source: str, case: str, clsvof: bool) -> str:
+def append_overlay(
+    source: str, case: str, clsvof: bool, middle: Optional[str] = None
+) -> str:
     if "CFD_FIELD_SNAPSHOTS_H" in source or 'include "field_snapshots.h"' in source:
         raise ValueError("field snapshot overlay is already present")
     setting = SETTINGS[case]
+    middle_time = middle or setting["middle"]
     block = f'''\n\n/* Repository-added observational field snapshots. */
-#define CFD_SNAPSHOT_MIDDLE_SOLVER_TIME {setting["middle"]}
+#define CFD_SNAPSHOT_MIDDLE_SOLVER_TIME {middle_time}
 #define CFD_SNAPSHOT_FINAL_SOLVER_TIME {setting["final"]}
 #define CFD_SNAPSHOT_BENCHMARK_TIME(value) {setting["benchmark"]}
 #define CFD_SNAPSHOT_PHASE_VALUE {setting["phase"] if clsvof else setting.get("vof_phase", setting["phase"])}
@@ -56,10 +60,12 @@ def main() -> int:
     parser.add_argument("source", type=Path)
     parser.add_argument("--case", choices=tuple(SETTINGS), required=True)
     parser.add_argument("--clsvof", action="store_true")
+    parser.add_argument("--middle")
     args = parser.parse_args()
     source = args.source.read_text(encoding="utf-8")
     args.source.write_text(
-        append_overlay(source, args.case, args.clsvof), encoding="utf-8"
+        append_overlay(source, args.case, args.clsvof, middle=args.middle),
+        encoding="utf-8",
     )
     return 0
 
